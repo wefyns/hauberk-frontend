@@ -49,71 +49,84 @@ function Login() {
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.loginForm}>
-        <div className={styles.formHeader}>
-          <h1>Welcome Back</h1>
-          <p>Sign in to your account</p>
+    <div className={styles.wrapper}>
+      <aside className={styles.brandPanel} aria-hidden="true">
+        <div className={styles.brandInner}>
+          <div className={styles.brandBig}>HAUBERK</div>
         </div>
+      </aside>
 
-        {successMessage && (
-          <div className={styles.successMessage}>{successMessage}</div>
-        )}
+      <main className={styles.formPanel}>
+        <div className={styles.card} role="region" aria-labelledby="login-heading">
+          <header className={styles.cardHeader}>
+            <h1 id="login-heading">Welcome Back</h1>
+            <p className={styles.lead}>Sign in to your account</p>
+          </header>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles.formGroup}>
-            <label htmlFor="username" className={styles.label}>
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              className={styles.input}
-              {...register("username", {
-                required: "Username is required",
-                minLength: {
-                  value: 3,
-                  message: "Username must be at least 3 characters",
-                },
-              })}
-            />
-            {errors.username && (
-              <span className={styles.error}>{errors.username.message}</span>
+          <div className={styles.messages} aria-live="polite">
+            {successMessage && (
+              <div className={styles.successMessage}>{successMessage}</div>
             )}
+            {formError && <div className={styles.formError}>{formError}</div>}
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="password" className={styles.label}>
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              className={styles.input}
-              {...register("password", {
-                required: "Password is required",
-              })}
-            />
-            {errors.password && (
-              <span className={styles.error}>{errors.password.message}</span>
-            )}
+          <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className={styles.formGroup}>
+              <label htmlFor="username" className={styles.label}>
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                className={`${styles.input} ${errors.username ? styles.inputError : ""}`}
+                {...register("username", {
+                  required: "Username is required",
+                  minLength: {
+                    value: 3,
+                    message: "Username must be at least 3 characters",
+                  },
+                })}
+                aria-invalid={errors.username ? "true" : "false"}
+              />
+              {errors.username && (
+                <span className={styles.error}>{errors.username.message}</span>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="password" className={styles.label}>
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                className={`${styles.input} ${errors.password ? styles.inputError : ""}`}
+                {...register("password", {
+                  required: "Password is required",
+                })}
+                aria-invalid={errors.password ? "true" : "false"}
+              />
+              {errors.password && (
+                <span className={styles.error}>{errors.password.message}</span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={isSubmitting || mutation.isPending}
+            >
+              {mutation.isPending ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          <div className={styles.footerLinks}>
+            <Link to={Pages.ResetPassword} className={styles.link}>
+              Forgot Password?
+            </Link>
           </div>
-
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={isSubmitting || mutation.isPending}
-          >
-            {mutation.isPending ? "Signing in..." : "Sign In"}
-          </button>
-
-          {formError && <div className={styles.formError}>{formError}</div>}
-        </form>
-
-        <div style={{ textAlign: "center", marginTop: "1rem" }}>
-          <Link to={Pages.ResetPassword}>Forgot Password?</Link>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

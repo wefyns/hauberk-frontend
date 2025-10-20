@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { agentService } from "../../services/agentService";
@@ -7,9 +8,12 @@ import { secretService } from "../../services/secretService";
 import styles from "../Home.module.css";
 
 function AgentsPage() {
+  const navigate = useNavigate();
+
   const { orgId } = useParams();
   const [showAddForm, setShowAddForm] = useState(false);
   const [addAgentSuccess, setAddAgentSuccess] = useState(false);
+  const [editingAgent, setEditingAgent] = useState(null);
   
   const {
     register,
@@ -50,6 +54,22 @@ function AgentsPage() {
     select: (data) => data?.secrets || []
   });
 
+  const handleEditClick = (agent) => {
+    reset({
+      uuid: agent.uuid || "",
+      secret_id: agent.secret_id?.toString() || "",
+      protocol: agent.protocol || "https",
+      host: agent.host || "",
+      port: agent.port || 8443
+    });
+    setEditingAgent(agent);
+    setShowAddForm(true);
+  };
+
+  const handleAgentDeploymentClick = (agentId) => {
+    navigate(`/home/${orgId}/agents/${agentId}/deployment`);
+  }
+
   const onSubmit = async (data) => {
     try {
       setAddAgentSuccess(false);
@@ -84,12 +104,15 @@ function AgentsPage() {
     <div className={styles.sectionContent}>
       <div className={styles.sectionHeader}>
         <h2>Agents</h2>
-        <button 
-          className={styles.addButton}
-          onClick={() => setShowAddForm(!showAddForm)}
-        >
-          {showAddForm ? "Cancel" : "+ Add Agent"}
-        </button>
+
+        <div className={styles.groupBtn}>
+          <button 
+            className={styles.addButton}
+            onClick={() => setShowAddForm(!showAddForm)}
+          >
+            {showAddForm ? "Cancel" : "+ Add Agent"}
+          </button>
+        </div>
       </div>
       
       {showAddForm && (
@@ -186,12 +209,12 @@ function AgentsPage() {
                 {errors.port && <span className={styles.error}>{errors.port.message}</span>}
               </div>
             </div>
-            <button 
+             <button 
               type="submit" 
               className={styles.submitButton}
               disabled={isSubmitting || secrets?.length === 0}
             >
-              {isSubmitting ? "Adding..." : "Add Agent"}
+              {isSubmitting ? (editingAgent ? "Updating..." : "Adding...") : (editingAgent ? "Update Agent" : "Add Agent")}
             </button>
           </form>
         </div>
@@ -205,13 +228,29 @@ function AgentsPage() {
             <p>No agents found for this organization.</p>
           ) : (
             agentsData?.map((agent) => (
-              <div key={agent.id} className={styles.agentCard}>
-                <h3>{agent.uuid}</h3>
-                <p>
-                  Host: {agent.host}:{agent.port}
-                </p>
-                <p>Protocol: {agent.protocol}</p>
-                <p>Secret ID: {agent.secret_id}</p>
+              <div 
+                key={agent.id} 
+                className={styles.agentCard} 
+                onClick={() => handleEditClick(agent)}
+              >
+                <div>
+                  <h3>{agent.uuid}</h3>
+                  <p>
+                    Host: {agent.host}:{agent.port}
+                  </p>
+                  <p>Protocol: {agent.protocol}</p>
+                  <p>Secret ID: {agent.secret_id}</p>
+                </div>
+
+
+                <div className={styles.agentBtn}>
+                  <button 
+                      className={styles.addButton}
+                      onClick={() => handleAgentDeploymentClick(agent?.id)}
+                  >
+                    Deployment
+                  </button>
+                </div>
               </div>
             ))
           )}

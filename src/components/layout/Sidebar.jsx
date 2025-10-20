@@ -18,6 +18,7 @@ function Sidebar({ sidebarCollapsed, toggleSidebar, activeSection, orgId }) {
     navigate(Pages.Organizations);
   };
 
+
   return (
     <div
       className={`${styles.sidebar} ${
@@ -25,8 +26,29 @@ function Sidebar({ sidebarCollapsed, toggleSidebar, activeSection, orgId }) {
       }`}
     >
       <div className={styles.sidebarHeader}>
-        <div className={styles.logo}>Hauberk</div>
-        <button onClick={toggleSidebar} className={styles.toggleButton}>
+        <div
+          className={styles.logo}
+          title={selectedOrganization?.name || "Hauberk"}
+          aria-hidden={false}
+        >
+          <span className={styles.logoFull}>Hauberk</span>
+
+          <button
+            onClick={toggleSidebar}
+            className={styles.logoToggleButton}
+            aria-label="Expand sidebar"
+            title="Expand sidebar"
+          >
+            →
+          </button>
+        </div>
+
+        <button
+          onClick={toggleSidebar}
+          className={styles.toggleButton}
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={sidebarCollapsed ? "Expand" : "Collapse"}
+        >
           {sidebarCollapsed ? "→" : "←"}
         </button>
       </div>

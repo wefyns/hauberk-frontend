@@ -46,58 +46,79 @@ function ResetPassword() {
 
   if (isSuccess) {
     return (
-      <div className={styles.loginContainer}>
-        <div className={styles.loginForm}>
-          <div className={styles.formHeader}>
-            <h1>Check Your Email</h1>
-            <p>We've sent a reset code to your email address.</p>
+    
+        <div className={styles.formPanelReset}>
+          <div className={styles.cardReset} role="region" aria-live="polite">
+            <div className={styles.cardHeader}>
+              <h1>Check Your Email</h1>
+              <p className={styles.lead}>We've sent a reset code to your email address.</p>
+            </div>
+
+          
+            <div style={{ marginTop: "1rem", textAlign: "center" }}>
+              <Link to={Pages.Login} className={styles.link}>
+                Вернуться к входу
+              </Link>
+            </div>
           </div>
+
+
         </div>
-      </div>
     );
   }
 
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.loginForm}>
-        <div className={styles.formHeader}>
-          <h1>Reset Password</h1>
-          <p>Enter your username to receive a reset code</p>
+   <div className={styles.wrapper}>
+      <aside className={styles.brandPanel} aria-hidden="true">
+        <div className={styles.brandInner}>
+          <div className={styles.brandBig}>HAUBERK</div>
         </div>
+      </aside>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles.formGroup}>
-            <label htmlFor="login" className={styles.label}>
-              Username
-            </label>
-            <input
-              id="login"
-              type="text"
-              className={styles.input}
-              {...register("login", {
-                required: "Username is required",
-              })}
-            />
-            {errors.login && (
-              <span className={styles.error}>{errors.login.message}</span>
-            )}
+      <main className={styles.formPanel}>
+        <div className={styles.card} role="region" aria-labelledby="reset-heading">
+          <header className={styles.cardHeader}>
+            <h1 id="reset-heading">Reset Password</h1>
+            <p className={styles.lead}>Enter your username to receive a reset code</p>
+          </header>
+
+          <div className={styles.messages} aria-live="polite">
+            {formError && <div className={styles.formError}>{formError}</div>}
           </div>
 
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? "Sending..." : "Send Reset Code"}
-          </button>
+          <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className={styles.formGroup}>
+              <label htmlFor="login" className={styles.label}>
+                Username
+              </label>
+              <input
+                id="login"
+                type="text"
+                className={`${styles.input} ${errors.login ? styles.inputError : ""}`}
+                {...register("login", {
+                  required: "Username is required",
+                })}
+                aria-invalid={errors.login ? "true" : "false"}
+              />
+              {errors.login && <span className={styles.error}>{errors.login.message}</span>}
+            </div>
 
-          {formError && <div className={styles.formError}>{formError}</div>}
-        </form>
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "Sending..." : "Send Reset Code"}
+            </button>
+          </form>
 
-        <div style={{ textAlign: "center", marginTop: "1rem" }}>
-          <Link to={Pages.Login}>Back to Login</Link>
+          <div className={styles.footerLinks}>
+            <Link to={Pages.Login} className={styles.link}>
+              Back to Login
+            </Link>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
