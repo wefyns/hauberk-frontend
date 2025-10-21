@@ -1,0 +1,26 @@
+.sidebarFooter {
+  background-color: #f8f9fb;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 16px;
+  border-bottom: 1px solid #c4ced7;
+}
+
+.organizationInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.orgName {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.logoutButton,
+.changeOrgButton {
+  font-size: 14px;
+  border-radius: 0px;
+}

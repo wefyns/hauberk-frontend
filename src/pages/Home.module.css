@@ -1,7 +1,6 @@
 .homeContainer {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
@@ -226,13 +225,17 @@
 .mainContent {
   flex: 1 1 auto;       
   min-height: 0;      
-  height: 100%;         
+  height: calc(100% - 40px);         
   overflow: auto;      
   padding: 40px;
   transition: all 0.3s ease;
   background-color: #f8f9fb;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+}
+
+.navContainer {
+  flex: 1 1 auto;       
 }
 
 .mainContent.expanded {
@@ -440,6 +443,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+  gap: 10px;
 }
 
 .deploymentContainer {
@@ -520,5 +524,204 @@
   .orgName,
   .changeOrgButton {
     display: none;
+  }
+}
+
+
+
+/* agent */
+.top {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 16px 24px;
+  margin-bottom: 8px;
+  background-color: #ffffff;
+  align-items: center;
+}
+
+.wrapperInput {
+  min-width: 320px;
+  flex: 1;
+  max-width: 800px;
+}
+
+.inputSearch {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e6eef7;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #fff;
+}
+
+.button {
+  font-size: 14px;
+  font-weight: 700;
+  height: 40px;
+  padding: 8px 12px;
+  text-transform: none;
+  white-space: nowrap;
+  background: #2d2eb7;
+  color: #fff;
+  border: none;
+  border-radius: 0px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.buttonOutlineBlue {
+  background: #fff;
+  color: #2d2eb7;
+  border: 2px solid #2d2eb7;
+}
+
+.buttonOutlineBlue:hover {
+  border: 2px solid #2d2eb7;
+  background: #2d2eb7;
+  color: #fff;
+}
+
+.buttonOutlineGreen {
+  background: #fff;
+  color: #35a388;
+  border: 2px solid #35a388;
+}
+
+.buttonOutlineGreen:hover {
+  background: #35a388;
+  border: 2px solid #35a388;
+  color: #fff;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+}
+
+.wrapperCounterparty {
+  padding: 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f3f6f9;
+  cursor: pointer;
+}
+
+.wrapperTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.name {
+  max-width: 70%;
+  font-family: Inter, system-ui;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.description {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.reduction {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.value {
+  color: #0f172a;
+}
+
+.status {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.wrapperBottom {
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f6f7f9;
+}
+
+.notFound {
+  display: flex;
+  margin-top: 24px;
+  max-width: 640px;
+  min-height: 240px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.textNotFound {
+  font-size: 20px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.invite {
+  padding: 8px 12px;
+  color: #0ea5a4;
+  border: 2px solid #0ea5a4;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.loader {
+  font-size: 14px;
+  color: #64748b;
+}
+
+@media (max-width: 880px) {
+  .top {
+    padding: 12px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .wrapper-input {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wrapperCounterparty {
+    padding: 12px;
+  }
+
+  .name {
+    font-size: 18px;
   }
 }

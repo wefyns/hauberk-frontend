@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.textLogoDashboard {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.textLogoAuth {
+  font-size: 28px;
+  font-weight: 900;
+  color: black;
+  margin-left: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

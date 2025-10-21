@@ -1,0 +1,163 @@
+.networkBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #e6eef8;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-weight: 600;
+  color: #333;
+}
+
+.fileArea {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.preview {
+  flex: 1;
+  min-height: 160px;
+  max-height: 320px;
+  resize: vertical;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #c4ced7;
+  background: rgba(255,255,255,0.02);
+  color: #333;
+  font-family: monospace;
+  white-space: pre;
+  overflow: auto;
+}
+
+.fileControls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: linear-gradient(180deg,#ffffff,#e6e6e6);
+  border: 1px solid #c4ced7;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+.btnSecondary {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #333;
+  cursor: pointer;
+}
+
+.actionsRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.primary {
+  background: #2d2eb7;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #333;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.error {
+  color: #ff0b37;
+}
+
+.errorBlock {
+  background: rgba(255,0,0,0.04);
+  border: 1px solid rgba(255,0,0,0.08);
+  padding: 12px;
+  border-radius: 8px;
+  color: #ffdede;
+}
+
+.details {
+  max-height: 220px;
+  overflow: auto;
+  background: rgba(0,0,0,0.04);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.resultBlock {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.docPreview {
+  max-height: 260px;
+  overflow: auto;
+  padding: 12px;
+  background: rgba(0,0,0,0.03);
+  border-radius: 6px;
+  color: #e6eef8;
+}
+
+.resultBtns {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.taskBlock {
+  margin-top: 12px;
+}
+
+.eventsList {
+  max-height: 280px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.01);
+}
+
+.eventItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.03);
+  color: #e6eef8;
+}
+
+.eventText {
+  font-size: 13px;
+  color: #dbeafe;
+}

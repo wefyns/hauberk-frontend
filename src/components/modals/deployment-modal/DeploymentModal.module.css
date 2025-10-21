@@ -1,0 +1,147 @@
+.deploymentBody {
+  color: #e6eef8;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerRow h4 {
+  color: #333;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stepLabel {
+  font-weight: 600;
+  color: #333;
+}
+
+.statusSuccess {
+  background: rgba(34,197,94,0.12);
+  color: #10b981;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.statusError {
+  background: rgba(239,68,68,0.12);
+  color: #ef4444;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.statusProgress {
+  background: rgba(59,130,246,0.12);
+  color: #3b82f6;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.statusPending {
+  background: rgba(248,250,252,0.03);
+  color: #94a3b8;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.logsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.logsBlock h5 {
+  color: #333;
+}
+
+.logs {
+  max-height: 220px;
+  overflow: auto;
+  background: rgba(255,255,255,0.02);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.logEmpty {
+  color: #becadc;
+  padding: 8px;
+}
+
+.logLine {
+  font-family: monospace;
+  font-size: 13px;
+  color: #333;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.02);
+}
+
+.primary {
+  background: #2d2eb7;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.secondary {
+  background: linear-gradient(180deg,#ffffff,#e6e6e6);
+  color: #0f172a;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #e6eef8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.errorBlock {
+  background: rgba(255,0,0,0.04);
+  border: 1px solid rgba(255,0,0,0.08);
+  padding: 12px;
+  border-radius: 8px;
+  color: #ffdede;
+}
+
+.errorDetails {
+  max-height: 200px;
+  overflow: auto;
+  background: rgba(0,0,0,0.04);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.footerButton {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}

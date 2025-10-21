@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+
+import Navbar from "../components/navbar/Navbar";
 import Sidebar from "../components/layout/Sidebar";
+
 import { Pages } from "../constants/routes";
 import { useAuthContext } from "../contexts/useAuth";
 import { useOrganization } from "../contexts/useOrganization";
+
 import styles from "./Home.module.css";
 
 function Home() {
@@ -85,12 +89,16 @@ function Home() {
       />
 
       {/* Main content */}
-      <div
-        className={`${styles.mainContent} ${
-          sidebarCollapsed ? styles.expanded : ""
-        }`}
-      >
-        <Outlet />
+      <div 
+        className={styles.navContainer}>
+        <Navbar />
+        <div  
+          className={`${styles.mainContent} ${
+            sidebarCollapsed ? styles.expanded : ""
+          }`}
+        >
+          <Outlet />
+        </div>
       </div>
     </div>
   );

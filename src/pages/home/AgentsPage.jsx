@@ -1,40 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useState, useMemo } from "react";
+
 import { useParams } from "react-router-dom";
+
+import NetworkModal from "../../components/modals/network-modal/NetworkModal";
+import DeploymentModal from "../../components/modals/deployment-modal/DeploymentModal";
+import AddAgentModal from "../../components/modals/add-agent-modal/AddAgentModal";
+
 import { agentService } from "../../services/agentService";
-import { secretService } from "../../services/secretService";
+
 import styles from "../Home.module.css";
 
 function AgentsPage() {
-  const navigate = useNavigate();
-
   const { orgId } = useParams();
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [addAgentSuccess, setAddAgentSuccess] = useState(false);
-  const [editingAgent, setEditingAgent] = useState(null);
-  
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting }
-  } = useForm({
-    defaultValues: {
-      uuid: "",
-      secret_id: "",
-      protocol: "https",
-      host: "",
-      port: 8443
-    }
-  });
 
+  const [filter, setFilter] = useState("");
+  const [editingAgent, setEditingAgent] = useState(null);
+
+  const [networkAgent, setNetworkAgent] = useState(null);
+  const [networkModalOpen, setNetworkModalOpen] = useState(false);
+
+  const [deploymentAgent, setDeploymentAgent] = useState(null);
+  const [deploymentModalOpen, setDeploymentModalOpen] = useState(false);
+
+  const [addAgentModalOpen, setAddAgentModalOpen] = useState(false);
+  
   // Use useQuery for agents data
   const { 
     data: agentsData, 
     isLoading: agentsLoading, 
-    error: agentsError,
     refetch: refetchAgents 
   } = useQuery({
     queryKey: ['agents', orgId],
@@ -43,210 +37,127 @@ function AgentsPage() {
     select: (data) => data?.agents || []
   });
 
-  // Use useQuery for secrets data
-  const { 
-    data: secrets, 
-    isLoading: secretsLoading 
-  } = useQuery({
-    queryKey: ['secrets', orgId],
-    queryFn: () => secretService.getSecrets(parseInt(orgId)),
-    enabled: !!orgId,
-    select: (data) => data?.secrets || []
-  });
+  const filterData = useMemo(() => {
+    if (!filter || filter.trim() === "") return agentsData || [];
+    const q = filter.trim().toLowerCase();
+    return (agentsData || []).filter((a) => {
+      if (!a) return false;
+
+      const uuid = String(a.uuid || "").toLowerCase();
+      const host = String(a.host || "").toLowerCase();
+      const protocol = String(a.protocol || "").toLowerCase();
+      return (
+        uuid.includes(q) ||
+        host.includes(q) ||
+        protocol.includes(q)
+      );
+    });
+  }, [agentsData, filter]);
 
   const handleEditClick = (agent) => {
-    reset({
-      uuid: agent.uuid || "",
-      secret_id: agent.secret_id?.toString() || "",
-      protocol: agent.protocol || "https",
-      host: agent.host || "",
-      port: agent.port || 8443
-    });
     setEditingAgent(agent);
-    setShowAddForm(true);
+    setAddAgentModalOpen(true);
   };
 
-  const handleAgentDeploymentClick = (agentId) => {
-    navigate(`/home/${orgId}/agents/${agentId}/deployment`);
-  }
-
-  const onSubmit = async (data) => {
-    try {
-      setAddAgentSuccess(false);
-      
-      // Convert string values to number where needed
-      const formattedData = {
-        ...data,
-        port: parseInt(data.port),
-        secret_id: parseInt(data.secret_id)
-      };
-      
-      await agentService.addAgent(parseInt(orgId), formattedData);
-      
-      setAddAgentSuccess(true);
-      reset();
-      
-      // Refetch agents to update the list
-      refetchAgents();
-      
-      // Close the form after successful addition
-      setTimeout(() => {
-        setShowAddForm(false);
-        setAddAgentSuccess(false);
-      }, 1000);
-      
-    } catch (err) {
-      return { error: err.message || "Failed to add agent" };
-    }
+  const handleAddClick = () => {
+    setEditingAgent(null);
+    setAddAgentModalOpen(true);
   };
+
+  const noDataOrFound = (agentsData?.length || 0) === 0;
 
   return (
-    <div className={styles.sectionContent}>
-      <div className={styles.sectionHeader}>
-        <h2>Agents</h2>
-
-        <div className={styles.groupBtn}>
-          <button 
-            className={styles.addButton}
-            onClick={() => setShowAddForm(!showAddForm)}
-          >
-            {showAddForm ? "Cancel" : "+ Add Agent"}
-          </button>
+    <>
+      <div className={styles.top}>
+        <div className={styles.wrapperInput}>
+          <div style={{ position: "relative" }}>
+            <input
+              className={styles.inputSearch}
+              value={filter}
+              placeholder="Поиск по имени, хосту, protocol"
+              onChange={(e) => setFilter(e.target.value)}
+              style={{ paddingLeft: 36, height: 40, borderRadius: 0 }}
+            />
+          </div>
         </div>
+
+        <button
+          type="button"
+          className={styles.button}
+          onClick={handleAddClick}
+        >
+          + Добавить агента
+        </button>
       </div>
-      
-      {showAddForm && (
-        <div className={styles.addForm}>
-          <h3>Add New Agent</h3>
-          {addAgentSuccess && (
-            <p className={styles.success}>Agent added successfully!</p>
-          )}
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className={styles.formGroup}>
-              <label htmlFor="uuid">Agent UUID *</label>
-              <input
-                type="text"
-                id="uuid"
-                placeholder="e.g., agent-123e4567-e89b-12d3-a456-426614174000"
-                {...register("uuid", {
-                  required: "Agent UUID is required"
-                })}
-                className={styles.input}
-              />
-              {errors.uuid && <span className={styles.error}>{errors.uuid.message}</span>}
-            </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="secret_id">Secret *</label>
-              <select
-                id="secret_id"
-                disabled={secretsLoading || secrets?.length === 0}
-                {...register("secret_id", {
-                  required: "Secret is required"
-                })}
-                className={styles.input}
-              >
-                <option value="">Select a secret</option>
-                {secrets?.map(secret => (
-                  <option key={secret.id} value={secret.id}>
-                    {secret.name} (ID: {secret.id} - {secret.secret_mark} - {secret.secret_type})
-                  </option>
-                ))}
-              </select>
-              {errors.secret_id && <span className={styles.error}>{errors.secret_id.message}</span>}
-              {secrets?.length === 0 && !secretsLoading && (
-                <p className={styles.formHelp}>
-                  No secrets available. Please add a secret first.
-                </p>
-              )}
-              {secretsLoading && <p className={styles.formHelp}>Loading secrets...</p>}
-            </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="protocol">Protocol</label>
-                <select
-                  id="protocol"
-                  {...register("protocol")}
-                  className={styles.input}
-                >
-                  <option value="https">HTTPS</option>
-                  <option value="http">HTTP</option>
-                </select>
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="host">Host *</label>
-                <input
-                  type="text"
-                  id="host"
-                  placeholder="e.g., example.com or 192.168.1.1"
-                  {...register("host", {
-                    required: "Host is required"
-                  })}
-                  className={styles.input}
-                />
-                {errors.host && <span className={styles.error}>{errors.host.message}</span>}
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="port">Port *</label>
-                <input
-                  type="number"
-                  id="port"
-                  placeholder="e.g., 8443"
-                  min="1"
-                  max="65535"
-                  {...register("port", {
-                    required: "Port is required",
-                    min: {
-                      value: 1,
-                      message: "Port must be at least 1"
-                    },
-                    max: {
-                      value: 65535,
-                      message: "Port must be at most 65535"
-                    }
-                  })}
-                  className={styles.input}
-                />
-                {errors.port && <span className={styles.error}>{errors.port.message}</span>}
-              </div>
-            </div>
-             <button 
-              type="submit" 
-              className={styles.submitButton}
-              disabled={isSubmitting || secrets?.length === 0}
-            >
-              {isSubmitting ? (editingAgent ? "Updating..." : "Adding...") : (editingAgent ? "Update Agent" : "Add Agent")}
-            </button>
-          </form>
+
+      {agentsLoading && (
+        <div style={{ padding: 32, display: "flex", justifyContent: "center" }}>
+          <div className={styles.loader}>Loading...</div>
         </div>
       )}
-      
-      {agentsLoading && <p>Loading agents...</p>}
-      {agentsError && <p className={styles.error}>Error: {agentsError.message || "Failed to fetch agents"}</p>}
-      {!agentsLoading && !agentsError && (
-        <div className={styles.agentsList}>
-          {agentsData?.length === 0 ? (
-            <p>No agents found for this organization.</p>
+
+      {!agentsLoading && (
+        <div className={ (noDataOrFound && filterData.length === 0) ? styles.wrapperBottom : styles.content }>
+          {noDataOrFound && filterData.length === 0 ? (
+            <div className={styles.notFound}>
+              <div className={styles.textNotFound}>No agents yet</div>
+              <div style={{ marginTop: 16 }}>
+                <button type="button" className={styles.invite} onClick={handleAddClick}>Create first agent</button>
+              </div>
+            </div>
+          ) : filterData.length === 0 ? (
+            <div className={styles.wrapperBottom}>
+              <div className={styles.textNotFound}>Ничего не найдено по запросу «{filter}»</div>
+            </div>
           ) : (
-            agentsData?.map((agent) => (
-              <div 
-                key={agent.id} 
-                className={styles.agentCard} 
+            filterData.map((agent) => (
+              <div
+                key={agent.id}
+                className={styles.wrapperCounterparty}
                 onClick={() => handleEditClick(agent)}
+                role="button"
+                tabIndex={0}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
-                <div>
-                  <h3>{agent.uuid}</h3>
-                  <p>
-                    Host: {agent.host}:{agent.port}
-                  </p>
-                  <p>Protocol: {agent.protocol}</p>
-                  <p>Secret ID: {agent.secret_id}</p>
+                <div className={styles.info}>
+                  <div className={styles.wrapperTop}>
+                    <div>
+                      <div className={styles.name}>{agent.uuid}</div>
+                      <div className={styles.description}>
+                        <div className={styles.reduction}>Host:</div>
+                        <div className={styles.value}>{agent.host}:{agent.port}</div>
+                        <div style={{ width: 24 }} />
+                        <div className={styles.reduction}>Protocol:</div>
+                        <div className={styles.value}>{agent.protocol}</div>
+                        <div style={{ width: 24 }} />
+                        <div className={styles.reduction}>Secret ID:</div>
+                        <div className={styles.value}>{agent.secret_id ?? "—"}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.buttonOutlineBlue}`}
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      setNetworkAgent(agent); 
+                      setNetworkModalOpen(true); 
+                    }}
+                  >
+                    Network
+                  </button>
 
-                <div className={styles.agentBtn}>
-                  <button 
-                      className={styles.addButton}
-                      onClick={() => handleAgentDeploymentClick(agent?.id)}
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.buttonOutlineGreen}`}
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      setDeploymentAgent(agent); 
+                      setDeploymentModalOpen(true); 
+                    }}
                   >
                     Deployment
                   </button>
@@ -256,7 +167,45 @@ function AgentsPage() {
           )}
         </div>
       )}
-    </div>
+
+      {networkAgent && (
+        <NetworkModal
+          visible={networkModalOpen}
+          onClose={() => { 
+            setNetworkModalOpen(false); 
+            setNetworkAgent(null);
+          }}
+          orgId={orgId}
+          agentId={networkAgent.id}
+        />
+      )}
+
+      {deploymentAgent && (
+        <DeploymentModal
+          visible={deploymentModalOpen}
+          onClose={() => { setDeploymentModalOpen(false); setDeploymentAgent(null); }}
+          orgId={orgId}
+          agentId={deploymentAgent.id}
+        />
+      )}
+
+      {addAgentModalOpen && (
+        <AddAgentModal
+          visible={addAgentModalOpen}
+          onClose={() => {
+            setAddAgentModalOpen(false);
+            setEditingAgent(null);
+          }}
+          orgId={orgId}
+          editingAgent={editingAgent}
+          onSuccess={() => {
+            refetchAgents();
+            setAddAgentModalOpen(false);
+            setEditingAgent(null);
+          }}
+        />
+      )}
+    </>
   );
 }
 

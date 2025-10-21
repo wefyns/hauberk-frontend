@@ -2,6 +2,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
+
+import footerIconUrl from '../../assets/images/footer.jpg'
+
+import { Logo } from "../../components/logo/Logo";
+
 import { authService } from "../../services/authService";
 import { Pages } from "../../constants/routes";
 import styles from "./Login.module.css";
@@ -68,57 +73,62 @@ function ResetPassword() {
   }
 
   return (
-   <div className={styles.wrapper}>
-      <aside className={styles.brandPanel} aria-hidden="true">
-        <div className={styles.brandInner}>
-          <div className={styles.brandBig}>HAUBERK</div>
-        </div>
-      </aside>
-
-      <main className={styles.formPanel}>
-        <div className={styles.card} role="region" aria-labelledby="reset-heading">
-          <header className={styles.cardHeader}>
-            <h1 id="reset-heading">Reset Password</h1>
-            <p className={styles.lead}>Enter your username to receive a reset code</p>
-          </header>
-
-          <div className={styles.messages} aria-live="polite">
-            {formError && <div className={styles.formError}>{formError}</div>}
-          </div>
-
-          <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className={styles.formGroup}>
-              <label htmlFor="login" className={styles.label}>
-                Username
-              </label>
-              <input
-                id="login"
-                type="text"
-                className={`${styles.input} ${errors.login ? styles.inputError : ""}`}
-                {...register("login", {
-                  required: "Username is required",
-                })}
-                aria-invalid={errors.login ? "true" : "false"}
-              />
-              {errors.login && <span className={styles.error}>{errors.login.message}</span>}
+    <div className={styles.root}>
+          <div className={styles.content}>
+            <div className={styles.firstBlock}>
+              <div>
+                <div className={styles.header}>
+                  <Logo />
+                  <span>HAUBERK</span>
+                </div>
+                <div className={styles.subtitle}>
+                  <span>Надежный инструмент управления цифровыми сетями на базе Hyperledger Fabric</span>
+                </div>
+              </div>
             </div>
+    
+            <div className={styles.secondBlock}>
+              <div className={styles.fullWidth}>
+                <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+                   <div className={styles.formContainer}>
+                    <div className={styles.formGroup}>
+                      <label htmlFor="login" className={styles.label}>
+                        Имя пользователя
+                      </label>
+                      <input
+                        id="login"
+                        type="text"
+                        className={`${styles.input} ${errors.login ? styles.inputError : ""}`}
+                        {...register("login", {
+                          required: "Username is required",
+                        })}
+                        aria-invalid={errors.login ? "true" : "false"}
+                      />
+                      {errors.login && <span className={styles.error}>{errors.login.message}</span>}
+                    </div>
 
-            <button
-              type="submit"
-              className={styles.submitButton}
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? "Sending..." : "Send Reset Code"}
-            </button>
-          </form>
+                    <div className={styles.footerLinks}>
+                      <Link to={Pages.Login} className={styles.link}>
+                        Вернуться к входу в систему
+                      </Link>
+                    </div>
+                   </div>
 
-          <div className={styles.footerLinks}>
-            <Link to={Pages.Login} className={styles.link}>
-              Back to Login
-            </Link>
+                  <button
+                    type="submit"
+                    className={styles.submitButton}
+                    disabled={mutation.isPending}
+                  >
+                    {mutation.isPending ? "Отправка..." : "Отправить код сброса"}
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
-        </div>
-      </main>
+    
+      <div className={styles.bottom}>
+        <img src={footerIconUrl} alt="footer icon" />
+      </div>
     </div>
   );
 }

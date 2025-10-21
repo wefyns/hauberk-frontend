@@ -1,8 +1,6 @@
 .container {
-  background: linear-gradient(135deg, #e6e9ee 0%, #ecf3fd 15%);;
   padding: 0;
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   position: relative;
 }
 
@@ -19,13 +17,16 @@
   font-size: 32px;
   font-weight: bold;
   color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .logoutButton {
   background: rgba(255, 255, 255, 0.2);
   color: #333;
   padding: 10px 24px;
-  border-radius: 25px;
+  border-radius: 0px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -53,11 +54,11 @@
 .formContainer {
   background: rgba(255, 255, 255, 1);
   border: 1px solid #dedede;
-  border-radius: 20px;
   padding: 40px;
   backdrop-filter: blur(20px);
   width: 100%;
   max-width: 800px;
+  box-shadow: 4px 4px 56px 0px rgba(66, 66, 132, 0.15);
 }
 
 .title {
@@ -108,15 +109,16 @@
 }
 
 .label {
-  color: rgba(50, 59, 75, 0.4);
-  font-weight: 500;
-  margin-bottom: 8px;
   font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  color: #546a8c;
+  margin-bottom: 4px;
 }
 
 .input {
   padding: 0.75rem;
-  border-radius: 8px;
   border: 1px solid rgba(15,23,42,0.08);
   background: rgba(255,255,255,0.6);
   font-size: 1rem;
@@ -130,7 +132,7 @@
 }
 
 .input::placeholder {
-  color: rgba(50, 59, 75, 0.4);
+  font-size: 14px;
 }
 
 .buttonGroup {
@@ -145,11 +147,11 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: #333;
   padding: 12px 24px;
-  border-radius: 25px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  border-radius: 0px;
 }
 
 .cancelButton:hover:not(:disabled) {
@@ -160,7 +162,7 @@
   background: linear-gradient(90deg, #4f46e5, #2563eb);
   color: white;
   padding: 12px 24px;
-  border-radius: 25px;
+  border-radius: 0px;
   cursor: pointer;
   font-weight: 600;
   transition: transform .12s ease, box-shadow .12s ease;
@@ -176,4 +178,28 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 280px;
+  z-index: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,0.0), rgba(255,255,255,0.02));
+}
+
+.bottom img {
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  pointer-events: none;
 }

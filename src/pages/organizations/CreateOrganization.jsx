@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+
+import footerIconUrl from '../../assets/images/footer.jpg'
+
+import { Logo } from "../../components/logo/Logo";
+
 import { organizationService } from "../../services/organizationService";
 import { useOrganization } from "../../contexts/useOrganization";
 import { useAuthContext } from "../../contexts/useAuth";
 import { Pages } from "../../constants/routes";
+
 import styles from "./CreateOrganization.module.css";
 
 function CreateOrganization() {
@@ -52,16 +58,19 @@ function CreateOrganization() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.logo}>Hauberk</div>
+        <div className={styles.logo}>
+          <Logo />
+          <span>HAUBERK</span>
+          </div>
         <button onClick={logoutFromApp} className={styles.logoutButton}>
-          Logout
+          Выход
         </button>
       </div>
 
       <div className={styles.content}>
         <div className={styles.formContainer}>
-          <h1 className={styles.title}>Create New Organization</h1>
-          <p className={styles.subtitle}>Fill in the details to create your organization</p>
+          <h1 className={styles.title}>Создать новую организацию</h1>
+          <p className={styles.subtitle}>Заполните данные, чтобы создать свою организацию</p>
 
           {error && (
             <div className={styles.error}>
@@ -73,14 +82,14 @@ function CreateOrganization() {
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="name" className={styles.label}>
-                  Organization Name *
+                  Название организации *
                 </label>
                 <input
                   type="text"
                   id="name"
                   className={styles.input}
                   {...register("name", {
-                    required: "Organization name is required"
+                    required: "Требуется указать название организации"
                   })}
                 />
                 {errors.name && <span className={styles.error}>{errors.name.message}</span>}
@@ -88,14 +97,14 @@ function CreateOrganization() {
 
               <div className={styles.formGroup}>
                 <label htmlFor="name_lat" className={styles.label}>
-                  Latinized Name *
+                  Латинизированное название *
                 </label>
                 <input
                   type="text"
                   id="name_lat"
                   className={styles.input}
                   {...register("name_lat", {
-                    required: "Latinized name is required"
+                    required: "Требуется латинизированное название"
                   })}
                 />
                 {errors.name_lat && <span className={styles.error}>{errors.name_lat.message}</span>}
@@ -105,14 +114,14 @@ function CreateOrganization() {
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="country" className={styles.label}>
-                  Country *
+                  Страна *
                 </label>
                 <input
                   type="text"
                   id="country"
                   className={styles.input}
                   {...register("country", {
-                    required: "Country is required"
+                    required: "Требуется страна"
                   })}
                 />
                 {errors.country && <span className={styles.error}>{errors.country.message}</span>}
@@ -120,7 +129,7 @@ function CreateOrganization() {
 
               <div className={styles.formGroup}>
                 <label htmlFor="country_code" className={styles.label}>
-                  Country Code *
+                  Код страны *
                 </label>
                 <input
                   type="text"
@@ -131,7 +140,7 @@ function CreateOrganization() {
                     required: "Country code is required",
                     pattern: {
                       value: /^[A-Z]{2}$/,
-                      message: "Enter a valid 2-letter country code (e.g., US, RU)"
+                      message: "Введите действительный 2-буквенный код страны (например, US, RU)."
                     }
                   })}
                 />
@@ -142,14 +151,14 @@ function CreateOrganization() {
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="region" className={styles.label}>
-                  Region *
+                  Регион *
                 </label>
                 <input
                   type="text"
                   id="region"
                   className={styles.input}
                   {...register("region", {
-                    required: "Region is required"
+                    required: "Требуется регион"
                   })}
                 />
                 {errors.region && <span className={styles.error}>{errors.region.message}</span>}
@@ -157,14 +166,14 @@ function CreateOrganization() {
 
               <div className={styles.formGroup}>
                 <label htmlFor="settlement" className={styles.label}>
-                  Settlement *
+                  Поселок *
                 </label>
                 <input
                   type="text"
                   id="settlement"
                   className={styles.input}
                   {...register("settlement", {
-                    required: "Settlement is required"
+                    required: "Требуется расчет"
                   })}
                 />
                 {errors.settlement && <span className={styles.error}>{errors.settlement.message}</span>}
@@ -174,18 +183,18 @@ function CreateOrganization() {
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="domain" className={styles.label}>
-                  Domain *
+                  Домен *
                 </label>
                 <input
                   type="text"
                   id="domain"
-                  placeholder="e.g., example.com"
+                  placeholder="например, example.com"
                   className={styles.input}
                   {...register("domain", {
-                    required: "Domain is required",
+                    required: "Требуется домен",
                     pattern: {
                       value: /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/,
-                      message: "Enter a valid domain name (e.g., example.com)"
+                      message: "Введите действительное доменное имя (например, example.com)"
                     }
                   })}
                 />
@@ -212,18 +221,22 @@ function CreateOrganization() {
                 className={styles.cancelButton}
                 disabled={isSubmitting}
               >
-                Cancel
+                Отменить
               </button>
               <button
                 type="submit"
                 className={styles.submitButton}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Creating..." : "Create Organization"}
+                {isSubmitting ? "Создание..." : "Создать организацию"}
               </button>
             </div>
           </form>
         </div>
+      </div>
+
+      <div className={styles.bottom}>
+        <img src={footerIconUrl} alt="footer icon" />
       </div>
     </div>
   );

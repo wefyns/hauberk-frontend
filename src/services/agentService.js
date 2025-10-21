@@ -59,10 +59,17 @@ export const agentService = {
    * Enroll an orderer for an organization's agent
    * @param {number} orgId - Organization ID
    * @param {number} agentId - Agent ID
+   * @param {string|number} [ordererId]
    * @returns {Promise} - Resolves with enrollment data
    */
-  enrollOrderer: async (orgId, agentId) => {
-    const url = API_URLS.AGENT_ORDERER_ENROLL(orgId, agentId);
+  enrollOrderer: async (orgId, agentId, ordererId) => {
+    let url;
+    if (typeof ordererId !== "undefined" && ordererId !== null) {
+      url = API_URLS.AGENT_ORDERER_ENROLL_WITH_ID(orgId, agentId, ordererId);
+    } else {
+      url = API_URLS.AGENT_ORDERER_ENROLL(orgId, agentId);
+    }
+
     const options = {
       method: "POST",
     };

@@ -10,7 +10,6 @@ import HomePage from "./pages/home/HomePage";
 import AgentsPage from "./pages/home/AgentsPage";
 import SecretsPage from "./pages/home/SecretsPage";
 import Organizations from "./pages/organizations/Organizations";
-import AgentDeploymentPage from "./pages/home/AgentDeploymentPage"
 import CreateOrganization from "./pages/organizations/CreateOrganization";
 import {
   Onboarding,
@@ -128,7 +127,6 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path="agents" element={<AgentsPage />} />
         <Route path="secrets" element={<SecretsPage />} />
-        <Route path="agents/:agentId/deployment" element={<AgentDeploymentPage />} />
       </Route>
 
       {/* 404 - redirect to organizations */}

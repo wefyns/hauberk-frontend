@@ -24,6 +24,8 @@ export const API_ENDPOINTS = {
     `/api/v1/organizations/${orgId}/agents/${agentId}/ca/enroll`,
   AGENT_ORDERER_ENROLL: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/enroll`,
+  AGENT_ORDERER_ENROLL_WITH_ID: (orgId, agentId, ordererId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}/enroll`,
   AGENT_PEER_ENROLL: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/peer/enroll`,
   AGENT_CREATE_CONNECTION_DOC: (orgId, agentId) =>
@@ -68,6 +70,8 @@ export const API_URLS = {
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_CA_ENROLL(orgId, agentId)}`,
   AGENT_ORDERER_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL(orgId, agentId)}`,
+  AGENT_ORDERER_ENROLL_WITH_ID: (orgId, agentId, ordererId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID(orgId, agentId, ordererId)}`,
   AGENT_PEER_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_ENROLL(orgId, agentId)}`,
   AGENT_CREATE_CONNECTION_DOC: (orgId, agentId) =>
