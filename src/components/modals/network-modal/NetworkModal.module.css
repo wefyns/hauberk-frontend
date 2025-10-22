@@ -53,13 +53,27 @@
   color: #0f172a;
 }
 
+.btnD {
+  padding: 8px 12px;
+  border-radius: 0px;
+  cursor: pointer;
+  color: #0f172a;
+}
+
 .btnSecondary {
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 0px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.06);
-  color: #333;
+  border: 1px solid #d60000;
+  color: #d60000;
   cursor: pointer;
+}
+
+.errorBtns {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
 }
 
 .actionsRow {
@@ -75,7 +89,7 @@
   background: #2d2eb7;
   color: white;
   padding: 10px 16px;
-  border-radius: 8px;
+  border-radius: 0px;
   border: none;
   cursor: pointer;
 }
@@ -85,7 +99,7 @@
   border: 1px solid rgba(255,255,255,0.06);
   color: #333;
   padding: 10px 16px;
-  border-radius: 8px;
+  border-radius: 0px;
   cursor: pointer;
 }
 
@@ -97,8 +111,13 @@
   background: rgba(255,0,0,0.04);
   border: 1px solid rgba(255,0,0,0.08);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 0px;
   color: #ffdede;
+}
+
+.processingError,
+.errorBlock h4 {
+  color: #d60000;
 }
 
 .details {
@@ -116,23 +135,33 @@
   border-radius: 8px;
 }
 
+.resultBlock h4 {
+  color: #333;
+}
+
 .docPreview {
   max-height: 260px;
   overflow: auto;
   padding: 12px;
   background: rgba(0,0,0,0.03);
   border-radius: 6px;
-  color: #e6eef8;
+  color: #333;
 }
 
 .resultBtns {
   display: flex;
+  align-items: center;
+  justify-self: flex-end;
   gap: 8px;
   margin-top: 8px;
 }
 
 .taskBlock {
   margin-top: 12px;
+}
+
+.taskBlock h4 {
+  color: #333;
 }
 
 .eventsList {
@@ -154,10 +183,10 @@
   padding: 8px;
   border-radius: 6px;
   background: rgba(0,0,0,0.03);
-  color: #e6eef8;
+  color: #333;
 }
 
 .eventText {
   font-size: 13px;
-  color: #dbeafe;
+  color: #333;
 }

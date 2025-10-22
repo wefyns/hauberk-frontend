@@ -1,0 +1,50 @@
+.wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font-weight: 600;
+}
+
+.button img {
+  width: 24px;
+  height: 24px;
+}
+
+.button:hover {
+  background: rgba(2,6,23,0.04);
+}
+
+.button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.overlay {
+  min-width: 160px;
+  max-width: 480px;
+  max-height: 70vh;
+  overflow: auto;
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid #e6eef7;
+  box-shadow: 0 6px 22px rgba(15,23,42,0.12);
+  border-radius: 8px;
+  padding: 6px;
+  animation: am-fade-in 120ms ease-out;
+}
+
+@keyframes am-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

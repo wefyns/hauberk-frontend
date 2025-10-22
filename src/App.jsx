@@ -6,7 +6,9 @@ import Login from "./pages/auth/Login";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ResetPasswordConfirm from "./pages/auth/ResetPasswordConfirm";
 import Home from "./pages/Home";
+
 import HomePage from "./pages/home/HomePage";
+import PeersPage from "./pages/home/PeersPage"; 
 import AgentsPage from "./pages/home/AgentsPage";
 import SecretsPage from "./pages/home/SecretsPage";
 import Organizations from "./pages/organizations/Organizations";
@@ -124,7 +126,7 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<HomePage />} />
+        <Route index element={<PeersPage />} />
         <Route path="agents" element={<AgentsPage />} />
         <Route path="secrets" element={<SecretsPage />} />
       </Route>

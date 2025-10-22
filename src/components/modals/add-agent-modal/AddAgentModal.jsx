@@ -82,8 +82,8 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
     mutation.mutate(payload);
   };
 
-  const title = editingAgent ? `Edit Agent — ${editingAgent.uuid || editingAgent.id}` : "Add Agent";
-  const submitLabel = editingAgent ? (mutation.isLoading ? "Updating..." : "Update Agent") : (mutation.isLoading ? "Creating..." : "Create Agent");
+  const title = editingAgent ? `Редактировать агента — ${editingAgent.uuid || editingAgent.id}` : "Добавить агента";
+  const submitLabel = editingAgent ? (mutation.isLoading ? "Обновление..." : "Обновить агента") : (mutation.isLoading ? "Создание..." : "Создать агента");
 
   return (
     <Dialog
@@ -104,21 +104,21 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
               id="uuid"
               type="text"
               className={styles.input}
-              {...register("uuid", { required: "Agent UUID is required" })}
-              placeholder="e.g., agent-123e4567-e89b-12d3-a456-426614174000"
+              {...register("uuid", { required: "Требуется UUID агента" })}
+              placeholder="например, agent-123e4567-e89b-12d3-a456-426614174000"
             />
             {errors.uuid && <span className={styles.error}>{errors.uuid.message}</span>}
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="secret_id">Secret *</label>
+            <label htmlFor="secret_id">Секрет *</label>
             <select
               id="secret_id"
               className={styles.input}
-              {...register("secret_id", { required: "Secret is required" })}
+              {...register("secret_id", { required: "Секрет обязателен" })}
               disabled={secretsLoading || secrets?.length === 0}
             >
-              <option value="">Select a secret</option>
+              <option value="">Выберите секрет</option>
               {secrets?.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name} (ID: {s.id} - {s.secret_mark} - {s.secret_type})
@@ -127,15 +127,15 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
             </select>
             {errors.secret_id && <span className={styles.error}>{errors.secret_id.message}</span>}
             {secrets?.length === 0 && !secretsLoading && (
-              <p className={styles.formHelp}>No secrets available. Please add a secret first.</p>
+              <p className={styles.formHelp}>Секретов нет. Пожалуйста, сначала добавьте секрет.</p>
             )}
-            {secretsLoading && <p className={styles.formHelp}>Loading secrets...</p>}
+            {secretsLoading && <p className={styles.formHelp}>Закгрузка секретов...</p>}
           </div>
 
           <div className={styles.formRow}>
             <div className={styles.column}>
               <div className={styles.formGroup}>
-                <label htmlFor="protocol">Protocol</label>
+                <label htmlFor="protocol">Протокол</label>
                 <select id="protocol" className={styles.input} {...register("protocol")}>
                   <option value="https">HTTPS</option>
                   <option value="http">HTTP</option>
@@ -143,28 +143,28 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="host">Host *</label>
+                <label htmlFor="host">Хост *</label>
                 <input
                   id="host"
                   type="text"
                   className={styles.input}
-                  {...register("host", { required: "Host is required" })}
-                  placeholder="e.g., example.com or 192.168.1.1"
+                  {...register("host", { required: "Требуется хостинг" })}
+                  placeholder="например, example.com или 192.168.1.1"
                 />
                 {errors.host && <span className={styles.error}>{errors.host.message}</span>}
               </div>
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="port">Port *</label>
+              <label htmlFor="port">Порт *</label>
               <input
                 id="port"
                 type="number"
                 className={styles.input}
                 {...register("port", {
-                  required: "Port is required",
-                  min: { value: 1, message: "Port must be at least 1" },
-                  max: { value: 65535, message: "Port must be at most 65535" },
+                  required: "Требуется порт",
+                  min: { value: 1, message: "Порт должен быть не менее 1" },
+                  max: { value: 65535, message: "Порт должен быть не более 65535" },
                 })}
               />
               {errors.port && <span className={styles.error}>{errors.port.message}</span>}
@@ -173,7 +173,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
 
           {mutation.isError && (
             <div className={styles.serverError}>
-              {mutation.error?.message || "Server error while saving agent"}
+              {mutation.error?.message || "Ошибка сервера при сохранении агента"}
             </div>
           )}
 
@@ -187,7 +187,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
               }}
               disabled={mutation.isLoading}
             >
-              Cancel
+              Отменить
             </button>
 
             <button type="submit" className={styles.primary} disabled={mutation.isLoading}>

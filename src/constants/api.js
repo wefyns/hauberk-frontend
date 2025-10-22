@@ -28,10 +28,20 @@ export const API_ENDPOINTS = {
     `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}/enroll`,
   AGENT_PEER_ENROLL: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/peer/enroll`,
+  AGENT_PEER_ENROLL_WITH_ID: (orgId, agentId, peerId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/enroll`,
   AGENT_CREATE_CONNECTION_DOC: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/network/create-connection-document`,
   AGENT_CONNECT: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/network/connect`,
+
+  // Journal endpoints
+  JOURNAL: (orgId, agentId, journalId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/journal/${journalId}`,
+
+  // Peers
+  AGENT_PEERS: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer`,
+  AGENT_PEER: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}`,
 };
 
 /**
@@ -74,6 +84,8 @@ export const API_URLS = {
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID(orgId, agentId, ordererId)}`,
   AGENT_PEER_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_ENROLL(orgId, agentId)}`,
+  AGENT_PEER_ENROLL_WITH_ID: (orgId, agentId, peerId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_ENROLL_WITH_ID(orgId, agentId, peerId)}`,
   AGENT_CREATE_CONNECTION_DOC: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_CREATE_CONNECTION_DOC(
       orgId,
@@ -81,4 +93,13 @@ export const API_URLS = {
     )}`,
   AGENT_CONNECT: (orgId, agentId, docId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_CONNECT(orgId, agentId)}/${docId}`,
+
+  // Journal endpoints
+
+  JOURNAL: (orgId, agentId, journalId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.JOURNAL(orgId, agentId, journalId)}`,
+
+  // Peers
+  AGENT_PEERS: (orgId, agentId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEERS(orgId, agentId)}`,
+  AGENT_PEER: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER(orgId, agentId, peerId)}`,
 };

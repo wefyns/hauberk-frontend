@@ -22,11 +22,11 @@ function Sidebar({ sidebarCollapsed, toggleSidebar, activeSection, orgId }) {
       <div className={styles.sidebarHeader}>
         <div
           className={styles.logo}
-          title={selectedOrganization?.name || "Hauberk"}
           aria-hidden={false}
         >
           <Logo variant='dashboard' />
           <span className={styles.logoFull}>Hauberk</span>
+          
 
           {/* <button
             onClick={toggleSidebar}

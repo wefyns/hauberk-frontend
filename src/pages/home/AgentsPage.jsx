@@ -92,7 +92,7 @@ function AgentsPage() {
 
       {agentsLoading && (
         <div style={{ padding: 32, display: "flex", justifyContent: "center" }}>
-          <div className={styles.loader}>Loading...</div>
+          <div className={styles.loader}>Загрузка...</div>
         </div>
       )}
 
@@ -100,9 +100,9 @@ function AgentsPage() {
         <div className={ (noDataOrFound && filterData.length === 0) ? styles.wrapperBottom : styles.content }>
           {noDataOrFound && filterData.length === 0 ? (
             <div className={styles.notFound}>
-              <div className={styles.textNotFound}>No agents yet</div>
+              <div className={styles.textNotFound}>Агентов пока нет</div>
               <div style={{ marginTop: 16 }}>
-                <button type="button" className={styles.invite} onClick={handleAddClick}>Create first agent</button>
+                <button type="button" className={styles.invite} onClick={handleAddClick}>Создайте первого агента</button>
               </div>
             </div>
           ) : filterData.length === 0 ? (

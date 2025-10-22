@@ -1,32 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useMemo } from "react";
+
 import { useParams } from "react-router-dom";
+
 import { secretService } from "../../services/secretService";
+import AddSecretModal from "../../components/modals/add-secret-modal/AddSecretModal";
+
 import styles from "../Home.module.css";
 
 function SecretsPage() {
   const { orgId } = useParams();
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [addSecretSuccess, setAddSecretSuccess] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: {
-      secret_mark: "",
-      secret_value: "",
-      secret_type: "AGENT_PASSWORD",
-    },
-  });
+  const [filter, setFilter] = useState("");
+  const [editingSecret, setEditingSecret] = useState(null);
+  const [addSecretModalOpen, setAddSecretModalOpen] = useState(false);
 
   const {
     data: secrets,
     isLoading: loading,
-    error,
     refetch: refetchSecrets,
   } = useQuery({
     queryKey: ["secrets", orgId],
@@ -35,125 +26,134 @@ function SecretsPage() {
     select: (data) => data?.secrets || [],
   });
 
-  const onSubmit = async (data) => {
-    try {
-      setAddSecretSuccess(false);
+  const filterData = useMemo(() => {
+    if (!filter || filter.trim() === "") return secrets || [];
+    const q = filter.trim().toLowerCase();
+    return (secrets || []).filter((s) => {
+      if (!s) return false;
+      const mark = String(s.secret_mark || "").toLowerCase();
+      const type = String(s.secret_type || "").toLowerCase();
+      const id = String(s.id || "").toLowerCase();
+      return mark.includes(q) || type.includes(q) || id.includes(q);
+    });
+  }, [secrets, filter]);
 
-      await secretService.addSecret(parseInt(orgId), data);
+  const noDataOrFound = (secrets?.length || 0) === 0;
 
-      setAddSecretSuccess(true);
-      reset();
-
-      // Refetch secrets to update the list
-      refetchSecrets();
-
-      // Close the form after successful addition
-      setTimeout(() => {
-        setShowAddForm(false);
-        setAddSecretSuccess(false);
-      }, 300);
-    } catch (err) {
-      return { error: err.message || "Failed to add secret" };
-    }
+  const handleOpenCreate = () => {
+    setEditingSecret(null);
+    setAddSecretModalOpen(true);
   };
 
-  return (
-    <div className={styles.sectionContent}>
-      <div className={styles.sectionHeader}>
-        <h2>Secrets</h2>
+  const handleCardClick = (secret) => {
+    setEditingSecret(secret);
+    setAddSecretModalOpen(true);
+  };
+
+ return (
+    <>
+      <div className={styles.top}>
+        <div className={styles.wrapperInput}>
+          <div style={{ position: "relative" }}>
+            <input
+              className={styles.inputSearch}
+              value={filter}
+              placeholder="Поиск по маркеру, типу или ID"
+              onChange={(e) => setFilter(e.target.value)}
+              style={{ paddingLeft: 36, height: 40, borderRadius: 0 }}
+            />
+          </div>
+        </div>
+
         <button
-          className={styles.addButton}
-          onClick={() => setShowAddForm(!showAddForm)}
+          type="button"
+           className={`${styles.button}`}
+          onClick={handleOpenCreate}
         >
-          {showAddForm ? "Cancel" : "+ Add Secret"}
+          + Добавить секрет
         </button>
       </div>
 
-      {showAddForm && (
-        <div className={styles.addForm}>
-          <h3>Add New Secret</h3>
-          {addSecretSuccess && (
-            <p className={styles.success}>Secret added successfully!</p>
-          )}
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className={styles.formGroup}>
-              <label htmlFor="secret_mark">Secret Mark *</label>
-              <input
-                type="text"
-                id="secret_mark"
-                className={styles.input}
-                {...register("secret_mark", {
-                  required: "Secret mark is required",
-                })}
-              />
-              {errors.secret_mark && (
-                <span className={styles.error}>
-                  {errors.secret_mark.message}
-                </span>
-              )}
-            </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="secret_value">Secret Value *</label>
-              <input
-                type="password"
-                id="secret_value"
-                className={styles.input}
-                {...register("secret_value", {
-                  required: "Secret value is required",
-                })}
-              />
-              {errors.secret_value && (
-                <span className={styles.error}>
-                  {errors.secret_value.message}
-                </span>
-              )}
-            </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="secret_type">Secret Type *</label>
-              <textarea
-                id="secret_type"
-                className={styles.input}
-                rows="3"
-                {...register("secret_type", {
-                  required: "Secret type is required",
-                })}
-              />
-              {errors.secret_type && (
-                <span className={styles.error}>
-                  {errors.secret_type.message}
-                </span>
-              )}
-            </div>
-            <button
-              type="submit"
-              className={styles.submitButton}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Adding..." : "Add Secret"}
-            </button>
-          </form>
+      {loading && (
+        <div style={{ padding: 32, display: "flex", justifyContent: "center" }}>
+          <div className={styles.loader}>Загрузка...</div>
         </div>
       )}
 
-      {loading && <p>Loading secrets...</p>}
-      {error && <p className={styles.error}>Error: {error?.message || "Failed to fetch secrets"}</p>}
-
-      {!loading && !error && (
-        <div className={styles.secretsList}>
-          {secrets.length === 0 ? (
-            <p>No secrets found for this organization.</p>
+      {!loading && (
+        <div className={(noDataOrFound && filterData.length === 0) ? styles.wrapperBottom : styles.content}>
+          {noDataOrFound && filterData.length === 0 ? (
+            <div className={styles.notFound}>
+              <div className={styles.textNotFound}>Секретов пока нет</div>
+              <div style={{ marginTop: 16 }}>
+                <button type="button" className={styles.invite} onClick={handleOpenCreate}>Создайте первый секрет</button>
+              </div>
+            </div>
+          ) : filterData.length === 0 ? (
+            <div className={styles.wrapperBottom}>
+              <div className={styles.textNotFound}>Ничего не найдено по запросу «{filter}»</div>
+            </div>
           ) : (
-            (Array.isArray(secrets) ? secrets : []).map((secret) => (
-              <div key={secret.id} className={styles.secretCard}>
-                <h3>{secret.secret_mark}</h3>
-                <p className={styles.secretDescription}>{secret.secret_type}</p>
-                <p className={styles.secretId}>ID: {secret.id}</p>
+            (filterData || []).map((secret) => (
+              <div
+                key={secret.id}
+                className={styles.wrapperCounterparty}
+                onClick={() => handleCardClick(secret)}
+                role="button"
+                tabIndex={0}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <div className={styles.info}>
+                  <div className={styles.wrapperTop}>
+                    <div>
+                      <div className={styles.name}>{secret.secret_mark}</div>
+                      <div className={styles.description}>
+                        <div className={styles.reduction}>Тип:</div>
+                        <div className={styles.value}>{secret.secret_type}</div>
+                        <div style={{ width: 24 }} />
+                        <div className={styles.reduction}>ID:</div>
+                        <div className={styles.value}>{secret.id}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.buttonOutlineGreen}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingSecret(secret);
+                      setAddSecretModalOpen(true);
+                    }}
+                  >
+                    Редактировать
+                  </button>
+                </div>
               </div>
             ))
           )}
         </div>
       )}
-    </div>
+
+      {addSecretModalOpen && (
+        <AddSecretModal
+          visible={addSecretModalOpen}
+          onClose={() => {
+            setAddSecretModalOpen(false);
+            setEditingSecret(null);
+          }}
+          orgId={orgId}
+          editingSecret={editingSecret}
+          onSuccess={() => {
+            refetchSecrets();
+            setAddSecretModalOpen(false);
+            setEditingSecret(null);
+          }}
+        />
+      )}
+    </>
   );
 }
 

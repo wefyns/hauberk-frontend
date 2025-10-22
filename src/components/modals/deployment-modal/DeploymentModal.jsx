@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Dialog } from "../../dialog/Dialog";
 
@@ -7,7 +8,10 @@ import { agentService } from "../../../services";
 import styles from "./DeploymentModal.module.css";
 
 export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
+  const navigate = useNavigate();
+
   const mountedRef = useRef(true);
+  const timeoutRef = useRef(null);
 
   const [status, setStatus] = useState({
     orderer: "pending",
@@ -27,6 +31,10 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
     }
     return () => {
       mountedRef.current = false;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
   }, [visible]);
 
@@ -42,8 +50,8 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
 
     const steps = [
       { key: "orderer", label: "Deploy Orderer", action: () => agentService.enrollOrderer(parseInt(orgId), parseInt(agentId), "default"), },
-      { key: "peer0", label: "Deploy Peer 0", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 0) },
-      { key: "peer1", label: "Deploy Peer 1", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 1) },
+      { key: "peer0", label: "Deploy Peer 0", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 0, 0) },
+      { key: "peer1", label: "Deploy Peer 1", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 1, 1) },
     ];
 
     let allSuccess = true;
@@ -69,6 +77,13 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
 
     if (allSuccess) {
       pushLog("Все шаги выполнены успешно.");
+
+      if (mountedRef.current) {
+        timeoutRef.current = setTimeout(() => {
+          if (!mountedRef.current) return;
+          navigate(`/home/${orgId}`);
+        }, 700);
+      }
     } else {
       pushLog("Деплой остановлен из-за ошибки.");
     }
@@ -138,7 +153,7 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
             onClick={handleDeploy}
             disabled={deploying}
           >
-            {deploying ? "Выполняется..." : "Start Deployment"}
+            {deploying ? "Выполняется..." : "Начать развертывание"}
           </button>
         </div>
       </div>

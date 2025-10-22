@@ -58,7 +58,7 @@ export const apiRequest = async (url, options) => {
     options.headers = {
       ...options.headers,
       ...(token && { Authorization: `Bearer ${token}` }),
-      "Content-Type": "application/json",
+      ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
     };
 
     const response = await fetch(url, options);

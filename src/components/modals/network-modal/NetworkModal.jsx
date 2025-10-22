@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+
 import { Dialog } from "../../dialog/Dialog";
-import { agentService } from "../../../services";
+import { agentService, journalService } from "../../../services";
+
+import { useTaskWebSocket } from "../../../hooks/useTaskWebSocket";
+
 import styles from './NetworkModal.module.css';
 
 export default function NetworkModal({
@@ -23,29 +27,41 @@ export default function NetworkModal({
   const [createdDocMeta, setCreatedDocMeta] = useState(null);
 
   const [taskId, setTaskId] = useState(null);
-  const [wsEvents, setWsEvents] = useState([]);
   const [blobUrl, setBlobUrl] = useState(null);
+
+  const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId);
 
   const createDocMutation = useMutation({
     mutationFn: ({file}) => {
       return agentService.createConnectionDocument(orgId, agentId, file);
     },
     onSuccess: (res) => {
-      const doc = res?.document ?? res ?? null;
+      if (res?.status && res.status >= 400) {
+        setProcessingError({
+          message: res.error || "Ошибка при обработке документа",
+          details: res.details ?? null,
+          journalId: res.journal_id ?? null,
+        });
+        setCreatedDoc(null);
+        setCreatedDocMeta(null);
+        return;
+      }
+
+      const doc = res?.connection_document ?? null;
       setCreatedDoc(doc);
       setCreatedDocMeta({
-        document_id: res?.document_id ?? null,
+        document_id: doc?.id ?? null,
         journal_id: res?.journal_id ?? null,
       });
       setProcessingError(null);
     },
     onError: (err) => {
       console.error("createConnectionDocument error:", err);
-      const payload = err?.response?.data ?? null;
+      const payload = err?.response?.data ?? err?.data ?? null;
       const details = payload?.details ?? null;
-      const journalId = payload?.journal_id ?? null;
+      const journalId = payload?.journal_id ?? payload?.journalId ?? payload?.journal ?? null;
       setProcessingError({
-        message: err?.message || "Error when processing the configuration file",
+        message: payload?.message || err?.message || "Ошибка при обработке конфигурационного файла",
         details,
         journalId,
       });
@@ -58,15 +74,15 @@ export default function NetworkModal({
       const t = res?.task_id ?? null;
       if (t) {
         setTaskId(t);
-        setWsEvents((prev) => [...prev, { type: "info", message: `Task started: ${t}` }]);
+        // setWsEvents((prev) => [...prev, { type: "info", message: `Задача запущена: ${t}` }]);
       } else {
         console.warn("connect response (no task id):", res);
-        setProcessingError({ message: "The connection is started, but the task_id has not been received.", details: res });
+        setProcessingError({ message: "Соединение запущено, но идентификатор задачы id получен не был.", details: res });
       }
     },
     onError: (err) => {
       console.error("connectWithDocument error:", err);
-      setProcessingError({ message: err?.message || "Error when starting the connection", details: err?.response?.data ?? err?.data });
+      setProcessingError({ message: err?.message || "Ошибка при запуске подключения", details: err?.response?.data ?? err?.data });
     },
   });
 
@@ -87,7 +103,7 @@ export default function NetworkModal({
     } catch (err) {
       console.error("read file error:", err);
       setFilePreview("");
-      setFileError("The file could not be read.");
+      setFileError("Файл не может быть прочитан.");
     }
   };
 
@@ -103,7 +119,7 @@ export default function NetworkModal({
     setCreatedDoc(null);
     setCreatedDocMeta(null);
     if (!selectedFile) {
-      setFileError("Select the configuration file (.json).");
+      setFileError("Выберите файл конфигурации (.json).");
       return;
     }
     createDocMutation.mutate({ file: selectedFile });
@@ -111,8 +127,9 @@ export default function NetworkModal({
 
   const onContinueConnect = () => {
     const docId = createdDocMeta?.document_id ?? createdDoc?.id ?? createdDocMeta?.id;
+
     if (!docId) {
-      setProcessingError({ message: "There is no document ID to continue." });
+      setProcessingError({ message: "Для продолжения работы нет идентификатора документа." });
       return;
     }
     connectMutation.mutate({ docId });
@@ -139,8 +156,28 @@ export default function NetworkModal({
     setCreatedDoc(null);
     setCreatedDocMeta(null);
     setTaskId(null);
-    setWsEvents([]);
+    closeWebSocket();
+    // setWsEvents([]);
   }
+
+  const downloadJournal = async (journalId) => {
+    try {
+      const data = await journalService.getJournal(orgId, agentId, journalId);
+      const jsonStr = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `journal-${journalId}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+      alert("Не удалось скачать журнал");
+    }
+  };
 
   useEffect(() => {
     if (!visible) {
@@ -167,13 +204,13 @@ export default function NetworkModal({
         <input ref={fileRef} type="file" accept=".json,application/json" onChange={onFileSelected} style={{ display: "none" }} />
 
         <div className={styles.row}>
-          <label className={styles.label}>Configuration file</label>
+          <label className={styles.label}>Конфигурационный файл</label>
           <div className={styles.fileArea}>
             <textarea
               readOnly
               className={styles.preview}
               value={filePreview || (selectedFile ? selectedFile.name : "")}
-              placeholder="Choose.a json file"
+              placeholder="Выберите файл в формате json"
             />
             <div className={styles.fileControls}>
               <button className={styles.btn} onClick={onClickPicker}>…</button>
@@ -184,42 +221,29 @@ export default function NetworkModal({
         </div>
 
         <div className={styles.actionsRow}>
-          <button className={styles.ghost} onClick={() => { cleanup(); onClose("custom"); }}>Cancel</button>
-          <button className={styles.primary} onClick={onUploadDocument} disabled={createDocMutation.isLoading}>
-            {createDocMutation.isLoading ? "Processing..." : "Create a document"}
+          <button className={styles.ghost} onClick={() => { cleanup(); onClose("custom"); }}>Отменить</button>
+          <button className={styles.primary} onClick={onUploadDocument} disabled={createDocMutation.isPending}>
+            {createDocMutation.isPending ? "Обработка..." : "Создайте документ"}
           </button>
         </div>
 
-        {processingError && (
-          <div className={styles.errorBlock}>
-            <h4>Error</h4>
-            <p>{processingError.message}</p>
-            {processingError.details && <pre className={styles.details}>{JSON.stringify(processingError.details, null, 2)}</pre>}
-            <div className={styles.errorBtns}>
-              {processingError.journalId && (
-                <button className={styles.btn} onClick={() => {}}>Download the magazine</button>
-              )}
-              <button className={styles.btnSecondary} onClick={() => setProcessingError(null)}>Ok</button>
-            </div>
-          </div>
-        )}
 
         {createdDoc && (
           <div className={styles.resultBlock}>
-            <h4>The created document</h4>
+            <h4>Созданный документ</h4>
             <pre className={styles.docPreview}>{JSON.stringify(createdDoc, null, 2)}</pre>
             <div className={styles.resultBtns}>
-              <button className={styles.primary} onClick={onContinueConnect} disabled={connectMutation.isLoading}>
-                {connectMutation.isLoading ? "Connect..." : "Continue and connect"}
+              <button className={styles.ghost} onClick={() => { setCreatedDoc(null); setCreatedDocMeta(null); }}>Закрыть</button>
+              <button className={styles.primary} onClick={onContinueConnect} disabled={connectMutation.isPending}>
+                {connectMutation.isPending ? "Подключение..." : "Подключить и продолжить"}
               </button>
-              <button className={styles.ghost} onClick={() => { setCreatedDoc(null); setCreatedDocMeta(null); }}>Close</button>
             </div>
           </div>
         )}
 
         {taskId && (
           <div className={styles.taskBlock}>
-            <h4>The connect process — task {taskId}</h4>
+            <h4>Процесс подключения — задача {taskId}</h4>
             <div className={styles.eventsList}>
               {wsEvents.map((ev, idx) => {
                 const journalId = ev?.payload?.journal_id ?? ev?.payload?.journalId ?? ev?.payload?.journal;
@@ -227,10 +251,29 @@ export default function NetworkModal({
                 return (
                   <div key={idx} className={styles.eventItem}>
                     <div className={styles.eventText}><strong>{ev.type}</strong>: {message}</div>
-                    {journalId && <button className={styles.btn} onClick={() => {}}>Journal</button>}
+                    {journalId && <button className={styles.btn} onClick={() => {}}>Журнал</button>}
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {processingError && (
+          <div className={styles.errorBlock}>
+            <h4>Ошибка</h4>
+            <p className={styles.processingError}>{processingError.message}</p>
+            {processingError.details && <pre className={styles.details}>{JSON.stringify(processingError.details, null, 2)}</pre>}
+            <div className={styles.errorBtns}>
+              {processingError.journalId && (
+                <button
+                  className={styles.btnD}
+                  onClick={() => downloadJournal(processingError.journalId)}
+                >
+                  Скачать журнал
+                </button>
+              )}
+              <button className={styles.btnSecondary} onClick={() => setProcessingError(null)}>Ок</button>
             </div>
           </div>
         )}

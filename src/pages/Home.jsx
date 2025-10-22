@@ -91,7 +91,7 @@ function Home() {
       {/* Main content */}
       <div 
         className={styles.navContainer}>
-        <Navbar />
+        <Navbar currentUser={currentUser} />
         <div  
           className={`${styles.mainContent} ${
             sidebarCollapsed ? styles.expanded : ""

@@ -245,7 +245,7 @@
 .sectionContent {
   background: rgba(255, 255, 255, 1);
   border: 1px solid #B8C4D3;
-  border-radius: 16px;
+  border-radius: 0px;
   padding: 32px;
   backdrop-filter: blur(20px);
   color: #333;
@@ -690,7 +690,7 @@
   background: transparent;
   font-size: 14px;
   font-weight: 700;
-  border-radius: 6px;
+  border-radius: 0px;
   cursor: pointer;
 }
 
@@ -706,6 +706,12 @@
     align-items: stretch;
     gap: 12px;
   }
+
+  .logoFull {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
 
   .wrapper-input {
     min-width: auto;
