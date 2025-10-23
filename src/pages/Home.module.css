@@ -156,12 +156,26 @@
 
 .navItem.active {
   color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+button[data-component='disabled'] {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .navIcon {
   font-size: 18px;
   margin-right: 12px;
   min-width: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.navIcon img {
+  width: 24px;
+  height: 24px;
 }
 
 .navText {

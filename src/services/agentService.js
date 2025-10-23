@@ -17,6 +17,12 @@ export const agentService = {
     return apiRequest(url, options);
   },
 
+  getFabricCA: async (orgId, agentId, caId) => {
+    const url = API_URLS.FABRIC_CA_WITH_ID(orgId, agentId, caId);
+    const options = { method: "GET" };
+    return apiRequest(url, options);
+  },
+
   getAllPeersInOrg: async (orgId) => {
     const orgIdNum = typeof orgId === "string" ? parseInt(orgId, 10) : orgId;
 
@@ -59,6 +65,54 @@ export const agentService = {
     results.forEach((r) => {
       if (r.status === "fulfilled" && r.value && Array.isArray(r.value.peers)) {
         r.value.peers.forEach((peer) => items.push({ peer, agent: r.value.agent }));
+      }
+    });
+
+    return items;
+  },
+
+  getAgentCAs: async (orgId, agentId) => {
+    const orgIdNum = typeof orgId === "string" ? parseInt(orgId, 10) : orgId;
+
+    const url = API_URLS.FABRIC_CA(orgIdNum, agentId);
+    const options = { method: "GET" };
+
+    return await apiRequest(url, options);
+  },
+
+  getAllCAsInOrg: async (orgId) => {
+    const orgIdNum = typeof orgId === "string" ? parseInt(orgId, 10) : orgId;
+
+    const agentsResp = await agentService.getAgents(orgIdNum);
+    const agentsList = Array.isArray(agentsResp) ? agentsResp : (agentsResp?.agents ?? []);
+
+    const results = await Promise.allSettled(
+      agentsList.map(async (a) => {
+        try {
+          const res = await agentService.getAgentCAs(orgIdNum, a.id);
+          const casRaw = Array.isArray(res) ? res : (res?.cas ?? []);
+
+          const normalized = casRaw.map((p) => {
+            const nameFromPeer = p.peer ?? p.name ?? p.id ?? null;
+            return {
+              id: p.id ?? nameFromPeer,
+              name: p.name ?? p.peer ?? p.id ?? null,
+              ...p,
+            };
+          });
+
+          return { agent: a, cas: normalized };
+        } catch (err) {
+          console.warn("[agentService.getAllCAsInOrg] getAgentCAs error for agent", a?.id, err);
+          return { agent: a, cas: [] };
+        }
+      })
+    );
+
+    const items = [];
+    results.forEach((r) => {
+      if (r.status === "fulfilled" && r.value && Array.isArray(r.value.cas)) {
+        r.value.cas.forEach((ca) => items.push({ ca, agent: r.value.agent }));
       }
     });
 

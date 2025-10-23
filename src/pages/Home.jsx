@@ -27,9 +27,13 @@ function Home() {
   // Determine active section from URL path
   const getActiveSection = () => {
     const path = location.pathname;
+    if (path.includes("/search")) return "search";
     if (path.includes("/agents")) return "agents";
     if (path.includes("/secrets")) return "secrets";
-    return "";
+    if (path.includes("/channel")) return "channel";
+    if (path.includes("/sertificate")) return "sertificate";
+    if (path.includes("/smart-contract")) return "smart-contract";
+    return "overview";
   };
 
   useEffect(() => {

@@ -1,0 +1,65 @@
+.tile {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #d0d7e0;
+  border-radius: 0px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(16,24,40,0.06);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.tile:focus { 
+  outline: none; 
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15); 
+}
+.tile:hover { 
+  box-shadow: 0 6px 18px rgba(16,24,40,0.08); 
+}
+
+.tileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.tileTitle {
+  font-weight: 600;
+  font-size: 15px;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.statusBadge {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.06);
+  flex: 0 0 12px;
+}
+
+.statusBadge[data-color="green"] { background: #10b981; }
+.statusBadge[data-color="yellow"] { background: #f59e0b; }
+.statusBadge[data-color="red"] { background: #ef4444; }
+.statusBadge[data-color="gray"] { background: #9ca3af; }
+
+.tileBody {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+.tileFooter { 
+  text-align: right; 
+  font-size: 12px; 
+  color: #64748b; 
+}

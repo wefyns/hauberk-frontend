@@ -42,6 +42,13 @@ export const API_ENDPOINTS = {
   // Peers
   AGENT_PEERS: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer`,
   AGENT_PEER: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}`,
+
+  // Fabric CA
+  FABRIC_CA: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca`,
+  FABRIC_CA_WITH_ID: (orgId, agentId, caId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}`,
+
+  // DB INFO
+  DB_INFO: "/api/v1/db-info",
 };
 
 /**
@@ -102,4 +109,11 @@ export const API_URLS = {
   // Peers
   AGENT_PEERS: (orgId, agentId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEERS(orgId, agentId)}`,
   AGENT_PEER: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER(orgId, agentId, peerId)}`,
+
+  // Fabric CA
+  FABRIC_CA: (orgId, agentId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA(orgId, agentId)}`,
+  FABRIC_CA_WITH_ID: (orgId, agentId, caId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID(orgId, agentId, caId)}`,
+
+  // DB INFO
+  DB_INFO: `${API_BASE_URL}${API_ENDPOINTS.DB_INFO}`,
 };

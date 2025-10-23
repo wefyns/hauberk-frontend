@@ -56,10 +56,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Logout function
-  const logoutFromApp = () => {
+  const logoutFromApp = (redirectTo = Pages.Login) => {
     setCurrentToken(null);
     authService.removeTokens();
-    navigate(Pages.Login);
+    navigate(redirectTo);
   };
 
   // Check if user is authenticated

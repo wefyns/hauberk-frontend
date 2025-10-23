@@ -1,0 +1,34 @@
+.section {
+  padding: 16px;
+  margin-bottom: 20px;
+  background: transparent;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.title {
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.tilesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.tileWrapper {
+}
+.noItems {
+  color: #64748b;
+}
+
+.btn:active {
+  background-color: #f1eeee;
+}

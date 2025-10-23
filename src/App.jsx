@@ -13,6 +13,9 @@ import AgentsPage from "./pages/home/AgentsPage";
 import SecretsPage from "./pages/home/SecretsPage";
 import Organizations from "./pages/organizations/Organizations";
 import CreateOrganization from "./pages/organizations/CreateOrganization";
+
+import { PeerDetailsPage } from "./pages/details";
+
 import {
   Onboarding,
   LicenseAgreement,
@@ -129,6 +132,11 @@ function App() {
         <Route index element={<PeersPage />} />
         <Route path="agents" element={<AgentsPage />} />
         <Route path="secrets" element={<SecretsPage />} />
+
+        <Route 
+          path="agents/:agentId/peers/:peerId" 
+          element={<PeerDetailsPage />} 
+        />
       </Route>
 
       {/* 404 - redirect to organizations */}

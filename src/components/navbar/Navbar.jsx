@@ -14,7 +14,6 @@ import styles from './Navbar.module.css'
 
 export default function Navbar({ 
   currentUser,
-  onResetPasswordStart,
   resetLoading = false,
   resetMessage = null,    
 }) {
@@ -27,12 +26,8 @@ export default function Navbar({
     navigate(Pages.Organizations);
   };
 
-  const handleResetClick = async () => {
-    if (typeof onResetPasswordStart === "function") {
-      onResetPasswordStart();
-    } else {
-      console.warn("onResetPasswordStart not provided");
-    }
+  const handleChangePassword = () => {
+    logoutFromApp(Pages.ResetPassword); 
   };
 
   return (
@@ -82,7 +77,7 @@ export default function Navbar({
                 type="button"
                 role="menuitem"
                 className={styles.resetPasswordButton}
-                onClick={handleResetClick}
+                onClick={handleChangePassword}
                 disabled={resetLoading}
                 title="Отправить код для сброса пароля на email"
               >
