@@ -14,7 +14,7 @@ import SecretsPage from "./pages/home/SecretsPage";
 import Organizations from "./pages/organizations/Organizations";
 import CreateOrganization from "./pages/organizations/CreateOrganization";
 
-import { PeerDetailsPage } from "./pages/details";
+import { PeerDetailsPage, FabricCADetailsPage } from "./pages/details";
 
 import {
   Onboarding,
@@ -136,6 +136,10 @@ function App() {
         <Route 
           path="agents/:agentId/peers/:peerId" 
           element={<PeerDetailsPage />} 
+        />
+        <Route 
+          path="agents/:agentId/ca/:caId" 
+          element={<FabricCADetailsPage />} 
         />
       </Route>
 

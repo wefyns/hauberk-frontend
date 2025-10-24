@@ -15,8 +15,8 @@ export function CAsSection() {
   };
 
   const handleClick = useCallback(
-    (agentId) => {
-      navigate(`/organizations/${orgId}/agents/${agentId}/ca`);
+    (agentId, caId) => {
+      navigate(`/home/${orgId}/agents/${agentId}/ca/${encodeURIComponent(caId)}`);
     },
     [navigate, orgId]
   );
@@ -28,7 +28,7 @@ export function CAsSection() {
       <PeerTile
         peer={ca}
         agent={agent}
-        onClick={() => handleClick(agent?.id)}
+        onClick={() => handleClick(agent?.id, ca?.id)}
       />
     );
   };
