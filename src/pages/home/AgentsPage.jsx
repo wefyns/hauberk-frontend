@@ -147,7 +147,7 @@ function AgentsPage() {
                       setNetworkModalOpen(true); 
                     }}
                   >
-                    Network
+                    Сеть
                   </button>
 
                   <button
@@ -159,7 +159,7 @@ function AgentsPage() {
                       setDeploymentModalOpen(true); 
                     }}
                   >
-                    Deployment
+                    Развертывание
                   </button>
                 </div>
               </div>

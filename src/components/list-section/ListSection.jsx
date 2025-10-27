@@ -53,7 +53,9 @@ export function ListSection({
         <div className={styles.header}>
           <h3 className={styles.title}>{title}</h3>
         </div>
-        <div className={styles.body}>Ошибка: {String(q.error)}</div>
+        <div className={styles.body}>
+          <span className={styles.noItems}>Элементы не найдены.</span>
+        </div>
       </section>
     );
   }

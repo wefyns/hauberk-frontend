@@ -114,4 +114,75 @@ export const authService = {
 
     return apiRequest(url, options);
   },
+
+  refreshTokens: async (refreshToken) => {
+    const url = API_URLS.REFRESH;
+    const options = {
+      method: "POST",
+      body: JSON.stringify({ refresh_token: refreshToken })
+    }
+
+    return apiRequest(url, options);
+  },
+
+  parseJwt: (token) => {
+    if (!token) return null;
+
+    try {
+      const parts = token.split(".");
+      if (parts.length < 2) return null;
+      const payload = parts[1];
+      const json = JSON.parse(decodeURIComponent(
+        atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+          .split("")
+          .map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      ));
+      return json;
+    } catch {
+      // ignore
+      try {
+        return JSON.parse(atob(token.split(".")[1]));
+      } catch {
+        return null;
+      }
+    }
+  },
+
+  _refreshPromise: null,
+
+  _refreshIfNeeded: async () => {
+    if (authService._refreshPromise) return authService._refreshPromise;
+
+    const { refresh_token } = authService.getTokens();
+    if (!refresh_token) {
+      throw new Error("No refresh token available");
+    }
+
+    authService._refreshPromise = (async () => {
+      try {
+        const newTokens = await authService.refreshTokens(refresh_token);
+        authService.setTokens(newTokens);
+        return newTokens;
+      } catch (err) {
+        authService.removeTokens();
+        throw err;
+      } finally {
+        authService._refreshPromise = null;
+      }
+    })();
+
+    return authService._refreshPromise;
+  },
+
+  getAccessTokenExpirySeconds: () => {
+    const { access_token } = authService.getTokens();
+    if (!access_token) return null;
+    const payload = authService.parseJwt(access_token);
+    if (!payload?.exp) return null;
+    const now = Math.floor(Date.now() / 1000);
+    return payload.exp - now;
+  }
 };

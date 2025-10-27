@@ -3,12 +3,14 @@
   flex-direction: column;
   gap: 12px;
   color: #e6eef8;
+  height: 100%;
 }
 
 .row {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: 100%;
 }
 
 .label {
@@ -24,8 +26,8 @@
 
 .preview {
   flex: 1;
-  min-height: 160px;
-  max-height: 320px;
+  min-height: 300px;
+  height: auto;
   resize: vertical;
   padding: 12px;
   border-radius: 8px;
@@ -41,7 +43,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .btn {
@@ -133,6 +135,7 @@
   border: 1px solid rgba(255,255,255,0.03);
   padding: 12px;
   border-radius: 8px;
+  padding-bottom: 40px;
 }
 
 .resultBlock h4 {
@@ -140,12 +143,12 @@
 }
 
 .docPreview {
-  max-height: 260px;
   overflow: auto;
   padding: 12px;
   background: rgba(0,0,0,0.03);
   border-radius: 6px;
   color: #333;
+  height: 100%;
 }
 
 .resultBtns {
@@ -158,6 +161,8 @@
 
 .taskBlock {
   margin-top: 12px;
+  min-height: 480px;
+  height: auto;
 }
 
 .taskBlock h4 {
@@ -165,7 +170,7 @@
 }
 
 .eventsList {
-  max-height: 280px;
+  /* max-height: 280px; */
   overflow: auto;
   display: flex;
   flex-direction: column;

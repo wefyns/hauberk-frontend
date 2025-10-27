@@ -16,6 +16,7 @@ export const Pages = {
   CreateOrganization: '/organizations/create',
   Agents: '/home/:orgId/agents',
   Secrets: '/home/:orgId/secrets',
+  ResetPasswordConfirmInner: 'reset-password/confirm',
 };
 
 /**

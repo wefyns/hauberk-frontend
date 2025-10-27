@@ -29,11 +29,20 @@ export default function NetworkModal({
   const [taskId, setTaskId] = useState(null);
   const [blobUrl, setBlobUrl] = useState(null);
 
+  const [viewMode, setViewMode] = useState("idle");
+
   const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId);
 
   const createDocMutation = useMutation({
     mutationFn: ({file}) => {
       return agentService.createConnectionDocument(orgId, agentId, file);
+    },
+    onMutate: () => {
+      setProcessingError(null);
+      setCreatedDoc(null);
+      setCreatedDocMeta(null);
+      setTaskId(null);
+      setViewMode(selectedFile ? "uploaded" : "idle");
     },
     onSuccess: (res) => {
       if (res?.status && res.status >= 400) {
@@ -44,6 +53,7 @@ export default function NetworkModal({
         });
         setCreatedDoc(null);
         setCreatedDocMeta(null);
+        setViewMode("error");
         return;
       }
 
@@ -54,6 +64,7 @@ export default function NetworkModal({
         journal_id: res?.journal_id ?? null,
       });
       setProcessingError(null);
+      setViewMode("created");
     },
     onError: (err) => {
       console.error("createConnectionDocument error:", err);
@@ -65,6 +76,7 @@ export default function NetworkModal({
         details,
         journalId,
       });
+      setViewMode("error");
     },
   })
 
@@ -74,13 +86,16 @@ export default function NetworkModal({
       const t = res?.task_id ?? null;
       if (t) {
         setTaskId(t);
+        setViewMode("task");
         // setWsEvents((prev) => [...prev, { type: "info", message: `Задача запущена: ${t}` }]);
       } else {
+        setViewMode("error");
         console.warn("connect response (no task id):", res);
         setProcessingError({ message: "Соединение запущено, но идентификатор задачы id получен не был.", details: res });
       }
     },
     onError: (err) => {
+      setViewMode("error");
       console.error("connectWithDocument error:", err);
       setProcessingError({ message: err?.message || "Ошибка при запуске подключения", details: err?.response?.data ?? err?.data });
     },
@@ -100,14 +115,19 @@ export default function NetworkModal({
       } catch {
         setFilePreview(text.slice(0, 2000));
       }
+      setViewMode("uploaded");
     } catch (err) {
       console.error("read file error:", err);
       setFilePreview("");
       setFileError("Файл не может быть прочитан.");
+      setViewMode("idle");
     }
   };
 
-  const onClickPicker = () => fileRef.current?.click();
+  const onClickPicker = () => {
+    fileRef.current?.click();
+    setViewMode("idle");
+  } 
   // const onClearFile = () => { 
   //   setSelectedFile(null); 
   //   setFilePreview(""); 
@@ -120,6 +140,7 @@ export default function NetworkModal({
     setCreatedDocMeta(null);
     if (!selectedFile) {
       setFileError("Выберите файл конфигурации (.json).");
+      setViewMode("idle");
       return;
     }
     createDocMutation.mutate({ file: selectedFile });
@@ -129,6 +150,7 @@ export default function NetworkModal({
     const docId = createdDocMeta?.document_id ?? createdDoc?.id ?? createdDocMeta?.id;
 
     if (!docId) {
+      setViewMode("error");
       setProcessingError({ message: "Для продолжения работы нет идентификатора документа." });
       return;
     }
@@ -157,6 +179,7 @@ export default function NetworkModal({
     setCreatedDocMeta(null);
     setTaskId(null);
     closeWebSocket();
+    setViewMode("idle");
     // setWsEvents([]);
   }
 
@@ -195,53 +218,102 @@ export default function NetworkModal({
       onClose={(reason) => { cleanup(); onClose(reason); }}
       title={`Agent - ${agentId}`}
       width="large"
-      height="auto"
+      height="large"
       position="center"
       backdropVariant="blur"
-      footerButtons={() => {}}
+      customFooter={
+        (viewMode === 'idle' || viewMode === 'uploaded') ? (
+          <div className={styles.actionsRow}>
+            <button className={styles.ghost} onClick={() => { cleanup(); onClose("custom"); }}>Отменить</button>
+            <button className={styles.primary} onClick={onUploadDocument} disabled={createDocMutation.isPending}>
+              {createDocMutation.isPending ? "Обработка..." : "Создайте документ"}
+            </button>
+          </div>
+        ) : viewMode === 'created' ? (
+          <div className={styles.resultBtns}>
+            <button className={styles.ghost} onClick={() => {
+              setViewMode("idle");
+              setCreatedDoc(null);
+              setCreatedDocMeta(null);
+            }}>Закрыть</button>
+
+            <button className={styles.primary} onClick={onContinueConnect} disabled={connectMutation.isPending}>
+              {connectMutation.isPending ? "Подключение..." : "Подключить и продолжить"}
+            </button>
+          </div>
+        ) : viewMode === 'error' ? (
+          <div className={styles.errorBtns}>
+            {processingError.journalId && (
+              <button
+                className={styles.btnD}
+                onClick={() => downloadJournal(processingError.journalId)}
+              >
+                Скачать журнал
+              </button>
+            )}
+            <button 
+              className={styles.btnSecondary} 
+              onClick={() => {
+                setViewMode("idle");
+                setProcessingError(null)}
+            }>Ок</button>
+          </div>
+        ) : null
+      }
     >
       <div className={styles.networkBody}>
         <input ref={fileRef} type="file" accept=".json,application/json" onChange={onFileSelected} style={{ display: "none" }} />
-
-        <div className={styles.row}>
-          <label className={styles.label}>Конфигурационный файл</label>
-          <div className={styles.fileArea}>
-            <textarea
-              readOnly
-              className={styles.preview}
-              value={filePreview || (selectedFile ? selectedFile.name : "")}
-              placeholder="Выберите файл в формате json"
-            />
-            <div className={styles.fileControls}>
-              <button className={styles.btn} onClick={onClickPicker}>…</button>
-              {/* <button className={styles.btnSecondary} onClick={onClearFile}>Clear</button> */}
+        
+        {(viewMode === 'idle' || viewMode === 'uploaded') && (
+          <>
+            <div className={styles.row}>
+              <label className={styles.label}>Конфигурационный файл</label>
+              <div className={styles.fileArea}>
+                {selectedFile && (
+                  <textarea
+                    readOnly
+                    className={styles.preview}
+                    value={filePreview || (selectedFile ? selectedFile.name : "")}
+                    placeholder="Выберите файл в формате json"
+                  />
+                )}
+              </div>
+              <div className={styles.fileControls}>
+                <button className={styles.btn} onClick={onClickPicker}>…</button>
+                {/* <button className={styles.btnSecondary} onClick={onClearFile}>Clear</button> */}
+              </div>
+              {fileError && <div className={styles.error}>{fileError}</div>}
             </div>
-          </div>
-          {fileError && <div className={styles.error}>{fileError}</div>}
-        </div>
 
-        <div className={styles.actionsRow}>
-          <button className={styles.ghost} onClick={() => { cleanup(); onClose("custom"); }}>Отменить</button>
-          <button className={styles.primary} onClick={onUploadDocument} disabled={createDocMutation.isPending}>
-            {createDocMutation.isPending ? "Обработка..." : "Создайте документ"}
-          </button>
-        </div>
+            {/* <div className={styles.actionsRow}>
+              <button className={styles.ghost} onClick={() => { cleanup(); onClose("custom"); }}>Отменить</button>
+              <button className={styles.primary} onClick={onUploadDocument} disabled={createDocMutation.isPending}>
+                {createDocMutation.isPending ? "Обработка..." : "Создайте документ"}
+              </button>
+            </div> */}
+          </>
+        )}
 
 
-        {createdDoc && (
+
+        {viewMode === "created" && createdDoc && (
           <div className={styles.resultBlock}>
             <h4>Созданный документ</h4>
             <pre className={styles.docPreview}>{JSON.stringify(createdDoc, null, 2)}</pre>
-            <div className={styles.resultBtns}>
-              <button className={styles.ghost} onClick={() => { setCreatedDoc(null); setCreatedDocMeta(null); }}>Закрыть</button>
+            {/* <div className={styles.resultBtns}>
+              <button className={styles.ghost} onClick={() => { 
+                setViewMode("idle");
+                setCreatedDoc(null); 
+                setCreatedDocMeta(null); 
+              }}>Закрыть</button>
               <button className={styles.primary} onClick={onContinueConnect} disabled={connectMutation.isPending}>
                 {connectMutation.isPending ? "Подключение..." : "Подключить и продолжить"}
               </button>
-            </div>
+            </div> */}
           </div>
         )}
 
-        {taskId && (
+        {viewMode === "task" && taskId && (
           <div className={styles.taskBlock}>
             <h4>Процесс подключения — задача {taskId}</h4>
             <div className={styles.eventsList}>
@@ -259,22 +331,11 @@ export default function NetworkModal({
           </div>
         )}
 
-        {processingError && (
+        {viewMode === "error" && processingError && (
           <div className={styles.errorBlock}>
             <h4>Ошибка</h4>
             <p className={styles.processingError}>{processingError.message}</p>
             {processingError.details && <pre className={styles.details}>{JSON.stringify(processingError.details, null, 2)}</pre>}
-            <div className={styles.errorBtns}>
-              {processingError.journalId && (
-                <button
-                  className={styles.btnD}
-                  onClick={() => downloadJournal(processingError.journalId)}
-                >
-                  Скачать журнал
-                </button>
-              )}
-              <button className={styles.btnSecondary} onClick={() => setProcessingError(null)}>Ок</button>
-            </div>
           </div>
         )}
       </div>

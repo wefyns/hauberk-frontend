@@ -89,19 +89,31 @@
 }
 
 .acceptButton {
-  background-color: #22c55e;
+  background: #2d2eb7;
   color: white;
+  padding: 10px 14px;
+  border-radius: 0px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 6px 18px rgba(6, 95, 70, 0.12);
 }
 
 .acceptButton:hover:not(:disabled) {
-  background-color: #16a34a;
+  background: #000073;
 }
 
 .declineButton {
-  background-color: #ef4444;
-  color: white;
+  padding: 8px 12px;
+  border-radius: 0px;
+  background: transparent;
+  border: 1px solid #d60000;
+  color: #d60000;
 }
 
 .declineButton:hover:not(:disabled) {
-  background-color: #dc2626;
+  border: 1px solid #d60000;
+  background-color: #d60000;
+  color: #ffffff;
 }

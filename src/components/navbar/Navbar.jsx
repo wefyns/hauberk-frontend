@@ -5,8 +5,8 @@ import { useOrganization } from "../../contexts/useOrganization";
 import { Pages } from "../../constants/routes";
 
 import userIconUrl from '../../assets/images/user.svg'
-import questionIconUrl from '../../assets/images/question.svg'
-import notificationIconUrl from '../../assets/images/notification.svg'
+// import questionIconUrl from '../../assets/images/question.svg'
+// import notificationIconUrl from '../../assets/images/notification.svg'
 
 import { ActionMenu } from "../action-menu/ActionMenu";
 
@@ -27,7 +27,7 @@ export default function Navbar({
   };
 
   const handleChangePassword = () => {
-    logoutFromApp(Pages.ResetPassword); 
+    navigate("reset-password");
   };
 
   return (
@@ -37,7 +37,7 @@ export default function Navbar({
           <div className={styles.orgName}>{selectedOrganization?.name ?? "—"}</div>
         </div>
         
-        <button
+        {/* <button
           type="button"
           className={styles.imgButton}
           onClick={() => {}}
@@ -50,7 +50,7 @@ export default function Navbar({
           onClick={() => {}}
         >
           <img src={notificationIconUrl} alt="notification icon" />
-        </button>
+        </button> */}
 
         <ActionMenu>
           <ActionMenu.Button>

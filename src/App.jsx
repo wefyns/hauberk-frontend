@@ -14,6 +14,8 @@ import SecretsPage from "./pages/home/SecretsPage";
 import Organizations from "./pages/organizations/Organizations";
 import CreateOrganization from "./pages/organizations/CreateOrganization";
 
+import ResetPasswordInner from "./pages/home/ResetPasswordInner";
+import ResetPasswordConfirmInner from "./pages/home/ResetPasswordConfirmInner";
 import { PeerDetailsPage, FabricCADetailsPage } from "./pages/details";
 
 import {
@@ -140,6 +142,14 @@ function App() {
         <Route 
           path="agents/:agentId/ca/:caId" 
           element={<FabricCADetailsPage />} 
+        />
+        <Route 
+          path='reset-password' 
+          element={<ResetPasswordInner />} 
+        />
+        <Route 
+          path='reset-password/confirm' 
+          element={<ResetPasswordConfirmInner />} 
         />
       </Route>
 

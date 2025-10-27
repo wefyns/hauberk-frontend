@@ -5,14 +5,14 @@ import styles from "./Dialog.module.css";
 const heightMap = {
   smallest: "300px",
   small: "480px",
-  large: "640px",
+  large: "800px",
   auto: "auto",
 };
 
 const widthMap = {
   small: "296px",
   medium: "500px",
-  large: "680px",
+  large: "690px",
   xlarge: "840px",
 };
 
@@ -136,7 +136,9 @@ export const Dialog = ({
 
         {!hideFooter &&
           (customFooter ? (
-            <div className={[styles.customFooter, footerClassName].join(" ")}>{customFooter}</div>
+            <div className={[styles.footer, footerClassName].join(" ")}>
+              {typeof customFooter === "function" ? customFooter() : customFooter}
+            </div>
           ) : (
             footerButtons &&
             footerButtons.length > 0 && (

@@ -71,16 +71,16 @@ function LicenseAgreement() {
   return (
     <div className={styles.licenseContainer}>
       <div className={styles.licenseContent}>
-        <h1>License Agreement</h1>
+        <h1>Лицензионное соглашение</h1>
 
         {isLoading && (
-          <p className={styles.loading}>Loading license agreement...</p>
+          <p className={styles.loading}>Загрузка лицензионного соглашения...</p>
         )}
 
         {(error || renderError) && (
           <div className={styles.error}>
-            <p>Failed to load license agreement. Please try again.</p>
-            <button onClick={() => window.location.reload()}>Reload</button>
+            <p>Не удалось загрузить лицензионное соглашение. Пожалуйста, попробуйте снова.</p>
+            <button onClick={() => window.location.reload()}>Перезагрузить</button>
             <p className={styles.errorDetails}>
               {error && `Error: ${error.message || "Unknown error"}`}
             </p>
@@ -103,7 +103,7 @@ function LicenseAgreement() {
             onClick={handleDecline}
             disabled={isLoading || !pdfUrl || renderError}
           >
-            Decline
+            Отказаться
           </button>
           <button
             className={`${styles.actionButton} ${styles.acceptButton}`}
@@ -112,7 +112,7 @@ function LicenseAgreement() {
               isLoading || !pdfUrl || renderError || acceptMutation.isPending
             }
           >
-            {acceptMutation.isPending ? "Processing..." : "Accept"}
+            {acceptMutation.isPending ? "Обработка..." : "Принять"}
           </button>
         </div>
       </div>

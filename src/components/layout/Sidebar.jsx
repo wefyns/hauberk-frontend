@@ -50,7 +50,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={overviewIconUrl} alt="overview icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Overview</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Обзор</span>}
         </button>
 
         <button
@@ -62,7 +62,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={agentIconUrl} alt="agent icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Agents</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Агенты</span>}
         </button>
 
         <button
@@ -74,7 +74,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={secretIconUrl} alt="secret icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Secrets</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Секреты</span>}
         </button>
 
         <button
@@ -87,7 +87,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={channelIconUrl} alt="channel icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Channel</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Канал</span>}
         </button>
 
         <button
@@ -100,7 +100,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={smartIconUrl} alt="smart contract icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Smart contract</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Смарт контракт</span>}
         </button>
 
         <button
@@ -113,7 +113,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={sertificateIconUrl} alt="sertificate icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Sertificate</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Сертификат</span>}
         </button>
 
         <button
@@ -126,7 +126,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={searchIconUrl} alt="search icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Search</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Поиск</span>}
         </button>
       </nav>
     </div>

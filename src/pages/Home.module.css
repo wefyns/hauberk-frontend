@@ -585,6 +585,7 @@ button[data-component='disabled'] {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  width: fit-content !important;
 }
 
 .buttonOutlineBlue {
@@ -711,6 +712,200 @@ button[data-component='disabled'] {
 .loader {
   font-size: 14px;
   color: #64748b;
+}
+
+.rootInner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+}
+
+.content {
+  margin-bottom: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.firstBlock {
+  flex: 1;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.header {
+  font-size: 50px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.entranceContainer {
+  width: 50%;
+  margin-top: 100px;
+  display: flex;
+  padding-right: 132px;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.entrance {
+  font-size: 60px;
+  margin-top: 38px;
+  font-weight: bold;
+  color: #ff3e00;
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.entrance > * {
+  display: inline-block;
+}
+.entrance svg {
+  width: 68px;
+  height: 68px;
+  margin-left: 18px;
+}
+
+.subtitle {
+  color: #050e1e;
+  margin-top: 60px;
+  font-size: 42px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 44px;
+  max-width: 40%;
+  white-space: pre-wrap;
+}
+
+.description {
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 32px;
+  color: #000000;
+}
+
+.secondBlock {
+  gap: 32px;
+  width: 40%;
+  display: flex;
+  padding: 56px;
+  padding-bottom: 30px;
+  height: calc(100% - 100px);
+  flex-direction: column;
+  align-items: flex-start;
+  position: absolute;
+  top: 50px;
+  right: 10%;
+  background: #ffffff;
+  box-shadow: 4px 4px 56px 0px rgba(66, 66, 132, 0.15);
+}
+
+.secondBlockB {
+  gap: 32px;
+  width: 40%;
+  display: flex;
+  padding: 40px;
+  flex-direction: column;
+  align-items: flex-start;
+  position: absolute;
+  top: 50px;
+  right: 10%;
+  bottom: 10px;
+  background: #ffffff;
+  box-shadow: 4px 4px 56px 0px rgba(66, 66, 132, 0.15);
+}
+
+.text {
+  font-size: 20px;
+  line-height: 40px;
+  margin-top: 40px;
+  max-width: 756px;
+}
+
+.selector {
+  margin-top: 40px;
+}
+
+.bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 280px;
+  z-index: -20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,0.0), rgba(255,255,255,0.02));
+}
+
+.bottom img {
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transform: translateY(-12px);
+  pointer-events: none;
+}
+
+.buttonContainer {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.fullWidth {
+  width: 100%;
+  flex: 1;
+}
+
+.button {
+  width: 100%;
+}
+
+.recoverButton {
+  margin-top: 27px;
+  background: #f2f2f2;
+}
+
+.formHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.formHeader h1 {
+  font-size: 28px;
+}
+
+.formHeader p {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.bottomBtn {
+  width: 100%;
+  flex-direction: column;
+}
+
+.bottomBtn button {
+  width: 100%;
 }
 
 @media (max-width: 880px) {

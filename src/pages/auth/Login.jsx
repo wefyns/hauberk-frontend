@@ -79,7 +79,28 @@ function Login() {
 
         <div className={styles.secondBlock}>
           <div className={styles.fullWidth}>
-            <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className={styles.formHeader}>
+              {formError && (
+                <div className={styles.errorMessage}>
+                  {formError}
+                </div>
+              )}
+              {successMessage && (
+                <div className={styles.successMessage}>
+                  {successMessage}
+                </div>
+              )}
+            </div>
+
+            <form 
+              className={
+                formError || successMessage
+                  ? styles.formB
+                  : styles.form
+              } 
+              onSubmit={handleSubmit(onSubmit)} 
+              noValidate
+            >
               <div className={styles.formContainer}>
                 <div className={styles.formGroup}>
                   <label htmlFor="username" className={styles.label}>
@@ -90,10 +111,10 @@ function Login() {
                     type="text"
                     className={`${styles.input} ${errors.username ? styles.inputError : ""}`}
                     {...register("username", {
-                      required: "Username is required",
+                      required: "Требуется имя пользователя",
                       minLength: {
                         value: 3,
-                        message: "Username must be at least 3 characters",
+                        message: "Имя пользователя должно содержать не менее 3 символов",
                       },
                     })}
                     aria-invalid={errors.username ? "true" : "false"}
@@ -113,7 +134,7 @@ function Login() {
                     type="password"
                     className={`${styles.input} ${errors.password ? styles.inputError : ""}`}
                     {...register("password", {
-                      required: "Password is required",
+                      required: "Требуется ввести пароль",
                     })}
                     aria-invalid={errors.password ? "true" : "false"}
                     placeholder="Введите пароль"

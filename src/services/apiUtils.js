@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 /**
  * Utility functions for API calls
  */
@@ -52,16 +53,52 @@ export const handleResponse = async (response) => {
  * @returns {Promise} - Resolved with response data or rejected with error
  */
 export const apiRequest = async (url, options) => {
-  try {
+  const baseOptions = {
+    ...options,
+    headers: { ...(options && options.headers ? options.headers : {}) }
+  };
+
+  const attachAuth = () => {
     const token = authService.getTokens().access_token;
+    if (token) {
+      baseOptions.headers["Authorization"] = `Bearer ${token}`;
+    } else {
+      delete baseOptions.headers["Authorization"];
+    }
+  };
 
-    options.headers = {
-      ...options.headers,
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
-    };
+  const attachContentTypeIfNeeded = () => {
+    if (baseOptions.body && !(baseOptions.body instanceof FormData)) {
+      if (!Object.keys(baseOptions.headers).some(h => h.toLowerCase() === "content-type")) {
+        baseOptions.headers["Content-Type"] = "application/json";
+      }
+    } else {
+      Object.keys(baseOptions.headers).forEach((h) => {
+        if (h.toLowerCase() === "content-type" && baseOptions.body instanceof FormData) {
+          delete baseOptions.headers[h];
+        }
+      });
+    }
+  };
 
-    const response = await fetch(url, options);
+  const doFetch = async () => {
+    attachAuth();
+    attachContentTypeIfNeeded();
+    return fetch(url, baseOptions);
+  };
+
+  try {
+    let response = await doFetch();
+
+    if (response.status === 401 || response.status === 403) {
+      try {
+        await authService._refreshIfNeeded();
+        response = await doFetch();
+      } catch (refreshErr) {
+        throw refreshErr;
+      }
+    }
+
     return await handleResponse(response);
   } catch (error) {
     return Promise.reject(error || "API request failed");

@@ -65,7 +65,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
         secret_id: "",
         protocol: "https",
         host: "",
-        port: 8443,
+        port: 8081,
       });
     },
     onError: (err) => {

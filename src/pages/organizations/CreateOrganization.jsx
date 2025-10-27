@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import footerIconUrl from '../../assets/images/footer.jpg'
 
 import { Logo } from "../../components/logo/Logo";
+import { COUNTRIES } from '../../constants/data'
+import { Select } from "../../components/select/Select";
 
 import { organizationService } from "../../services/organizationService";
 import { useOrganization } from "../../contexts/useOrganization";
@@ -23,7 +25,9 @@ function CreateOrganization() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
   } = useForm({
     defaultValues: {
       name: "",
@@ -36,6 +40,24 @@ function CreateOrganization() {
       ogrn: "",
     }
   });
+
+  const watchedCountry = watch("country", "");
+  const watchedCountryCode = watch("country_code", "");
+
+  const handleCountryChange = (item) => {
+    if (!item) {
+      setValue("country", "", { shouldDirty: true, shouldValidate: true });
+      setValue("country_code", "", { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+
+    const name = item?.name ?? "";
+    const code = (item?.code ?? "").toString().toUpperCase();
+
+    setValue("country", name, { shouldDirty: true, shouldValidate: true });
+    setValue("country_code", code, { shouldDirty: true, shouldValidate: true });
+  };
+
 
   const onSubmit = async (data) => {
     setError(null);
@@ -112,20 +134,17 @@ function CreateOrganization() {
             </div>
 
             <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="country" className={styles.label}>
-                  Страна *
-                </label>
-                <input
-                  type="text"
-                  id="country"
-                  className={styles.input}
-                  {...register("country", {
-                    required: "Требуется страна"
-                  })}
-                />
-                {errors.country && <span className={styles.error}>{errors.country.message}</span>}
-              </div>
+              <Select
+                data={COUNTRIES}
+                label="Страна *"
+                id="country"
+                placeholder="Начните вводить название страны..."
+                labelKey="name"
+                valueKey="code"
+                selected={watchedCountry}
+                onChange={handleCountryChange}
+                errors={errors}
+              />
 
               <div className={styles.formGroup}>
                 <label htmlFor="country_code" className={styles.label}>
@@ -143,6 +162,8 @@ function CreateOrganization() {
                       message: "Введите действительный 2-буквенный код страны (например, US, RU)."
                     }
                   })}
+                  value={watchedCountryCode || ""}
+                  disabled
                 />
                 {errors.country_code && <span className={styles.error}>{errors.country_code.message}</span>}
               </div>

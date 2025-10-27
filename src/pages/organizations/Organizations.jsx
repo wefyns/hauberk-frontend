@@ -63,13 +63,13 @@ function Organizations() {
       <div className={styles.header}>
         <div className={styles.logo}>Hauberk</div>
         <button onClick={logoutFromApp} className={styles.logoutButton}>
-          Logout
+          Выход
         </button>
       </div>
 
       <div className={styles.content}>
-        <h1 className={styles.title}>Select Organization</h1>
-        <p className={styles.subtitle}>Choose an organization to continue</p>
+        <h1 className={styles.title}>Выберите организацию</h1>
+        <p className={styles.subtitle}>Выберите организацию для продолжения</p>
 
         <div className={styles.organizationsList}>
           {(organizations ?? [])?.map((org) => (
@@ -91,7 +91,7 @@ function Organizations() {
           onClick={handleCreateOrganization}
           className={styles.createButton}
         >
-          + Create New Organization
+          + Создать новую организацию
         </button>
       </div>
     </div>

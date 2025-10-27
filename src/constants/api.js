@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
   // Auth endpoints
   LOGIN: "/api/v1/login",
   WHOAMI: "/api/v1/users/whoami",
+  REFRESH: "/api/v1/refresh-token",
 
   // User endpoints
   LICENSE_AGREEMENT_VIEW: "/api/v1/users/license-agreement/view",
@@ -66,6 +67,7 @@ export const API_URLS = {
   // Auth endpoints
   WHOAMI: `${API_BASE_URL}${API_ENDPOINTS.WHOAMI}`,
   LOGIN: `${API_BASE_URL}${API_ENDPOINTS.LOGIN}`,
+  REFRESH: `${API_BASE_URL}${API_ENDPOINTS.REFRESH}`,
 
   // User endpoints
   LICENSE_AGREEMENT_VIEW: `${API_BASE_URL}${API_ENDPOINTS.LICENSE_AGREEMENT_VIEW}`,

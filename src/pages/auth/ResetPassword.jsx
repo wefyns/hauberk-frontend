@@ -51,12 +51,11 @@ function ResetPassword() {
 
   if (isSuccess) {
     return (
-    
         <div className={styles.formPanelReset}>
           <div className={styles.cardReset} role="region" aria-live="polite">
             <div className={styles.cardHeader}>
-              <h1>Check Your Email</h1>
-              <p className={styles.lead}>We've sent a reset code to your email address.</p>
+              <h1>Проверьте свою электронную почту</h1>
+              <p className={styles.lead}>Мы отправили код сброса на ваш электронный адрес.</p>
             </div>
 
           
@@ -66,15 +65,13 @@ function ResetPassword() {
               </Link>
             </div>
           </div>
-
-
         </div>
     );
   }
 
   return (
     <div className={styles.root}>
-          <div className={styles.content}>
+      <div className={styles.content}>
             <div className={styles.firstBlock}>
               <div>
                 <div className={styles.header}>
@@ -89,7 +86,23 @@ function ResetPassword() {
     
             <div className={styles.secondBlock}>
               <div className={styles.fullWidth}>
-                <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+                <div className={styles.formHeader}>
+                  {formError && (
+                    <div className={styles.errorMessage}>
+                      {formError}
+                    </div>
+                  )}
+                </div>
+      
+                <form 
+                  className={
+                    formError
+                      ? styles.formB
+                      : styles.form
+                  } 
+                  onSubmit={handleSubmit(onSubmit)} 
+                  noValidate
+                >
                    <div className={styles.formContainer}>
                     <div className={styles.formGroup}>
                       <label htmlFor="login" className={styles.label}>
@@ -100,7 +113,7 @@ function ResetPassword() {
                         type="text"
                         className={`${styles.input} ${errors.login ? styles.inputError : ""}`}
                         {...register("login", {
-                          required: "Username is required",
+                          required: "Требуется имя пользователя",
                         })}
                         aria-invalid={errors.login ? "true" : "false"}
                       />

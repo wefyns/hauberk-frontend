@@ -22,12 +22,15 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
   const [logs, setLogs] = useState([]);
   const [deploying, setDeploying] = useState(false);
 
+  const [deploySuccess, setDeploySuccess] = useState(false);
+
   useEffect(() => {
     mountedRef.current = true;
     if (!visible) {
       setStatus({ orderer: "pending", peer0: "pending", peer1: "pending" });
       setDeploying(false);
       setLogs([]);
+      setDeploySuccess(false);
     }
     return () => {
       mountedRef.current = false;
@@ -45,6 +48,7 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
   const handleDeploy = async () => {
     setDeploying(true);
     setLogs([]);
+    setDeploySuccess(false);
 
     const nextStatus = { ...status };
 
@@ -79,16 +83,25 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
       pushLog("Все шаги выполнены успешно.");
 
       if (mountedRef.current) {
-        timeoutRef.current = setTimeout(() => {
-          if (!mountedRef.current) return;
-          navigate(`/home/${orgId}`);
-        }, 700);
+        setDeploySuccess(true);
       }
     } else {
       pushLog("Деплой остановлен из-за ошибки.");
+      if (mountedRef.current) {
+        setDeploySuccess(false);
+      }
     }
 
     if (mountedRef.current) setDeploying(false);
+  };
+
+  const handleCloseAndNavigate = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    navigate(`/home/${orgId}`);
+    onClose?.("close-button");
   };
 
   const renderStatusTag = (key) => {
@@ -113,7 +126,24 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
       height="auto"
       position="center"
       backdropVariant="blur"
-      footerButtons={() => {}}
+      customFooter={
+        deploySuccess ? (
+          <div className={styles.customFooterActions}>
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={() => {
+                setDeploySuccess(false);
+                setStatus({ orderer: "pending", peer0: "pending", peer1: "pending" });
+                setLogs([]);
+                handleCloseAndNavigate();
+              }}
+            >
+              Закрыть и перейти
+            </button>
+          </div>
+        ) : null
+      }
     >
       <div className={styles.deploymentBody}>
         <div className={styles.headerRow}>

@@ -17,7 +17,9 @@ export default function DbInfoSection() {
         <div className={styles.header}>
           <h3 className={styles.title}>Информация о СУБД</h3>
         </div>
-        <div className={styles.body}>Загрузка...</div>
+        <div className={styles.body}>
+          <span className={styles.item}>Загрузка...</span>
+        </div>
       </section>
     );
   }
@@ -28,7 +30,9 @@ export default function DbInfoSection() {
         <div className={styles.header}>
           <h3 className={styles.title}>Информация о СУБД</h3>
         </div>
-        <div className={styles.body}>Ошибка: {String(q.error)}</div>
+        <div className={styles.body}>
+          <span className={styles.noItems}>Элементы не найдены.</span>
+        </div>
       </section>
     );
   }
