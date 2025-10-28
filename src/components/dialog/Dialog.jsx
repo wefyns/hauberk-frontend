@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, ReactNode } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Dialog.module.css";
 
@@ -45,6 +45,43 @@ export const Dialog = ({
   headerClassName,
   footerClassName,
 }) => {
+  const backdropRef = useRef(null);
+  const pointerDownStartedOnBackdrop = useRef(false);
+
+  const handleBackdropMouseDown = (e) => {
+    if (e.target === backdropRef.current) {
+      pointerDownStartedOnBackdrop.current = true;
+    } else {
+      pointerDownStartedOnBackdrop.current = false;
+    }
+  };
+
+  const handleBackdropMouseUp = (e) => {
+    if (e.target === backdropRef.current && pointerDownStartedOnBackdrop.current) {
+      pointerDownStartedOnBackdrop.current = false;
+      onClose && onClose("close-button");
+    } else {
+      pointerDownStartedOnBackdrop.current = false;
+    }
+  };
+
+  const handleBackdropTouchStart = (e) => {
+    if (e.target === backdropRef.current) {
+      pointerDownStartedOnBackdrop.current = true;
+    } else {
+      pointerDownStartedOnBackdrop.current = false;
+    }
+  };
+
+  const handleBackdropTouchEnd = (e) => {
+    if (e.target === backdropRef.current && pointerDownStartedOnBackdrop.current) {
+      pointerDownStartedOnBackdrop.current = false;
+      onClose?.("close-button");
+    } else {
+      pointerDownStartedOnBackdrop.current = false;
+    }
+  };
+
   const onKeyDown = useCallback(
     (e) => {
       if (e.key === "Escape") {
@@ -90,9 +127,14 @@ export const Dialog = ({
 
   return createPortal(
     <div
+      ref={backdropRef}
       className={styles.backdrop}
       {...dataAttrs}
-      onClick={() => onClose("close-button")}
+      onMouseDown={handleBackdropMouseDown}
+      onMouseUp={handleBackdropMouseUp}
+      onTouchStart={handleBackdropTouchStart}
+      onTouchEnd={handleBackdropTouchEnd}
+      // onClick={() => onClose("close-button")}
       role="presentation"
     >
       <div

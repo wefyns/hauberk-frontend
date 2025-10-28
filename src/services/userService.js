@@ -14,7 +14,6 @@ export const userService = {
     const options = {
       method: "GET",
       headers: {
-        "Content-Type": "application/pdf",
         Accept: "application/pdf",
       },
     };

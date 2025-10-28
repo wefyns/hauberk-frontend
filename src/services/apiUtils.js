@@ -34,16 +34,30 @@ export const createFormDataHeaders = (token = null) => {
 export const handleResponse = async (response) => {
   const contentType = response.headers.get("content-type");
   const isJson = contentType && contentType.includes("application/json");
+  const isPdf = contentType && contentType.includes("application/pdf");
 
-  const data = isJson ? await response.json() : await response.text();
+  const readBody = async () => {
+    if (isJson) return await response.json();
+    if (isPdf) return await response.arrayBuffer();
+    return await response.text();
+  }
 
   if (!response.ok) {
     // Handle API error responses
-    const error = data || response.statusText;
+    const data = await readBody();
+    const error = (typeof data === "string" && data) || data || response.statusText;
     return Promise.reject(error);
   }
 
-  return data;
+  if (isJson) {
+    return await response.json();
+  }
+
+  if (isPdf) {
+    return await response.arrayBuffer();
+  }
+
+  return await response.text();
 };
 
 /**
