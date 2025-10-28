@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import footerIconUrl from '../../assets/images/footer.jpg'
 
@@ -9,7 +10,6 @@ import { COUNTRIES } from '../../constants/data'
 import { Select } from "../../components/select/Select";
 
 import { organizationService } from "../../services/organizationService";
-import { useOrganization } from "../../contexts/useOrganization";
 import { useAuthContext } from "../../contexts/useAuth";
 import { Pages } from "../../constants/routes";
 
@@ -17,9 +17,9 @@ import styles from "./CreateOrganization.module.css";
 
 function CreateOrganization() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { logoutFromApp } = useAuthContext();
-  const { fetchOrganizations } = useOrganization();
-  
+
   const [error, setError] = useState(null);
   
   const {
@@ -58,19 +58,26 @@ function CreateOrganization() {
     setValue("country_code", code, { shouldDirty: true, shouldValidate: true });
   };
 
+  const createOrganizationMutation = useMutation({
+    mutationFn: (data) => organizationService.createOrganization(data),
+    onSuccess: async () => {
+      setError(null);
+
+      await queryClient.invalidateQueries(["organizations"]);
+      
+      setTimeout(() => {
+        navigate(Pages.Organizations, { replace: true });
+        window.location.reload();
+      }, 400);
+    },
+    onError: (err) => {
+      setError(err.message || "Ошибка при создании организации");
+    },
+  });
 
   const onSubmit = async (data) => {
     setError(null);
-
-    try {
-      await organizationService.createOrganization(data);
-      // Refresh organizations list
-      await fetchOrganizations();
-      // Navigate to organizations list
-      navigate(Pages.Organizations);
-    } catch (err) {
-      setError(err.message || "Failed to create organization");
-    }
+    createOrganizationMutation.mutateAsync(data);
   };
 
   const handleCancel = () => {

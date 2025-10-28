@@ -447,10 +447,13 @@ button[data-component='disabled'] {
 }
 
 .submitButton:disabled {
-  background: rgba(255, 255, 255, 0.3);
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+.submitButton:disabled:hover {
+  background: #2d2eb7;
 }
 
 .agentBtn {

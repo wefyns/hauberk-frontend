@@ -31,7 +31,7 @@ function ResetPasswordInner() {
       setFormError("");
       // Navigate to confirmation page with login
       setTimeout(() => {
-        navigate(Pages.ResetPasswordConfirmInner, {
+        navigate("confirm", {
           state: { login: getValues("login") },
         });
       }, 2000);

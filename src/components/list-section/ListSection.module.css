@@ -29,6 +29,10 @@
   color: #64748b;
 }
 
+.btn {
+  background-color: #f1eeee;
+}
+
 .btn:active {
   background-color: #f1eeee;
 }
