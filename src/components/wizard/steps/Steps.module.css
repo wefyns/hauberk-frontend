@@ -1,0 +1,180 @@
+.stepContainer {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  min-height: 400px;
+}
+
+.stepContent {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.stepTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.stepDescription {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.formContainer {
+  width: 100%;
+}
+
+.formContainerGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.formRow {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.input {
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 0px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #ffffff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #0b66ff;
+  box-shadow: 0 0 0 3px rgba(11, 102, 255, 0.1);
+}
+
+.input:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.errorMessage {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.fieldError {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .stepContainer {
+    padding: 16px;
+  }
+  
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .stepTitle {
+    font-size: 18px;
+  }
+  
+  .stepDescription {
+    font-size: 14px;
+  }
+}
+
+.successState {
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  margin: 24px 0;
+}
+
+.successIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.successTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #15803d;
+  margin-bottom: 8px;
+}
+
+.successDescription {
+  font-size: 16px;
+  color: #166534;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.statusSuccess {
+  background-color: #10b981;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusError {
+  background-color: #ef4444;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusProgress {
+  background-color: #f59e0b;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusPending {
+  background-color: #6b7280;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}

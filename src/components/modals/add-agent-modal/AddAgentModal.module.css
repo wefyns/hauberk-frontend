@@ -3,7 +3,7 @@
   color: #0f172a;
   min-width: 360px;
   max-width: 680px;
-  padding: 12px 14px;
+  padding: 8px 14px;
   box-sizing: border-box;
 }
 
@@ -91,7 +91,7 @@
   background: #2d2eb7;
   color: white;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 0px;
   border: none;
   cursor: pointer;
   font-weight: 700;
@@ -120,7 +120,7 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
   color: #0f172a;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 0px;
   cursor: pointer;
   font-weight: 600;
 }

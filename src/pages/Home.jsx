@@ -19,6 +19,7 @@ function Home() {
     selectedOrganization,
     selectOrganization,
     organizations,
+    loading,
     fetchOrganizations,
     pickOrganization,
   } = useOrganization();
@@ -30,6 +31,7 @@ function Home() {
     if (path.includes("/search")) return "search";
     if (path.includes("/agents")) return "agents";
     if (path.includes("/secrets")) return "secrets";
+    if (path.includes("/organizations")) return "organizations";
     if (path.includes("/channel")) return "channel";
     if (path.includes("/sertificate")) return "sertificate";
     if (path.includes("/smart-contract")) return "smart-contract";
@@ -38,9 +40,18 @@ function Home() {
 
   useEffect(() => {
     fetchOrganizations();
-  }, [currentUser]);
+  }, [currentUser, fetchOrganizations]);
 
-  // Check user authentication and organization
+  // useEffect(() => {
+  //   if (orgId && organizations.length > 0) {
+  //     const orgIdNum = parseInt(orgId);
+  //     const org = organizations.find(o => o.id === orgIdNum);
+  //     if (org && (!selectedOrganization || selectedOrganization.id !== orgIdNum)) {
+  //       pickOrganization(orgIdNum);
+  //     }
+  //   }
+  // }, [orgId, organizations, selectedOrganization, pickOrganization]);
+
   useEffect(() => {
     const checkAccess = async () => {
       if (!currentUser) return;
@@ -49,18 +60,26 @@ function Home() {
         navigate(Pages.Onboarding);
         return;
       }
+      
       if (!currentUser?.email_confirmed) {
         navigate(Pages.SetEmailPassword);
         return;
       }
 
-      // If no organization ID in URL, redirect to organizations
-      if (!orgId || orgId === ":orgId") {
-        navigate(Pages.Organizations);
+      if (loading) return;
+
+      if (organizations.length === 0) {
+        navigate(Pages.CreateOrganization);
         return;
       }
 
-      pickOrganization(orgId);
+      if (!orgId) {
+        const firstOrg = organizations[0];
+        navigate(`/home/${firstOrg.id}`, { replace: true });
+        return;
+      }
+
+      pickOrganization(parseInt(orgId));
     };
 
     checkAccess();
@@ -69,8 +88,10 @@ function Home() {
     orgId,
     selectedOrganization,
     organizations,
+    loading,
     navigate,
     selectOrganization,
+    pickOrganization,
   ]);
 
   const toggleSidebar = () => {

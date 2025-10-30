@@ -1,0 +1,308 @@
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  align-items: center;
+}
+
+.searchContainer {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 0px;
+  font-size: 14px;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.createButton {
+  padding: 12px 20px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.createButton:hover {
+  background: #1d4ed8;
+}
+
+.organizationsList {
+  min-height: 400px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.orgCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.orgCard:hover {
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.orgInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.orgHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.orgName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.orgId {
+  font-size: 12px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 0px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.orgDetails {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 13px;
+  color: #111827;
+  font-weight: 500;
+  text-align: right;
+  word-break: break-all;
+}
+
+.orgActions {
+}
+
+.selectButton {
+  width: 100%;
+  padding: 8px 16px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectButton:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.orgCard:hover .selectButton {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 20px;
+  text-align: center;
+}
+
+.emptyState h3 {
+  font-size: 18px;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.emptyState p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 24px 0;
+}
+
+.createButtonEmpty {
+  padding: 12px 24px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.createButtonEmpty:hover {
+  background: #1d4ed8;
+}
+
+.searchResults {
+  margin-top: 24px;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error h2 {
+  color: #dc2626;
+  font-size: 18px;
+  margin: 0 0 8px 0;
+}
+
+.error p {
+  color: #6b7280;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchContainer {
+    max-width: none;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .orgHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .value {
+    text-align: left;
+    max-width: 100%;
+  }
+}

@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../contexts/useAuth";
 import { useOrganization } from "../../contexts/useOrganization";
-import { Pages } from "../../constants/routes";
 
 import userIconUrl from '../../assets/images/user.svg'
 // import questionIconUrl from '../../assets/images/question.svg'
@@ -19,11 +18,21 @@ export default function Navbar({
 }) {
   const navigate = useNavigate();
   const { logoutFromApp } = useAuthContext();
-  const { selectedOrganization, clearSelectedOrganization } = useOrganization();
+  const { selectedOrganization, organizations } = useOrganization();
 
   const handleChangeOrganization = () => {
-    clearSelectedOrganization();
-    navigate(Pages.Organizations);
+    const currentPath = window.location.pathname;
+    const orgIdMatch = currentPath.match(/\/home\/(\d+)/);
+    const currentOrgId = orgIdMatch ? orgIdMatch[1] : null;
+    
+    if (currentOrgId) {
+      navigate(`/home/${currentOrgId}/organizations`);
+    } else {
+      const firstOrg = organizations?.[0];
+      if (firstOrg) {
+        navigate(`/home/${firstOrg.id}/organizations`);
+      }
+    }
   };
 
   const handleChangePassword = () => {
@@ -34,7 +43,9 @@ export default function Navbar({
     <div className={styles.sidebarFooter}>
       <div className={styles.organizationInfo}>
         <div className={styles.orgButtonContent}>
-          <div className={styles.orgName}>{selectedOrganization?.name ?? "—"}</div>
+          <div className={styles.orgName}>
+            {selectedOrganization?.name ?? "Загрузка..."}
+          </div>
         </div>
         
         {/* <button
@@ -70,7 +81,7 @@ export default function Navbar({
                 className={styles.changeOrgButton}
                 onClick={handleChangeOrganization}
               >
-                Изменить организацию
+                Сменить организацию
               </button>
 
               <button

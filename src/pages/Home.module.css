@@ -712,6 +712,12 @@ button[data-component='disabled'] {
   cursor: pointer;
 }
 
+.invite:hover {
+  color: #ffffff;
+  border: 2px solid #0ea5a4;
+  background-color: #0ea5a4;
+}
+
 .loader {
   font-size: 14px;
   color: #64748b;
@@ -942,4 +948,146 @@ button[data-component='disabled'] {
   .name {
     font-size: 18px;
   }
+}
+
+.organizationSection {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.orgSelector {
+  position: relative;
+}
+
+.orgSelectorBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.orgSelectorBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.orgSelectorLabel {
+  font-weight: 500;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orgSelectorArrow {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.orgSelectorArrow.open {
+  transform: rotate(180deg);
+}
+
+.orgDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  margin-top: 4px;
+  max-height: 320px;
+  overflow: hidden;
+}
+
+.orgDropdownHeader {
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.orgDropdownTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.orgList {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.orgItem {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 16px;
+  background: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+.orgItem:hover {
+  background: #f9fafb;
+}
+
+.orgItem.active {
+  background: #eff6ff;
+  border-right: 3px solid #2563eb;
+}
+
+.orgName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.orgDomain {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.orgDropdownFooter {
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.createOrgBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.createOrgBtn:hover {
+  background: #1d4ed8;
 }

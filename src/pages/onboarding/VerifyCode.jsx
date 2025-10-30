@@ -29,7 +29,7 @@ function VerifyCode() {
       navigate(Pages.OnboardingSuccess);
     },
     onError: (error) => {
-      setFormError(error.message || 'Failed to verify. Please try again.');
+      setFormError(error.message || 'Не удалось проверить. Пожалуйста, попробуйте снова.');
     },
   });
 
@@ -38,7 +38,7 @@ function VerifyCode() {
     
     // Check if passwords match
     if (data.newPassword !== data.confirmPassword) {
-      setFormError('Passwords do not match');
+      setFormError('Пароли не совпадают');
       return;
     }
     
@@ -51,23 +51,23 @@ function VerifyCode() {
   return (
     <div className={styles.container}>
       <div className={styles.formContainer}>
-        <h1>Verify Your Email</h1>
+        <h1>Подтвердите свой адрес электронной почты</h1>
         <p className={styles.subtitle}>
-          We've sent a verification code to your email address. 
-          Please enter the code below along with your new password.
+          Мы отправили код подтверждения на ваш электронный адрес. 
+          Пожалуйста, введите код ниже вместе с вашим новым паролем.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.formGroup}>
             <label htmlFor="resetCode" className={styles.label}>
-              Verification Code
+              Код подтверждения
             </label>
             <input
               id="resetCode"
               type="text"
               className={styles.input}
               {...register('resetCode', {
-                required: 'Verification code is required',
+                required: 'Требуется код подтверждения',
               })}
             />
             {errors.resetCode && (
@@ -77,17 +77,17 @@ function VerifyCode() {
 
           <div className={styles.formGroup}>
             <label htmlFor="newPassword" className={styles.label}>
-              New Password
+              Новый пароль
             </label>
             <input
               id="newPassword"
               type="password"
               className={styles.input}
               {...register('newPassword', {
-                required: 'New password is required',
+                required: 'Требуется новый пароль',
                 minLength: {
                   value: 8,
-                  message: 'Password must be at least 8 characters',
+                  message: 'Пароль должен содержать не менее 8 символов',
                 },
               })}
             />
@@ -98,14 +98,14 @@ function VerifyCode() {
 
           <div className={styles.formGroup}>
             <label htmlFor="confirmPassword" className={styles.label}>
-              Confirm Password
+              Подтвердите пароль
             </label>
             <input
               id="confirmPassword"
               type="password"
               className={styles.input}
               {...register('confirmPassword', {
-                required: 'Please confirm your password',
+                required: 'Пожалуйста, подтвердите свой пароль',
               })}
             />
             {errors.confirmPassword && (
@@ -118,7 +118,7 @@ function VerifyCode() {
             className={styles.submitButton}
             disabled={isSubmitting || mutation.isPending}
           >
-            {mutation.isPending ? 'Verifying...' : 'Complete Setup'}
+            {mutation.isPending ? 'Подтверждение...' : 'Завершить настройку'}
           </button>
 
           {formError && <div className={styles.formError}>{formError}</div>}

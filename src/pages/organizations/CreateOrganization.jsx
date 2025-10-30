@@ -1,88 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import footerIconUrl from '../../assets/images/footer.jpg'
 
 import { Logo } from "../../components/logo/Logo";
-import { COUNTRIES } from '../../constants/data'
-import { Select } from "../../components/select/Select";
-
-import { organizationService } from "../../services/organizationService";
+import { Wizard } from "../../components/wizard/Wizard";
 import { useAuthContext } from "../../contexts/useAuth";
-import { Pages } from "../../constants/routes";
+import { useOrganization } from "../../contexts/useOrganization";
 
 import styles from "./CreateOrganization.module.css";
 
 function CreateOrganization() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { logoutFromApp } = useAuthContext();
 
-  const [error, setError] = useState(null);
-  
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-    watch,
-  } = useForm({
-    defaultValues: {
-      name: "",
-      name_lat: "",
-      country: "",
-      country_code: "",
-      region: "",
-      domain: "",
-      settlement: "",
-      ogrn: "",
-    }
-  });
+  const { logoutFromApp, currentUser } = useAuthContext();
+  const { organizations, loading, fetchOrganizations } = useOrganization();
 
-  const watchedCountry = watch("country", "");
-  const watchedCountryCode = watch("country_code", "");
+  const [showWizard, setShowWizard] = useState(false);
 
-  const handleCountryChange = (item) => {
-    if (!item) {
-      setValue("country", "", { shouldDirty: true, shouldValidate: true });
-      setValue("country_code", "", { shouldDirty: true, shouldValidate: true });
+  useEffect(() => {
+    fetchOrganizations();
+  }, [fetchOrganizations]);
+
+  useEffect(() => {
+    if (!currentUser || loading) return;
+    
+    if (organizations.length > 0) {
+      const firstOrg = organizations[0];
+      navigate(`/home/${firstOrg.id}`, { replace: true });
       return;
     }
+    
+    setShowWizard(true);
+  }, [currentUser, organizations, loading, navigate]);
 
-    const name = item?.name ?? "";
-    const code = (item?.code ?? "").toString().toUpperCase();
-
-    setValue("country", name, { shouldDirty: true, shouldValidate: true });
-    setValue("country_code", code, { shouldDirty: true, shouldValidate: true });
-  };
-
-  const createOrganizationMutation = useMutation({
-    mutationFn: (data) => organizationService.createOrganization(data),
-    onSuccess: async () => {
-      setError(null);
-
-      await queryClient.invalidateQueries(["organizations"]);
+  const handleWizardFinish = async () => {
+    try {
+      await fetchOrganizations();
       
       setTimeout(() => {
-        navigate(Pages.Organizations, { replace: true });
-        window.location.reload();
-      }, 400);
-    },
-    onError: (err) => {
-      setError(err.message || "Ошибка при создании организации");
-    },
-  });
-
-  const onSubmit = async (data) => {
-    setError(null);
-    createOrganizationMutation.mutateAsync(data);
+        fetchOrganizations().then(() => {
+          window.location.href = '/home';
+        });
+      }, 500);
+    } catch (error) {
+      console.error('Error finishing wizard:', error);
+      window.location.reload();
+    }
   };
 
-  const handleCancel = () => {
-    navigate(Pages.Organizations);
+  const handleWizardCancel = () => {
+    logoutFromApp();
   };
+
+  if (!showWizard) {
+    return null;
+  }
 
   return (
     <div className={styles.container}>
@@ -90,7 +63,7 @@ function CreateOrganization() {
         <div className={styles.logo}>
           <Logo />
           <span>HAUBERK</span>
-          </div>
+        </div>
         <button onClick={logoutFromApp} className={styles.logoutButton}>
           Выход
         </button>
@@ -98,168 +71,17 @@ function CreateOrganization() {
 
       <div className={styles.content}>
         <div className={styles.formContainer}>
-          <h1 className={styles.title}>Создать новую организацию</h1>
-          <p className={styles.subtitle}>Заполните данные, чтобы создать свою организацию</p>
+          <h1 className={styles.title}>Первичная настройка</h1>
+          <p className={styles.subtitle}>
+            Пройдите несколько шагов для настройки вашей первой организации
+          </p>
 
-          {error && (
-            <div className={styles.error}>
-              <p>{error}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="name" className={styles.label}>
-                  Название организации *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  className={styles.input}
-                  {...register("name", {
-                    required: "Требуется указать название организации"
-                  })}
-                />
-                {errors.name && <span className={styles.error}>{errors.name.message}</span>}
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="name_lat" className={styles.label}>
-                  Латинизированное название *
-                </label>
-                <input
-                  type="text"
-                  id="name_lat"
-                  className={styles.input}
-                  {...register("name_lat", {
-                    required: "Требуется латинизированное название"
-                  })}
-                />
-                {errors.name_lat && <span className={styles.error}>{errors.name_lat.message}</span>}
-              </div>
-            </div>
-
-            <div className={styles.formRow}>
-              <Select
-                data={COUNTRIES}
-                label="Страна *"
-                id="country"
-                placeholder="Начните вводить название страны..."
-                labelKey="name"
-                valueKey="code"
-                selected={watchedCountry}
-                onChange={handleCountryChange}
-                errors={errors}
-              />
-
-              <div className={styles.formGroup}>
-                <label htmlFor="country_code" className={styles.label}>
-                  Код страны *
-                </label>
-                <input
-                  type="text"
-                  id="country_code"
-                  placeholder="e.g., US, RU, GB"
-                  className={styles.input}
-                  {...register("country_code", {
-                    required: "Country code is required",
-                    pattern: {
-                      value: /^[A-Z]{2}$/,
-                      message: "Введите действительный 2-буквенный код страны (например, US, RU)."
-                    }
-                  })}
-                  value={watchedCountryCode || ""}
-                  disabled
-                />
-                {errors.country_code && <span className={styles.error}>{errors.country_code.message}</span>}
-              </div>
-            </div>
-
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="region" className={styles.label}>
-                  Регион *
-                </label>
-                <input
-                  type="text"
-                  id="region"
-                  className={styles.input}
-                  {...register("region", {
-                    required: "Требуется регион"
-                  })}
-                />
-                {errors.region && <span className={styles.error}>{errors.region.message}</span>}
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="settlement" className={styles.label}>
-                  Поселок *
-                </label>
-                <input
-                  type="text"
-                  id="settlement"
-                  className={styles.input}
-                  {...register("settlement", {
-                    required: "Требуется расчет"
-                  })}
-                />
-                {errors.settlement && <span className={styles.error}>{errors.settlement.message}</span>}
-              </div>
-            </div>
-
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="domain" className={styles.label}>
-                  Домен *
-                </label>
-                <input
-                  type="text"
-                  id="domain"
-                  placeholder="например, example.com"
-                  className={styles.input}
-                  {...register("domain", {
-                    required: "Требуется домен",
-                    pattern: {
-                      value: /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/,
-                      message: "Введите действительное доменное имя (например, example.com)"
-                    }
-                  })}
-                />
-                {errors.domain && <span className={styles.error}>{errors.domain.message}</span>}
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="ogrn" className={styles.label}>
-                  OGRN
-                </label>
-                <input
-                  type="text"
-                  id="ogrn"
-                  className={styles.input}
-                  {...register("ogrn")}
-                />
-              </div>
-            </div>
-
-            <div className={styles.buttonGroup}>
-              <button
-                type="button"
-                onClick={handleCancel}
-                className={styles.cancelButton}
-                disabled={isSubmitting}
-              >
-                Отменить
-              </button>
-              <button
-                type="submit"
-                className={styles.submitButton}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Создание..." : "Создать организацию"}
-              </button>
-            </div>
-          </form>
+          <Wizard
+            storageKey="first_time_setup"
+            onFinish={handleWizardFinish}
+            onCancel={handleWizardCancel}
+            forceShow={true}
+          />
         </div>
       </div>
 

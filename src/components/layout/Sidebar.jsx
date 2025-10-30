@@ -37,8 +37,9 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <Logo variant='dashboard' />
           <span className={styles.logoFull}>Hauberk</span>
         </div>
-
       </div>
+
+
 
       <nav className={styles.sidebarNav}>
         <button
@@ -79,6 +80,18 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
 
         <button
           className={`${styles.navItem} ${
+            activeSection === "organizations" ? styles.active : ""
+          }`}
+          onClick={() => handleSectionClick("organizations")}
+        >
+          <span className={styles.navIcon}>
+            <img src={agentIconUrl} alt="organizations icon" />
+          </span>
+          {!sidebarCollapsed && <span className={styles.navText}>Организации</span>}
+        </button>
+
+        <button
+          className={`${styles.navItem} ${
             activeSection === "channel" ? styles.active : ""
           }`}
           onClick={() => {}}
@@ -87,7 +100,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={channelIconUrl} alt="channel icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Канал</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Каналы</span>}
         </button>
 
         <button
@@ -100,7 +113,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={smartIconUrl} alt="smart contract icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Смарт контракт</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Смарт контракты</span>}
         </button>
 
         <button
@@ -113,7 +126,7 @@ function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
           <span className={styles.navIcon}>
             <img src={sertificateIconUrl} alt="sertificate icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Сертификат</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Сертификаты</span>}
         </button>
 
         <button

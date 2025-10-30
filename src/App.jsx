@@ -11,7 +11,8 @@ import HomePage from "./pages/home/HomePage";
 import PeersPage from "./pages/home/PeersPage"; 
 import AgentsPage from "./pages/home/AgentsPage";
 import SecretsPage from "./pages/home/SecretsPage";
-import Organizations from "./pages/organizations/Organizations";
+import OrganizationsPage from "./pages/home/OrganizationsPage";
+import CreateOrganizationDashboardPage from "./pages/home/CreateOrganizationDashboardPage";
 import CreateOrganization from "./pages/organizations/CreateOrganization";
 
 import ResetPasswordInner from "./pages/home/ResetPasswordInner";
@@ -33,7 +34,7 @@ function App() {
       {/* Redirect root to organizations */}
       <Route
         path={Pages.Root}
-        element={<Navigate to={Pages.Organizations} replace />}
+        element={<Navigate to="/home" replace />}
       />
 
       {/* Public routes */}
@@ -106,18 +107,19 @@ function App() {
 
       {/* Organization routes */}
       <Route
-        path={Pages.Organizations}
-        element={
-          <ProtectedRoute>
-            <Organizations />
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path={Pages.CreateOrganization}
         element={
           <ProtectedRoute>
             <CreateOrganization />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <Home />
           </ProtectedRoute>
         }
       />
@@ -134,6 +136,8 @@ function App() {
         <Route index element={<PeersPage />} />
         <Route path="agents" element={<AgentsPage />} />
         <Route path="secrets" element={<SecretsPage />} />
+        <Route path="organizations" element={<OrganizationsPage />} />
+        <Route path="create-organization" element={<CreateOrganizationDashboardPage />} />
 
         <Route 
           path="agents/:agentId/peers/:peerId" 
@@ -153,8 +157,8 @@ function App() {
         />
       </Route>
 
-      {/* 404 - redirect to organizations */}
-      <Route path="*" element={<Navigate to={Pages.Organizations} replace />} />
+      {/* 404 - redirect to home */}
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 }

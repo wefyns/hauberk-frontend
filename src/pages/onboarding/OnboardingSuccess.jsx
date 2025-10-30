@@ -28,15 +28,15 @@ function OnboardingSuccess() {
             <path d="M8 12l2 2 6-6"></path>
           </svg>
         </div>
-        <h1>Setup Complete!</h1>
+        <h1>Настройка завершена!</h1>
         <p className={styles.message}>
-          Your account has been successfully set up. You can now start using the application.
+          Ваша учетная запись успешно создана. Теперь вы можете начать пользоваться приложением.
         </p>
         <button 
           className={styles.homeButton}
           onClick={handleGoHome}
         >
-          Go to Home
+          Перейти на главную
         </button>
       </div>
     </div>

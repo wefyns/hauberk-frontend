@@ -4,24 +4,29 @@ import { useForm } from "react-hook-form";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
 import { secretService } from "../../../services";
+import { useOrganization } from "../../../contexts/useOrganization";
 
 import { Dialog } from "../../dialog/Dialog";
 import { agentService } from "../../../services";
 import styles from "./AddAgentModal.module.css";
 
 export default function AddAgentModal({ visible, onClose, orgId, onSuccess, editingAgent }) {
+  const { organizations, selectedOrganization } = useOrganization();
+  
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
+      organization_id: "",
       uuid: "",
       secret_id: "",
       protocol: "https",
       host: "",
-      port: 8443,
+      port: 8081,
     },
   });
 
@@ -33,25 +38,31 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
   });
 
   useEffect(() => {
+    if (visible) {
+      setValue("organization_id", selectedOrganization?.id?.toString() || orgId?.toString() || "");
+    }
+    
     if (editingAgent) {
       reset({
+        organization_id: selectedOrganization?.id?.toString() || orgId?.toString() || "",
         uuid: editingAgent.uuid ?? "",
         secret_id: editingAgent.secret_id != null ? String(editingAgent.secret_id) : "",
         protocol: editingAgent.protocol ?? "https",
         host: editingAgent.host ?? "",
-        port: editingAgent.port ?? 8443,
+        port: editingAgent.port ?? 8081,
       });
     } else if (!visible) {
       reset({
+        organization_id: "",
         uuid: "",
         secret_id: "",
         protocol: "https",
         host: "",
-        port: 8443,
+        port: 8081,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingAgent, visible]);
+  }, [editingAgent, visible, selectedOrganization, orgId]);
 
   const mutation = useMutation({
     mutationFn: (payload) => {
@@ -99,7 +110,24 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
       <div className={styles.container}>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className={styles.formGroup}>
-            <label htmlFor="uuid">Agent UUID *</label>
+            <label htmlFor="organization_id" className={styles.label}>Организация</label>
+            <select
+              id="organization_id"
+              className={styles.input}
+              disabled
+              {...register("organization_id")}
+            >
+              <option value="">Выберите организацию</option>
+              {organizations.map((org) => (
+                <option key={org.id} value={org.id}>
+                  {org.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="uuid" className={styles.label}>UUID агента *</label>
             <input
               id="uuid"
               type="text"
@@ -111,7 +139,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="secret_id">Секрет *</label>
+            <label htmlFor="secret_id" className={styles.label}>Секрет *</label>
             <select
               id="secret_id"
               className={styles.input}
@@ -135,7 +163,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
           <div className={styles.formRow}>
             <div className={styles.column}>
               <div className={styles.formGroup}>
-                <label htmlFor="protocol">Протокол</label>
+                <label htmlFor="protocol" className={styles.label}>Протокол соединения</label>
                 <select id="protocol" className={styles.input} {...register("protocol")}>
                   <option value="https">HTTPS</option>
                   <option value="http">HTTP</option>
@@ -143,12 +171,12 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="host">Хост *</label>
+                <label htmlFor="host" className={styles.label}>Хост *</label>
                 <input
                   id="host"
                   type="text"
                   className={styles.input}
-                  {...register("host", { required: "Требуется хостинг" })}
+                  {...register("host", { required: "Требуется указать хост" })}
                   placeholder="например, example.com или 192.168.1.1"
                 />
                 {errors.host && <span className={styles.error}>{errors.host.message}</span>}
@@ -156,7 +184,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="port">Порт *</label>
+              <label htmlFor="port" className={styles.label}>Порт *</label>
               <input
                 id="port"
                 type="number"

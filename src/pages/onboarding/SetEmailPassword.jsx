@@ -32,7 +32,7 @@ function SetEmailPassword() {
         navigate(Pages.OnboardingSuccess);
         return;
       }
-      setFormError(error.message || 'Failed to submit. Please try again.');
+      setFormError(error.message || 'Не удалось отправить заявку. Пожалуйста, попробуйте снова.');
     },
   });
 
@@ -44,25 +44,25 @@ function SetEmailPassword() {
   return (
     <div className={styles.container}>
       <div className={styles.formContainer}>
-        <h1>Set Your Email & Password</h1>
+        <h1>Установите свой адрес электронной почты и пароль</h1>
         <p className={styles.subtitle}>
-          Please set your email address and confirm your current password
+          Пожалуйста, укажите свой адрес электронной почты и подтвердите свой текущий пароль
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.formGroup}>
             <label htmlFor="email" className={styles.label}>
-              Email Address
+              Адрес электронной почты
             </label>
             <input
               id="email"
               type="email"
               className={styles.input}
               {...register('email', {
-                required: 'Email is required',
+                required: 'Требуется электронная почта',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address',
+                  message: 'Неверный адрес электронной почты',
                 },
               })}
             />
@@ -73,14 +73,14 @@ function SetEmailPassword() {
 
           <div className={styles.formGroup}>
             <label htmlFor="oldPassword" className={styles.label}>
-              Current Password
+              Текущий пароль
             </label>
             <input
               id="oldPassword"
               type="password"
               className={styles.input}
               {...register('oldPassword', {
-                required: 'Current password is required',
+                required: 'Требуется пароль',
               })}
             />
             {errors.oldPassword && (
@@ -93,7 +93,7 @@ function SetEmailPassword() {
             className={styles.submitButton}
             disabled={isSubmitting || mutation.isPending}
           >
-            {mutation.isPending ? 'Processing...' : 'Continue'}
+            {mutation.isPending ? 'Обработка...' : 'Продолжить'}
           </button>
 
           {formError && <div className={styles.formError}>{formError}</div>}

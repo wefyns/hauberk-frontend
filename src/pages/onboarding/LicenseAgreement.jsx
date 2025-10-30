@@ -33,8 +33,7 @@ function LicenseAgreement() {
       try {
         // Try to get response as arrayBuffer to ensure binary integrity
         const response  = await userService.getLicenseAgreement();
-        console.log('response ', response )
-        
+   
         if (!response || !(response instanceof ArrayBuffer)) {
           throw new Error("Unexpected license response format");
         }
