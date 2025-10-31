@@ -6,7 +6,7 @@ function OnboardingSuccess() {
   const navigate = useNavigate();
   
   const handleGoHome = () => {
-    navigate(Pages.Home);
+    navigate(Pages.CreateOrganization);
   };
 
   return (

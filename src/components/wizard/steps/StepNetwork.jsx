@@ -86,7 +86,8 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
     if (orgId && agentId) {
       registerSubmit(handleWizardSubmit);
     }
-  }, [registerSubmit, handleWizardSubmit, orgId, agentId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleWizardSubmit, orgId, agentId]);
 
   useEffect(() => {
     if (wsEvents.length > 0) {

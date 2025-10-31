@@ -32,7 +32,7 @@ function AgentsPage() {
     refetch: refetchAgents 
   } = useQuery({
     queryKey: ['agents', orgId],
-    queryFn: () => agentService.getAgents(parseInt(orgId)),
+    queryFn: () => agentService.getAgents(),
     enabled: !!orgId,
     select: (data) => data?.agents || []
   });
@@ -122,7 +122,10 @@ function AgentsPage() {
                 <div className={styles.info}>
                   <div className={styles.wrapperTop}>
                     <div>
-                      <div className={styles.name}>{agent.uuid}</div>
+                      <div className={styles.orgHeader}>
+                        <div className={styles.name}>{agent.uuid}</div>
+                        <span className={styles.orgId}>ID: {agent.id}</span>
+                      </div>
                       <div className={styles.description}>
                         <div className={styles.reduction}>Host:</div>
                         <div className={styles.value}>{agent.host}:{agent.port}</div>
@@ -130,8 +133,6 @@ function AgentsPage() {
                         <div className={styles.reduction}>Protocol:</div>
                         <div className={styles.value}>{agent.protocol}</div>
                         <div style={{ width: 24 }} />
-                        <div className={styles.reduction}>Secret ID:</div>
-                        <div className={styles.value}>{agent.secret_id ?? "—"}</div>
                       </div>
                     </div>
                   </div>
@@ -140,7 +141,19 @@ function AgentsPage() {
                 <div style={{ display: "flex", gap: 8 }}>
                   <button
                     type="button"
-                    className={`${styles.button} ${styles.buttonOutlineBlue}`}
+                    className={`${styles.button} ${styles.buttonAgentDeploy}`}
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      setDeploymentAgent(agent); 
+                      setDeploymentModalOpen(true); 
+                    }}
+                  >
+                    Развертывание
+                  </button>
+                  
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.buttonAgentNetwork}`}
                     onClick={(e) => { 
                       e.stopPropagation(); 
                       setNetworkAgent(agent); 
@@ -150,17 +163,6 @@ function AgentsPage() {
                     Сеть
                   </button>
 
-                  <button
-                    type="button"
-                    className={`${styles.button} ${styles.buttonOutlineGreen}`}
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      setDeploymentAgent(agent); 
-                      setDeploymentModalOpen(true); 
-                    }}
-                  >
-                    Развертывание
-                  </button>
                 </div>
               </div>
             ))

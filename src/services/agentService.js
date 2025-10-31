@@ -23,10 +23,30 @@ export const agentService = {
     return apiRequest(url, options);
   },
 
-  getAllPeersInOrg: async (orgId) => {
+  getAllPeers: async () => {
+    const url = API_URLS.PEERS;
+    const options = { method: "GET" };
+    return apiRequest(url, options);
+  },
+
+  getAllOrderers: async () => {
+    const url = API_URLS.ORDERERS;
+    const options = { method: "GET" };
+    return apiRequest(url, options);
+  },
+
+  getAllCAs: async () => {
+    const url = API_URLS.CAS;
+    const options = { method: "GET" };
+    return apiRequest(url, options);
+  },
+
+  getAllPeersInOrg: async () => {
+    return agentService.getAllPeers();
+    /*
     const orgIdNum = typeof orgId === "string" ? parseInt(orgId, 10) : orgId;
 
-    const agentsResp = await agentService.getAgents(orgIdNum);
+    const agentsResp = await agentService.getAgents();
 
     const agentsList = Array.isArray(agentsResp)
       ? agentsResp
@@ -69,6 +89,7 @@ export const agentService = {
     });
 
     return items;
+    */
   },
 
   getAgentCAs: async (orgId, agentId) => {
@@ -80,10 +101,12 @@ export const agentService = {
     return await apiRequest(url, options);
   },
 
-  getAllCAsInOrg: async (orgId) => {
+  getAllCAsInOrg: async () => {
+    return agentService.getAllCAs();
+    /*
     const orgIdNum = typeof orgId === "string" ? parseInt(orgId, 10) : orgId;
 
-    const agentsResp = await agentService.getAgents(orgIdNum);
+    const agentsResp = await agentService.getAgents();
     const agentsList = Array.isArray(agentsResp) ? agentsResp : (agentsResp?.agents ?? []);
 
     const results = await Promise.allSettled(
@@ -117,16 +140,11 @@ export const agentService = {
     });
 
     return items;
+    */
   },
 
-
-  /**
-   * Get all agents for an organization
-   * @param {number} orgId - Organization ID
-   * @returns {Promise} - Resolves with the list of agents
-   */
-  getAgents: async (orgId) => {
-    const url = API_URLS.ORGANIZATION_AGENTS(orgId);
+  getAgents: async () => {
+    const url = API_URLS.AGENTS;
     const options = {
       method: "GET",
     };

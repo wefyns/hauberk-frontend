@@ -38,10 +38,14 @@ function CreateOrganization() {
     try {
       await fetchOrganizations();
       
-      setTimeout(() => {
-        fetchOrganizations().then(() => {
-          window.location.href = '/home';
-        });
+      setTimeout(async () => {
+        const orgs = await fetchOrganizations();
+        if (orgs && orgs.length > 0) {
+          const firstOrg = orgs[0];
+          navigate(`/home/${firstOrg.id}`, { replace: true });
+        } else {
+          window.location.reload();
+        }
       }, 500);
     } catch (error) {
       console.error('Error finishing wizard:', error);
@@ -52,6 +56,15 @@ function CreateOrganization() {
   const handleWizardCancel = () => {
     logoutFromApp();
   };
+
+  if (!currentUser || loading || (!showWizard && organizations.length === 0)) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>Загрузка данных...</p>
+      </div>
+    );
+  }
 
   if (!showWizard) {
     return null;
@@ -85,9 +98,11 @@ function CreateOrganization() {
         </div>
       </div>
 
-      <div className={styles.bottom}>
-        <img src={footerIconUrl} alt="footer icon" />
-      </div>
+      {showWizard && (
+        <div className={styles.bottom}>
+          <img src={footerIconUrl} alt="footer icon" />
+        </div>
+      )}
     </div>
   );
 }

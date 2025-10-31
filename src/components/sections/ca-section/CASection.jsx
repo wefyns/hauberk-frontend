@@ -11,7 +11,7 @@ export function CAsSection() {
   const navigate = useNavigate();
 
   const fetcher = async () => {
-    return agentService.getAllCAsInOrg(parseInt(orgId, 10));
+    return agentService.getAllCAsInOrg();
   };
 
   const handleClick = useCallback(

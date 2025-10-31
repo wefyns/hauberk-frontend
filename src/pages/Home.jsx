@@ -57,19 +57,19 @@ function Home() {
       if (!currentUser) return;
 
       if (!currentUser?.license_accepted) {
-        navigate(Pages.Onboarding);
+        navigate(Pages.Onboarding, { replace: true });
         return;
       }
       
       if (!currentUser?.email_confirmed) {
-        navigate(Pages.SetEmailPassword);
+        navigate(Pages.SetEmailPassword, { replace: true });
         return;
       }
 
       if (loading) return;
 
       if (organizations.length === 0) {
-        navigate(Pages.CreateOrganization);
+        navigate(Pages.CreateOrganization, { replace: true });
         return;
       }
 
@@ -97,11 +97,6 @@ function Home() {
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
-
-  // Redirect if no organization
-  if (!selectedOrganization && orgId) {
-    return <div>Loading organization...</div>;
-  }
 
   return (
     <div className={styles.homeContainer}>

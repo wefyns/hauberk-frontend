@@ -34,7 +34,7 @@ function App() {
       {/* Redirect root to organizations */}
       <Route
         path={Pages.Root}
-        element={<Navigate to="/home" replace />}
+        element={<Navigate to={Pages.CreateOrganization} replace />}
       />
 
       {/* Public routes */}
@@ -115,15 +115,6 @@ function App() {
         }
       />
 
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }
-      />
-
       {/* Home routes with organization ID */}
       <Route
         path={Pages.Home}
@@ -158,7 +149,7 @@ function App() {
       </Route>
 
       {/* 404 - redirect to home */}
-      <Route path="*" element={<Navigate to="/home" replace />} />
+      <Route path="*" element={<Navigate to={Pages.CreateOrganization} replace />} />
     </Routes>
   );
 }

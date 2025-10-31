@@ -109,7 +109,8 @@ export function StepDeploy({ registerSubmit, isSubmitting, orgId, agentId }) {
     if (orgId && agentId) {
       registerSubmit(handleWizardSubmit);
     }
-  }, [registerSubmit, handleWizardSubmit, orgId, agentId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleWizardSubmit, orgId, agentId]);
 
   useEffect(() => {
     mountedRef.current = true;

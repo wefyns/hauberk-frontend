@@ -20,6 +20,13 @@ export const API_ENDPOINTS = {
   ORGANIZATION_SECRETS: (orgId) => `/api/v1/organizations/${orgId}/secrets`,
   ORGANIZATION_AGENTS: (orgId) => `/api/v1/organizations/${orgId}/agents`,
 
+  // List By Current User
+  AGENTS: "/api/v1/agents",
+  SECRETS: "/api/v1/secrets",
+  PEERS: "/api/v1/peers",
+  ORDERERS: "/api/v1/orderers",
+  CAS: "/api/v1/ca",
+
   // Agent endpoints
   AGENT_CA_ENROLL: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/ca/enroll`,
@@ -83,6 +90,13 @@ export const API_URLS = {
     `${API_BASE_URL}${API_ENDPOINTS.ORGANIZATION_SECRETS(orgId)}`,
   ORGANIZATION_AGENTS: (orgId) =>
     `${API_BASE_URL}${API_ENDPOINTS.ORGANIZATION_AGENTS(orgId)}`,
+
+  // List By Current User
+  AGENTS: `${API_BASE_URL}${API_ENDPOINTS.AGENTS}`,
+  SECRETS: `${API_BASE_URL}${API_ENDPOINTS.SECRETS}`,
+  PEERS: `${API_BASE_URL}${API_ENDPOINTS.PEERS}`,
+  ORDERERS: `${API_BASE_URL}${API_ENDPOINTS.ORDERERS}`,
+  CAS: `${API_BASE_URL}${API_ENDPOINTS.CAS}`,
 
   // Agent endpoints
   AGENT_CA_ENROLL: (orgId, agentId) =>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 
 import styles from './Select.module.css'
 
@@ -23,8 +23,10 @@ export const Select = ({
   const [open, setOpen] = useState(false);
   const [filtered, setFiltered] = useState(data);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const effectiveSearchKeys = searchKeys ?? [labelKey, valueKey];
+  const effectiveSearchKeys = useMemo(
+    () => searchKeys ?? [labelKey, valueKey],
+    [searchKeys, labelKey, valueKey]
+  );
 
   useEffect(() => {
     const q = (query ?? "").trim().toLowerCase();
@@ -40,7 +42,7 @@ export const Select = ({
         )
       );
     }
-  }, [query, data, effectiveSearchKeys, onChange]);
+  }, [query, data, effectiveSearchKeys]);
 
   useEffect(() => {
     if (typeof selected === "string" && selected !== query) {
@@ -48,13 +50,6 @@ export const Select = ({
     }
     if (selected === "" && query !== "") {
       setQuery("");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected]);
-
-  useEffect(() => {
-    if (typeof selected === "string" && selected !== query) {
-      setQuery(selected);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);

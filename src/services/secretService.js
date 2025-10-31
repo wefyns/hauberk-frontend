@@ -5,13 +5,8 @@ import { apiRequest } from "./apiUtils";
  * Service for secrets-related API calls
  */
 export const secretService = {
-  /**
-   * Get all secrets for an organization
-   * @param {number} orgId - Organization ID
-   * @returns {Promise} - Resolves with the list of secrets
-   */
-  getSecrets: async (orgId) => {
-    const url = API_URLS.ORGANIZATION_SECRETS(orgId);
+  getSecrets: async () => {
+    const url = API_URLS.SECRETS;
     const options = {
       method: "GET",
     };

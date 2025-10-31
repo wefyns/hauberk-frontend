@@ -93,7 +93,8 @@ export function StepOrganization({ registerSubmit, isSubmitting, orgId }) {
         error: err.message || "Не удалось создать организацию"
       };
     }
-  }, [createOrganizationMutation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submitWrapper = useCallback(async () => {
     if (orgId) {
@@ -122,7 +123,8 @@ export function StepOrganization({ registerSubmit, isSubmitting, orgId }) {
 
   useEffect(() => {
     registerSubmit(submitWrapper);
-  }, [registerSubmit, submitWrapper]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitWrapper]);
 
   if (orgId) {
     return (

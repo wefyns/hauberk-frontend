@@ -32,7 +32,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
 
   const { data: secrets = [], isLoading: secretsLoading } = useQuery({
     queryKey: ["secrets", orgId],
-    queryFn: () => secretService.getSecrets(parseInt(orgId)),
+    queryFn: () => secretService.getSecrets(),
     enabled: !!orgId,
     select: (data) => data?.secrets || [],
   });

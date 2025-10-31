@@ -21,7 +21,7 @@ function SecretsPage() {
     refetch: refetchSecrets,
   } = useQuery({
     queryKey: ["secrets", orgId],
-    queryFn: () => secretService.getSecrets(parseInt(orgId)),
+    queryFn: () => secretService.getSecrets(),
     enabled: !!orgId,
     select: (data) => data?.secrets || [],
   });
@@ -106,13 +106,14 @@ function SecretsPage() {
                 <div className={styles.info}>
                   <div className={styles.wrapperTop}>
                     <div>
-                      <div className={styles.name}>{secret.secret_mark}</div>
+                      <div className={styles.orgHeader}>
+                        <div className={styles.name}>{secret.secret_mark}</div>
+                        <span className={styles.orgId}>ID: {secret.id}</span>
+                      </div>
                       <div className={styles.description}>
                         <div className={styles.reduction}>Тип:</div>
                         <div className={styles.value}>{secret.secret_type}</div>
                         <div style={{ width: 24 }} />
-                        <div className={styles.reduction}>ID:</div>
-                        <div className={styles.value}>{secret.id}</div>
                       </div>
                     </div>
                   </div>

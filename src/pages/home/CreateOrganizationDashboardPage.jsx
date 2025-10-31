@@ -6,11 +6,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { COUNTRIES } from "../../constants/data";
 import { Select } from "../../components/select/Select";
 import { organizationService } from "../../services/organizationService";
+import { useOrganization } from "../../contexts/useOrganization";
 import styles from "./CreateOrganizationDashboardPage.module.css";
 
 function CreateOrganizationDashboardPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { fetchOrganizations } = useOrganization();
   const [error, setError] = useState(null);
 
   const {
@@ -37,15 +39,29 @@ function CreateOrganizationDashboardPage() {
 
   const createOrganizationMutation = useMutation({
     mutationFn: (data) => organizationService.createOrganization(data),
-    onSuccess: (result) => {
-      queryClient.invalidateQueries(["organizations"]);
+    onSuccess: async (result) => {
+      await queryClient.invalidateQueries({ queryKey: ["organizations"] });
       
-      const orgId = result.id || result.organization?.id;
+      await fetchOrganizations();
+      
+      const orgId = result?.id || result?.organization?.id;
+      
       if (orgId) {
         navigate(`/home/${orgId}`, { replace: true });
       } else {
-        const currentOrgId = window.location.pathname.split('/')[2];
-        navigate(`/home/${currentOrgId}/organizations`, { replace: true });
+        const orgsData = await queryClient.fetchQuery({
+          queryKey: ["organizations"],
+          queryFn: () => organizationService.getOrganizations()
+        });
+        
+        const organizations = orgsData?.organizations || orgsData || [];
+        if (organizations.length > 0) {
+          const firstOrg = organizations[0];
+          navigate(`/home/${firstOrg.id}`, { replace: true });
+        } else {
+          const currentOrgId = window.location.pathname.split('/')[2];
+          navigate(`/home/${currentOrgId}/organizations`, { replace: true });
+        }
       }
     },
     onError: (err) => {

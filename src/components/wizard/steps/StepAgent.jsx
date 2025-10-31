@@ -27,7 +27,7 @@ export function StepAgent({ registerSubmit, isSubmitting, orgId, agentId }) {
 
   const { data: secrets = [], isLoading: secretsLoading } = useQuery({
     queryKey: ["secrets", orgId],
-    queryFn: () => secretService.getSecrets(parseInt(orgId)),
+    queryFn: () => secretService.getSecrets(),
     enabled: !!orgId,
     select: (data) => data?.secrets || [],
   });
@@ -102,7 +102,8 @@ export function StepAgent({ registerSubmit, isSubmitting, orgId, agentId }) {
     if (orgId && !secretsLoading) {
       registerSubmit(submitWrapper);
     }
-  }, [registerSubmit, submitWrapper, orgId, secretsLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitWrapper, orgId, secretsLoading]);
 
   if (!orgId) {
     return (
