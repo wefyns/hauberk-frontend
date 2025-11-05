@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { Dialog } from "../../dialog/Dialog";
 import { agentService, journalService } from "../../../services";
@@ -31,7 +31,15 @@ export default function NetworkModal({
 
   const [viewMode, setViewMode] = useState("idle");
 
-  const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId);
+  const { data: agentsData } = useQuery({
+    queryKey: ["agents"],
+    queryFn: () => agentService.getAgents(),
+    enabled: visible && !!agentId,
+  });
+
+  const currentAgent = agentsData?.agents?.find(a => a.id === agentId) || null;
+
+  const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId, currentAgent);
 
   const createDocMutation = useMutation({
     mutationFn: ({file}) => {

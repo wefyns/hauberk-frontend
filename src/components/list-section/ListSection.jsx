@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { ListControls } from "../list-controls/ListControls";
+// import { Pagination } from "../pagination/Pagination";
 
 import styles from "./ListSection.module.css";
 
@@ -10,12 +11,14 @@ export function ListSection({
   queryKey,
   fetcher,
   renderItem,
-  defaultPageSize = 10,
-  pageSizeOptions = [5, 10, 15, 20],
+  defaultPageSize = 20,
+  pageSizeOptions = [10, 20, 50, 100],
   label = "Показать",
   keyExtractor,
+  enablePagination = true,
 }) {
   const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const q = useQuery({
     queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
@@ -30,11 +33,31 @@ export function ListSection({
     if (Array.isArray(d.items)) return d.items;
     if (Array.isArray(d.data)) return d.data;
     if (Array.isArray(d.peers)) return d.peers;
-    if (Array.isArray(d.cas)) return d.cas;
+    if (Array.isArray(d.ca)) return d.ca;
     return [];
   }, [q.data]);
 
-  const visible = useMemo(() => items.slice(0, pageSize), [items, pageSize]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pageSize, items.length]);
+
+  const { visible, totalPages } = useMemo(() => {
+    if (!enablePagination) {
+      return {
+        visible: items.slice(0, pageSize),
+        totalPages: 1,
+      };
+    }
+    
+    const totalPages = Math.ceil(items.length / pageSize);
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    
+    return {
+      visible: items.slice(startIndex, endIndex),
+      totalPages,
+    };
+  }, [items, pageSize, currentPage, enablePagination]);
 
   if (q.isPending) {
     return (
@@ -80,8 +103,14 @@ export function ListSection({
 
       <ListControls
         pageSize={pageSize}
-        onPageSizeChange={(v) => setPageSize(v)}
-        visibleCount={visible.length}
+        onPageSizeChange={(v) => {
+          setPageSize(v);
+          if (enablePagination && items.length > 0) {
+            const currentFirstItem = (currentPage - 1) * pageSize;
+            const newCurrentPage = Math.floor(currentFirstItem / v) + 1;
+            setCurrentPage(newCurrentPage);
+          }
+        }}
         totalCount={items.length}
         pageSizeOptions={pageSizeOptions}
         label={label}

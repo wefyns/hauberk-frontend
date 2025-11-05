@@ -211,6 +211,30 @@
   background: linear-gradient(135deg, #059669, #047857);
 }
 
+.homeButton {
+  background-color: #f9fafb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.homeButton:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.retryButton {
+  background-color: #ef4444;
+  color: #ffffff;
+  border: 1px solid #ef4444;
+}
+
+.retryButton:hover:not(:disabled) {
+  background-color: #ef4444;
+  border: 1px solid #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
 @media (max-width: 768px) {
   .wizardContainer {
     padding: 16px;

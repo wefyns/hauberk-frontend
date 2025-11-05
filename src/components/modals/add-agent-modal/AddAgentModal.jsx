@@ -65,13 +65,14 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
   }, [editingAgent, visible, selectedOrganization, orgId]);
 
   const mutation = useMutation({
-    mutationFn: (payload) => {
-      return agentService.addAgent(parseInt(orgId), payload);
+    mutationFn: ({ orgId, payload }) => {
+      return agentService.addAgent(orgId, payload);
     },
     onSuccess: () => {
       onSuccess?.();
       onClose?.("custom");
       reset({
+        organization_id: "",
         uuid: "",
         secret_id: "",
         protocol: "https",
@@ -85,12 +86,17 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
   });
 
   const onSubmit = (data) => {
+    const selectedOrgId = parseInt(data.organization_id);
+    
     const payload = {
-      ...data,
-      port: Number(data.port),
+      uuid: data.uuid,
       secret_id: data.secret_id ? Number(data.secret_id) : null,
+      protocol: data.protocol,
+      host: data.host,
+      port: Number(data.port),
     };
-    mutation.mutate(payload);
+    
+    mutation.mutate({ orgId: selectedOrgId, payload });
   };
 
   const title = editingAgent ? `Редактировать агента — ${editingAgent.uuid || editingAgent.id}` : "Добавить агента";
@@ -110,12 +116,11 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
       <div className={styles.container}>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className={styles.formGroup}>
-            <label htmlFor="organization_id" className={styles.label}>Организация</label>
+            <label htmlFor="organization_id" className={styles.label}>Организация *</label>
             <select
               id="organization_id"
               className={styles.input}
-              disabled
-              {...register("organization_id")}
+              {...register("organization_id", { required: "Выберите организацию" })}
             >
               <option value="">Выберите организацию</option>
               {organizations.map((org) => (
@@ -124,6 +129,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
                 </option>
               ))}
             </select>
+            {errors.organization_id && <span className={styles.error}>{errors.organization_id.message}</span>}
           </div>
 
           <div className={styles.formGroup}>

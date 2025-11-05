@@ -21,13 +21,15 @@ export function CAsSection() {
   );
 
   const renderItem = (item) => {
-    const ca = item.ca ?? item;
-    const agent = item.agent ?? item.agent;
+    const ca = item.agent_ca ?? {};
+    const agent = { id: item.agent_id };
+    const status = item.agent_status;
+    
     return (
       <PeerTile
-        peer={ca}
+        peer={{ ...ca, agent_status: status }}
         agent={agent}
-        onClick={() => handleClick(agent?.id, ca?.id)}
+        onClick={() => handleClick(item.agent_id, ca?.id)}
       />
     );
   };

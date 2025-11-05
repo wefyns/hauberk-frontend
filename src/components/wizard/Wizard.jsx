@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useMemo } from "react"
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useOnceWizardShown } from '../../hooks/useOnceWizardShown'
@@ -11,6 +12,7 @@ export const Wizard = ({
   onFinish,
   forceShow = false,
 }) => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { firstTime } = useOnceWizardShown({
@@ -131,6 +133,15 @@ export const Wizard = ({
     }
   };
 
+  const handleRetry = () => {
+    setError(null);
+    setIsSubmitting(false);
+  };
+
+  const handleGoHome = () => {
+    navigate('/home');
+  };
+
   if (firstTime === null) {
     return null;
   }
@@ -183,15 +194,25 @@ export const Wizard = ({
       </div>
 
       <div className={styles.wizardNavigation}>
-        {/* {!isFirst && (
-          <button 
-            onClick={handlePrev} 
+        {orgId && (
+          <button
+            onClick={handleGoHome}
             disabled={isSubmitting}
-            className={`${styles.navButton} ${styles.prevButton}`}
+            className={`${styles.navButton} ${styles.homeButton}`}
           >
-            Назад
+            На главную
           </button>
-        )} */}
+        )}
+
+        {error && (
+          <button
+            onClick={handleRetry}
+            disabled={isSubmitting}
+            className={`${styles.navButton} ${styles.retryButton}`}
+          >
+            Попробовать снова
+          </button>
+        )}
 
         <button
           onClick={wizardNext}

@@ -42,7 +42,7 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
   }, [visible, editingSecret, selectedOrganization, orgId]);
 
   const createMutation = useMutation({
-    mutationFn: (payload) => secretService.addSecret(parseInt(orgId), payload),
+    mutationFn: ({ orgId, payload }) => secretService.addSecret(orgId, payload),
     onSuccess: () => {
       reset();
       onSuccess?.();
@@ -54,6 +54,8 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
   });
 
   const onSubmit = async (data) => {
+    const selectedOrgId = parseInt(data.organization_id);
+    
     const payload = {
       secret_mark: data.secret_mark,
       secret_value: data.secret_value,
@@ -61,7 +63,7 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
     };
 
     try {
-      await createMutation.mutateAsync(payload);
+      await createMutation.mutateAsync({ orgId: selectedOrgId, payload });
     } catch (err) {
       return { error: err.message || "Failed to add secret" };
     }
@@ -83,12 +85,11 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
       <div className={styles.container}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.formGroup}>
-            <label htmlFor="organization_id" className={styles.label}>Организация</label>
+            <label htmlFor="organization_id" className={styles.label}>Организация *</label>
             <select
               id="organization_id"
               className={styles.input}
-              disabled
-              {...register("organization_id")}
+              {...register("organization_id", { required: "Выберите организацию" })}
             >
               <option value="">Выберите организацию</option>
               {organizations.map((org) => (
@@ -97,6 +98,7 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
                 </option>
               ))}
             </select>
+            {errors.organization_id && <span className={styles.error}>{errors.organization_id.message}</span>}
           </div>
 
           <div className={styles.formGroup}>

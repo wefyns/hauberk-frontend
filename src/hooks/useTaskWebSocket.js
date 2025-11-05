@@ -2,8 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { authService } from "../services";
 
-
-export function useTaskWebSocket(taskId) {
+export function useTaskWebSocket(taskId, agent = null) {
   const wsRef = useRef(null);
   const retryTimerRef = useRef(null);
   const retryCountRef = useRef(0);
@@ -45,9 +44,17 @@ export function useTaskWebSocket(taskId) {
       return;
     }
 
-    const scheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-    const hostPart = isLocalhost ? `localhost:8080` : window.location.host;
+    let hostPart;
+    let scheme;
+
+    if (agent && agent.host) {
+      scheme = agent.protocol === "https" ? "wss" : "ws";
+      hostPart = agent.port ? `${agent.host}:${agent.port}` : agent.host;
+    } else {
+      scheme = window.location.protocol === "https:" ? "wss" : "ws";
+      const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+      hostPart = isLocalhost ? `localhost:8080` : window.location.host;
+    }
 
     const safeTaskId = encodeURIComponent(taskId);
     const safeToken = encodeURIComponent(accessToken);
@@ -141,7 +148,7 @@ export function useTaskWebSocket(taskId) {
       } catch {}
       wsRef.current = null;
     };
-  }, [taskId, accessToken, closeWebSocket]);
+  }, [taskId, accessToken, agent, closeWebSocket]);
 
   const sendMessage = useCallback((payload) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {

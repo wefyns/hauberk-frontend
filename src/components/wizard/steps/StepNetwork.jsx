@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { agentService } from "../../../services";
 import { useTaskWebSocket } from "../../../hooks/useTaskWebSocket";
 import styles from "./Steps.module.css";
@@ -10,7 +10,15 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
   const [taskId, setTaskId] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState("idle");
 
-  const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId);
+  const { data: agentsData } = useQuery({
+    queryKey: ["agents"],
+    queryFn: () => agentService.getAgents(),
+    enabled: !!agentId,
+  });
+
+  const currentAgent = agentsData?.agents?.find(a => a.id === agentId) || null;
+
+  const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId, currentAgent);
 
   const createConnectionMutation = useMutation({
     mutationFn: () => agentService.createConnectionDocument(parseInt(orgId), parseInt(agentId)),

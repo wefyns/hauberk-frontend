@@ -35,6 +35,7 @@
 }
 
 .extra {
+  margin-top: 10px;
   margin-left: auto;
   display: flex;
   gap: 8px;

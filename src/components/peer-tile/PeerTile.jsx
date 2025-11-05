@@ -13,6 +13,7 @@ const STATUS_MAP = {
   error: "red",
   failed: "red",
   unknown: "gray",
+  unavailable: "gray",
   "": "gray",
 };
 
@@ -28,7 +29,7 @@ function pickBadgeColor(statusRaw) {
 }
 
 export function PeerTile({ peer, agent, onClick }) {
-  const status = peer?.status ?? peer?.connection_status ?? "";
+  const status = peer?.agent_status ?? peer?.status ?? "";
   const badgeColor = pickBadgeColor(status);
 
   return (
@@ -46,6 +47,7 @@ export function PeerTile({ peer, agent, onClick }) {
         <div><strong>Version:</strong> {peer?.version ?? "—"}</div>
         <div><strong>MSP:</strong> {peer?.msp_id ?? "—"}</div>
         <div><strong>Network:</strong> {peer?.network_name ?? peer?.network ?? "—"}</div>
+        {status && <div><strong>Status:</strong> {status}</div>}
       </div>
 
       <div className={styles.tileFooter}>
