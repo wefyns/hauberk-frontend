@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { ListSection } from "../../list-section/ListSection";
 import { PeerTile } from "../../peer-tile/PeerTile";
@@ -7,7 +7,6 @@ import { PeerTile } from "../../peer-tile/PeerTile";
 import { agentService } from "../../../services";
 
 export function CAsSection() {
-  const { orgId } = useParams();
   const navigate = useNavigate();
 
   const fetcher = async () => {
@@ -16,9 +15,9 @@ export function CAsSection() {
 
   const handleClick = useCallback(
     (agentId, caId) => {
-      navigate(`/home/${orgId}/agents/${agentId}/ca/${encodeURIComponent(caId)}`);
+      navigate(`/home/agents/${agentId}/ca/${encodeURIComponent(caId)}`);
     },
-    [navigate, orgId]
+    [navigate]
   );
 
   const renderItem = (item) => {
@@ -36,7 +35,7 @@ export function CAsSection() {
   return (
     <ListSection
       title="Центры сертификации"
-      queryKey={["cas", orgId]}
+      queryKey={["cas"]}
       fetcher={fetcher}
       renderItem={renderItem}
       defaultPageSize={5}

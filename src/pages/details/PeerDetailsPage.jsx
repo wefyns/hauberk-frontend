@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Switch } from "../../components/switch/Switch";
 
 import { agentService } from "../../services";
+import { useOrganization } from "../../contexts/useOrganization";
 
 import styles from './DetailsPage.module.css';
 
 export function PeerDetailsPage() {
-  const { orgId, agentId, peerId } = useParams();
+  const { agentId, peerId } = useParams();
+  const { selectedOrganization } = useOrganization();
 
   const [enabled, setEnabled] = useState(false);
 
@@ -17,12 +19,12 @@ export function PeerDetailsPage() {
     isPending, 
     isError,
   } = useQuery({
-    queryKey: ['peer', orgId, agentId, peerId],
+    queryKey: ['peer', selectedOrganization?.id, agentId, peerId],
     queryFn: async () => {
-      const data = await agentService.getPeer(parseInt(orgId), parseInt(agentId), peerId);
+      const data = await agentService.getPeer(selectedOrganization?.id, parseInt(agentId), peerId);
       return data;
     },
-    enabled: !!orgId && !!agentId && !!peerId,
+    enabled: !!selectedOrganization?.id && !!agentId && !!peerId,
     select: (data) => {
       setEnabled(data.enabled);
       return data;

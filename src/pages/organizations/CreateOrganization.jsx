@@ -26,8 +26,7 @@ function CreateOrganization() {
     if (!currentUser || loading) return;
     
     if (organizations.length > 0) {
-      const firstOrg = organizations[0];
-      navigate(`/home/${firstOrg.id}`, { replace: true });
+      navigate('/home', { replace: true });
       return;
     }
     
@@ -41,8 +40,7 @@ function CreateOrganization() {
       setTimeout(async () => {
         const orgs = await fetchOrganizations();
         if (orgs && orgs.length > 0) {
-          const firstOrg = orgs[0];
-          navigate(`/home/${firstOrg.id}`, { replace: true });
+          navigate('/home', { replace: true });
         } else {
           window.location.reload();
         }

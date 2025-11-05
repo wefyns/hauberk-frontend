@@ -12,15 +12,15 @@ import searchIconUrl from '../../assets/images/search.svg'
 
 import styles from "../../pages/Home.module.css";
 
-function Sidebar({ sidebarCollapsed, activeSection, orgId }) {
+function Sidebar({ sidebarCollapsed, activeSection }) {
   const navigate = useNavigate();
 
   const handleSectionClick = (section) => {
-    navigate(`/home/${orgId}/${section}`);
+    navigate(`/home/${section}`);
   };
 
   const handleOverviewClick = () => {
-    navigate(`/home/${orgId}/`);
+    navigate(`/home/`);
   };
 
   return (

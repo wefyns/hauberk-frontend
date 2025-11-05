@@ -100,7 +100,7 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
-    navigate(`/home/${orgId}`);
+    navigate('/home');
     onClose?.("close-button");
   };
 

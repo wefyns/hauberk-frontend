@@ -5,7 +5,7 @@ import styles from "./OrganizationsPage.module.css";
 
 function OrganizationsPage() {
   const navigate = useNavigate();
-  const { organizations, loading, error } = useOrganization();
+  const { organizations, error } = useOrganization();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredOrganizations = useMemo(() => {
@@ -16,25 +16,14 @@ function OrganizationsPage() {
     );
   }, [organizations, searchTerm]);
 
-  const handleSelectOrganization = (orgId) => {
-    navigate(`/home/${orgId}`);
-  };
+  // const handleSelectOrganization = (orgId) => {
+  //   selectOrganization(orgId);
+  //   navigate('/home');
+  // };
 
   const handleCreateOrganization = () => {
-    const currentOrgId = window.location.pathname.split('/')[2];
-    navigate(`/home/${currentOrgId}/create-organization`);
+    navigate(`/home/create-organization`);
   };
-
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>Загрузка организаций...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -91,7 +80,7 @@ function OrganizationsPage() {
               <div
                 key={org.id}
                 className={styles.orgCard}
-                onClick={() => handleSelectOrganization(org.id)}
+                // onClick={() => handleSelectOrganization(org.id)}
               >
                 <div className={styles.orgInfo}>
                   <div className={styles.orgHeader}>
@@ -124,7 +113,7 @@ function OrganizationsPage() {
                   </div>
                 </div>
               
-                <div className={styles.orgActions}>
+                {/* <div className={styles.orgActions}>
                   <button 
                     className={styles.selectButton}
                     onClick={(e) => {
@@ -134,7 +123,7 @@ function OrganizationsPage() {
                   >
                     Выбрать
                   </button>
-                </div>
+                </div> */}
               </div>
             ))}
           </div>

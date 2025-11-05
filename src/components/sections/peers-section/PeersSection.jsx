@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { ListSection } from '../../list-section/ListSection'
 import { PeerTile } from "../../peer-tile/PeerTile";
@@ -7,7 +7,6 @@ import { PeerTile } from "../../peer-tile/PeerTile";
 import { agentService } from "../../../services";
 
 export function PeersSection() {
-  const { orgId } = useParams();
   const navigate = useNavigate();
 
   const fetcher = async () => {
@@ -17,10 +16,10 @@ export function PeersSection() {
    const handlePeerClick = useCallback(
     (agentId, peerId) => {
       navigate(
-        `/home/${orgId}/agents/${agentId}/peers/${encodeURIComponent(peerId)}`
+        `/home/agents/${agentId}/peers/${encodeURIComponent(peerId)}`
       );
     },
-    [navigate, orgId]
+    [navigate]
   );
 
    const renderItem = ({ peer, agent }) => {
@@ -37,7 +36,7 @@ export function PeersSection() {
   return (
     <ListSection
       title="Peers"
-      queryKey={["peers", orgId]}
+      queryKey={["peers"]}
       fetcher={fetcher}
       renderItem={renderItem}
       defaultPageSize={20}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -11,9 +11,12 @@ import styles from "./CreateOrganizationDashboardPage.module.css";
 
 function CreateOrganizationDashboardPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const { fetchOrganizations } = useOrganization();
   const [error, setError] = useState(null);
+
+  const isFromOrganizationsList = location.pathname === '/home/create-organization';
 
   const {
     register,
@@ -39,30 +42,12 @@ function CreateOrganizationDashboardPage() {
 
   const createOrganizationMutation = useMutation({
     mutationFn: (data) => organizationService.createOrganization(data),
-    onSuccess: async (result) => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["organizations"] });
       
       await fetchOrganizations();
       
-      const orgId = result?.id || result?.organization?.id;
-      
-      if (orgId) {
-        navigate(`/home/${orgId}`, { replace: true });
-      } else {
-        const orgsData = await queryClient.fetchQuery({
-          queryKey: ["organizations"],
-          queryFn: () => organizationService.getOrganizations()
-        });
-        
-        const organizations = orgsData?.organizations || orgsData || [];
-        if (organizations.length > 0) {
-          const firstOrg = organizations[0];
-          navigate(`/home/${firstOrg.id}`, { replace: true });
-        } else {
-          const currentOrgId = window.location.pathname.split('/')[2];
-          navigate(`/home/${currentOrgId}/organizations`, { replace: true });
-        }
-      }
+      navigate('/home', { replace: true });
     },
     onError: (err) => {
       setError(err.message || "Ошибка при создании организации");
@@ -93,8 +78,11 @@ function CreateOrganizationDashboardPage() {
   };
 
   const handleCancel = () => {
-    const currentOrgId = window.location.pathname.split('/')[2];
-    navigate(`/home/${currentOrgId}/organizations`);
+    if (isFromOrganizationsList) {
+      navigate('/home/organizations');
+    } else {
+      navigate('/home');
+    }
   };
 
   return (

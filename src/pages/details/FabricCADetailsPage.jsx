@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Switch } from "../../components/switch/Switch";
 
 import { agentService } from "../../services";
+import { useOrganization } from "../../contexts/useOrganization";
 
 import styles from './DetailsPage.module.css';
 
 export function FabricCADetailsPage() {
-  const { orgId, agentId, caId } = useParams();
+  const { agentId, caId } = useParams();
+  const { selectedOrganization } = useOrganization();
 
   const [enabled, setEnabled] = useState(false);
 
@@ -17,12 +19,12 @@ export function FabricCADetailsPage() {
     isPending, 
     isError,
   } = useQuery({
-    queryKey: ['peer', orgId, agentId, caId],
+    queryKey: ['peer', selectedOrganization?.id, agentId, caId],
     queryFn: async () => {
-      const data = await agentService.getFabricCA(parseInt(orgId), parseInt(agentId), caId);
+      const data = await agentService.getFabricCA(selectedOrganization?.id, parseInt(agentId), caId);
       return data;
     },
-    enabled: !!orgId && !!agentId && !!caId,
+    enabled: !!selectedOrganization?.id && !!agentId && !!caId,
     select: (data) => {
       setEnabled(data.enabled);
       return data;

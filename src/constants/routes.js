@@ -2,7 +2,7 @@
  * Application routes
  */
 export const Pages = {
-  Home: '/home/:orgId',
+  Home: '/home',
   Login: '/login',
   Root: '/',
   ResetPassword: '/reset-password',
@@ -13,10 +13,10 @@ export const Pages = {
   VerifyCode: '/onboarding/verify-code',
   OnboardingSuccess: '/onboarding/success',
   CreateOrganization: '/create-organization',
-  Organizations: '/home/:orgId/organizations',
-  CreateOrganizationDashboard: '/home/:orgId/create-organization',
-  Agents: '/home/:orgId/agents',
-  Secrets: '/home/:orgId/secrets',
+  Organizations: '/home/organizations',
+  CreateOrganizationDashboard: '/home/create-organization',
+  Agents: '/home/agents',
+  Secrets: '/home/secrets',
   ResetPasswordConfirmInner: 'reset-password/confirm',
 };
 

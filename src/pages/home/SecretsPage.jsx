@@ -1,30 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 
-import { useParams } from "react-router-dom";
-
 import { secretService } from "../../services/secretService";
+import { organizationService } from "../../services/organizationService";
+import { useOrganization } from "../../contexts/useOrganization";
 import AddSecretModal from "../../components/modals/add-secret-modal/AddSecretModal";
 
 import styles from "../Home.module.css";
 
 function SecretsPage() {
-  const { orgId } = useParams();
+  const { selectedOrganization } = useOrganization();
 
   const [filter, setFilter] = useState("");
   const [editingSecret, setEditingSecret] = useState(null);
   const [addSecretModalOpen, setAddSecretModalOpen] = useState(false);
+
+  const { data: organizationsData } = useQuery({
+    queryKey: ['organizations'],
+    queryFn: () => organizationService.getOrganizations(),
+    select: (data) => data?.organizations || []
+  });
 
   const {
     data: secrets,
     isLoading: loading,
     refetch: refetchSecrets,
   } = useQuery({
-    queryKey: ["secrets", orgId],
+    queryKey: ["secrets"],
     queryFn: () => secretService.getSecrets(),
-    enabled: !!orgId,
     select: (data) => data?.secrets || [],
   });
+
+  const getOrganizationName = (organizationId) => {
+    const org = organizationsData?.find(o => o.id === organizationId);
+    return org?.name || `Org #${organizationId}`;
+  };
 
   const filterData = useMemo(() => {
     if (!filter || filter.trim() === "") return secrets || [];
@@ -111,6 +121,13 @@ function SecretsPage() {
                         <span className={styles.orgId}>ID: {secret.id}</span>
                       </div>
                       <div className={styles.description}>
+                        {secret.organization_id && (
+                          <>
+                            <div className={styles.reduction}>Организация:</div>
+                            <div className={styles.value}>{getOrganizationName(secret.organization_id)}</div>
+                            <div style={{ width: 24 }} />
+                          </>
+                        )}
                         <div className={styles.reduction}>Тип:</div>
                         <div className={styles.value}>{secret.secret_type}</div>
                         <div style={{ width: 24 }} />
@@ -145,7 +162,7 @@ function SecretsPage() {
             setAddSecretModalOpen(false);
             setEditingSecret(null);
           }}
-          orgId={orgId}
+          orgId={selectedOrganization?.id}
           editingSecret={editingSecret}
           onSuccess={() => {
             refetchSecrets();

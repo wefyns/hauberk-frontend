@@ -18,21 +18,10 @@ export default function Navbar({
 }) {
   const navigate = useNavigate();
   const { logoutFromApp } = useAuthContext();
-  const { selectedOrganization, organizations } = useOrganization();
+  const { selectedOrganization } = useOrganization();
 
   const handleChangeOrganization = () => {
-    const currentPath = window.location.pathname;
-    const orgIdMatch = currentPath.match(/\/home\/(\d+)/);
-    const currentOrgId = orgIdMatch ? orgIdMatch[1] : null;
-    
-    if (currentOrgId) {
-      navigate(`/home/${currentOrgId}/organizations`);
-    } else {
-      const firstOrg = organizations?.[0];
-      if (firstOrg) {
-        navigate(`/home/${firstOrg.id}/organizations`);
-      }
-    }
+    navigate('/home/organizations');
   };
 
   const handleChangePassword = () => {

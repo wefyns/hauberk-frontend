@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/navbar/Navbar";
 import Sidebar from "../components/layout/Sidebar";
@@ -13,15 +13,14 @@ import styles from "./Home.module.css";
 function Home() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { orgId } = useParams();
+  const fetchedRef = useRef(false);
+  
   const { currentUser } = useAuthContext();
   const {
     selectedOrganization,
-    selectOrganization,
     organizations,
     loading,
     fetchOrganizations,
-    pickOrganization,
   } = useOrganization();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -39,18 +38,11 @@ function Home() {
   };
 
   useEffect(() => {
-    fetchOrganizations();
+    if (!fetchedRef.current && currentUser) {
+      fetchedRef.current = true;
+      fetchOrganizations();
+    }
   }, [currentUser, fetchOrganizations]);
-
-  // useEffect(() => {
-  //   if (orgId && organizations.length > 0) {
-  //     const orgIdNum = parseInt(orgId);
-  //     const org = organizations.find(o => o.id === orgIdNum);
-  //     if (org && (!selectedOrganization || selectedOrganization.id !== orgIdNum)) {
-  //       pickOrganization(orgIdNum);
-  //     }
-  //   }
-  // }, [orgId, organizations, selectedOrganization, pickOrganization]);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -72,26 +64,15 @@ function Home() {
         navigate(Pages.CreateOrganization, { replace: true });
         return;
       }
-
-      if (!orgId) {
-        const firstOrg = organizations[0];
-        navigate(`/home/${firstOrg.id}`, { replace: true });
-        return;
-      }
-
-      pickOrganization(parseInt(orgId));
     };
 
     checkAccess();
   }, [
     currentUser,
-    orgId,
     selectedOrganization,
     organizations,
     loading,
     navigate,
-    selectOrganization,
-    pickOrganization,
   ]);
 
   const toggleSidebar = () => {
@@ -105,7 +86,6 @@ function Home() {
         sidebarCollapsed={sidebarCollapsed}
         toggleSidebar={toggleSidebar}
         activeSection={getActiveSection()}
-        orgId={orgId}
       />
 
       {/* Main content */}
