@@ -91,7 +91,7 @@ function OrganizationsPage() {
                   <div className={styles.orgDetails}>
                     <div className={styles.detail}>
                       <span className={styles.label}>Домен:</span>
-                      <span className={styles.value}>{org.domain}</span>
+                      <span className={styles.value}>{org.domain_name}</span>
                     </div>
                     
                     <div className={styles.detail}>

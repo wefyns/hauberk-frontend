@@ -20,10 +20,6 @@ export default function Navbar({
   const { logoutFromApp } = useAuthContext();
   const { selectedOrganization } = useOrganization();
 
-  const handleChangeOrganization = () => {
-    navigate('/home/organizations');
-  };
-
   const handleChangePassword = () => {
     navigate("reset-password");
   };
@@ -63,15 +59,6 @@ export default function Navbar({
                 <div className={styles.email}>{currentUser?.email ?? "—"}</div>
                 <div className={styles.role}>Роль: {currentUser?.role ?? "—"}</div>
               </div>
-
-              <button
-                type="button"
-                role="menuitem"
-                className={styles.changeOrgButton}
-                onClick={handleChangeOrganization}
-              >
-                Сменить организацию
-              </button>
 
               <button
                 type="button"

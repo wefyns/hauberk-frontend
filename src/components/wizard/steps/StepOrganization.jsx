@@ -24,7 +24,7 @@ export function StepOrganization({ registerSubmit, isSubmitting, orgId }) {
       country: "",
       country_code: "",
       region: "",
-      domain: "",
+      domain: "haub.procsy.tech",
       settlement: "",
       ogrn: "",
     }
@@ -123,8 +123,7 @@ export function StepOrganization({ registerSubmit, isSubmitting, orgId }) {
 
   useEffect(() => {
     registerSubmit(submitWrapper);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitWrapper]);
+  }, [submitWrapper, registerSubmit]);
 
   if (orgId) {
     return (
@@ -270,7 +269,7 @@ export function StepOrganization({ registerSubmit, isSubmitting, orgId }) {
               <input
                 type="text"
                 id="domain"
-                placeholder="example.com"
+                placeholder="haub.procsy.tech"
                 className={styles.input}
                 disabled={isSubmitting}
                 {...register("domain", {

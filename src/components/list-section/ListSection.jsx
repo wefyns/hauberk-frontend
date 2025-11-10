@@ -93,12 +93,22 @@ export function ListSection({
         {items.length === 0 && <div className={styles.noItems}>Элементы не найдены.</div>}
 
         {visible.map((item, idx) => {
+          const rendered = renderItem(item);
+          
+          if (Array.isArray(rendered)) {
+            return rendered.map((element, subIdx) => (
+              <div key={`${keyExtractor}-${idx}-${subIdx}`} className={styles.tileWrapper}>
+                {element}
+              </div>
+            ));
+          }
+          
           return (
-             <div key={`${keyExtractor}-${idx}`} className={styles.tileWrapper}>
-              {renderItem(item)}
+            <div key={`${keyExtractor}-${idx}`} className={styles.tileWrapper}>
+              {rendered}
             </div>
-          )}) 
-        }
+          );
+        })} 
       </div>
 
       <ListControls

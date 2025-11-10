@@ -8,55 +8,55 @@ import { useOrganization } from "../../contexts/useOrganization";
 
 import styles from './DetailsPage.module.css';
 
-export function PeerDetailsPage() {
-  const { agentId, peerId } = useParams();
+export function OrdererDetailsPage() {
+  const { agentId, ordererId } = useParams();
   const { selectedOrganization } = useOrganization();
 
   const [enabled, setEnabled] = useState(false);
   const [error, setError] = useState(null);
 
   const { 
-    data: peerData, 
-    isPending: peerPending, 
-    isError: peerError,
+    data: ordererData, 
+    isPending: ordererPending, 
+    isError: ordererError,
   } = useQuery({
-    queryKey: ['peer', selectedOrganization?.id, agentId, peerId],
+    queryKey: ['orderer', selectedOrganization?.id, agentId, ordererId],
     queryFn: async () => {
-      const data = await agentService.getPeer(selectedOrganization?.id, parseInt(agentId), peerId);
+      const data = await agentService.getOrderer(selectedOrganization?.id, parseInt(agentId), ordererId);
       return data;
     },
-    enabled: !!selectedOrganization?.id && !!agentId && !!peerId,
+    enabled: !!selectedOrganization?.id && !!agentId && !!ordererId,
   });
-  console.log('peerData', peerData)
+  
   const { data: organizationsData } = useQuery({
     queryKey: ['organizations'],
     queryFn: () => organizationService.getOrganizations(),
-    enabled: !!peerData?.organization_id,
+    enabled: !!ordererData?.organization_id,
   });
 
   const organization = organizationsData?.organizations?.find(
-    org => org.id === peerData?.organization_id
+    org => org.id === ordererData?.organization_id
   );
 
   useEffect(() => {
-    if (peerData?.status === 'running' || peerData?.status === 'deployed') {
+    if (ordererData?.status === 'running' || ordererData?.status === 'deployed') {
       setEnabled(true);
     } else {
       setEnabled(false);
     }
-  }, [peerData]);
+  }, [ordererData]);
 
   const mutationStop = useMutation({
-    mutationFn: () => agentService.fabricCAStop(selectedOrganization?.id, agentId, peerId),
+    mutationFn: () => agentService.enrollOrdererStop(selectedOrganization?.id, agentId, ordererId),
     onError: (err) => {
-      setError(`Ошибка остановки пира: ${err.message}`);
+      setError(`Ошибка остановки orderer: ${err.message}`);
     },
   })
 
   const mutationRestart = useMutation({
-    mutationFn: () => agentService.fabricCARestart(selectedOrganization?.id, agentId, peerId),
+    mutationFn: () => agentService.enrollOrdererRestart(selectedOrganization?.id, agentId, ordererId),
     onError: (err) => {
-      setError(`Ошибка перезапуска пира: ${err.message}`);
+      setError(`Ошибка перезапуска orderer: ${err.message}`);
     },
   })
 
@@ -72,13 +72,13 @@ export function PeerDetailsPage() {
     }
   }, [enabled, mutationRestart, mutationStop])
 
-  if (peerPending) return <div className={styles.loading}>Загрузка...</div>;
-  if (peerError || !peerData) return <div className={styles.error}>Пир не найден</div>;
+  if (ordererPending) return <div className={styles.loading}>Загрузка...</div>;
+  if (ordererError || !ordererData) return <div className={styles.error}>Orderer не найден</div>;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Управление пиром: {peerData.peer || peerData.id || 'Неизвестный'}</h1>
+        <h1 className={styles.title}>Управление Orderer: {ordererData.host_name || ordererData.id || 'Неизвестный'}</h1>
 
         <div className={styles.switchRow}>
           <Switch checked={enabled} onChange={handleToggle} />
@@ -94,27 +94,37 @@ export function PeerDetailsPage() {
       <div className={styles.infoSection}>
         <div className={styles.infoRow}>
           <span className={styles.label}>ID:</span>
-          <span className={styles.value}>{peerData.id || '—'}</span>
+          <span className={styles.value}>{ordererData.id || '—'}</span>
         </div>
         
         <div className={styles.infoRow}>
-          <span className={styles.label}>MSP ID:</span>
-          <span className={styles.value}>{peerData.msp_id || '—'}</span>
-        </div>
-        
-        <div className={styles.infoRow}>
-          <span className={styles.label}>Version:</span>
-          <span className={styles.value}>{peerData.version || '—'}</span>
-        </div>
-        
-        <div className={styles.infoRow}>
-          <span className={styles.label}>Status:</span>
-          <span className={styles.value}>{peerData.status || '—'}</span>
+          <span className={styles.label}>Host Name:</span>
+          <span className={styles.value}>{ordererData.host_name || '—'}</span>
         </div>
         
         <div className={styles.infoRow}>
           <span className={styles.label}>Domain:</span>
-          <span className={styles.value}>{peerData.domain_name || '—'}</span>
+          <span className={styles.value}>{ordererData.domain_name || '—'}</span>
+        </div>
+        
+        <div className={styles.infoRow}>
+          <span className={styles.label}>Address:</span>
+          <span className={styles.value}>{ordererData.address || '—'}</span>
+        </div>
+        
+        <div className={styles.infoRow}>
+          <span className={styles.label}>MSP ID:</span>
+          <span className={styles.value}>{ordererData.msp_id || '—'}</span>
+        </div>
+        
+        <div className={styles.infoRow}>
+          <span className={styles.label}>Status:</span>
+          <span className={styles.value}>{ordererData.status || '—'}</span>
+        </div>
+        
+        <div className={styles.infoRow}>
+          <span className={styles.label}>Local:</span>
+          <span className={styles.value}>{ordererData.local ? 'Yes' : 'No'}</span>
         </div>
 
         {organization && (

@@ -51,19 +51,25 @@ function ResetPassword() {
 
   if (isSuccess) {
     return (
-        <div className={styles.formPanelReset}>
-          <div className={styles.cardReset} role="region" aria-live="polite">
-            <div className={styles.cardHeader}>
-              <h1>Проверьте свою электронную почту</h1>
-              <p className={styles.lead}>Мы отправили код сброса на ваш электронный адрес.</p>
-            </div>
+        <div className={styles.root}>
+          <div className={styles.content}>
+            <div className={styles.cardReset} role="region" aria-live="polite">
+              <div className={styles.cardHeader}>
+                <h1>Проверьте свою электронную почту</h1>
+                <p className={styles.lead}>Мы отправили код сброса на ваш электронный адрес.</p>
+              </div>
 
-          
-            <div style={{ marginTop: "1rem", textAlign: "center" }}>
-              <Link to={Pages.Login} className={styles.link}>
-                Вернуться к входу
-              </Link>
+            
+              <div style={{ marginTop: "1rem", textAlign: "center" }}>
+                <Link to={Pages.Login} className={styles.link}>
+                  Вернуться к входу
+                </Link>
+              </div>
             </div>
+          </div>
+
+          <div className={styles.bottom}>
+            <img src={footerIconUrl} alt="footer icon" />
           </div>
         </div>
     );

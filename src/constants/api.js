@@ -30,10 +30,18 @@ export const API_ENDPOINTS = {
   // Agent endpoints
   AGENT_CA_ENROLL: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/ca/enroll`,
+  AGENT_CA_ENROLL_WITH_ID: (orgId, agentId, caId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/enroll`,
+  AGENT_ORDERER: (orgId, agentId, ordererId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}`,
   AGENT_ORDERER_ENROLL: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/enroll`,
   AGENT_ORDERER_ENROLL_WITH_ID: (orgId, agentId, ordererId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}/enroll`,
+  AGENT_ORDERER_ENROLL_WITH_ID_STOP: (orgId, agentId, ordererId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}/stop`,
+  AGENT_ORDERER_ENROLL_WITH_ID_RESTART: (orgId, agentId, ordererId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}/restart`,
   AGENT_PEER_ENROLL: (orgId, agentId) =>
     `/api/v1/organizations/${orgId}/agents/${agentId}/peer/enroll`,
   AGENT_PEER_ENROLL_WITH_ID: (orgId, agentId, peerId) =>
@@ -50,10 +58,14 @@ export const API_ENDPOINTS = {
   // Peers
   AGENT_PEERS: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer`,
   AGENT_PEER: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}`,
-
+  AGENT_PEER_STOP: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/stop`,
+  AGENT_PEER_RESTART: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/restart`,
+  
   // Fabric CA
   FABRIC_CA: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca`,
   FABRIC_CA_WITH_ID: (orgId, agentId, caId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}`,
+  FABRIC_CA_WITH_ID_STOP: (orgId, agentId, caId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/stop`,
+  FABRIC_CA_WITH_ID_RESTART: (orgId, agentId, caId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/restart`,
 
   // DB INFO
   DB_INFO: "/api/v1/db-info",
@@ -101,10 +113,18 @@ export const API_URLS = {
   // Agent endpoints
   AGENT_CA_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_CA_ENROLL(orgId, agentId)}`,
+  AGENT_CA_ENROLL_WITH_ID: (orgId, agentId, caId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_CA_ENROLL_WITH_ID(orgId, agentId, caId)}`,
+  AGENT_ORDERER: (orgId, agentId, ordererId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER(orgId, agentId, ordererId)}`,
   AGENT_ORDERER_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL(orgId, agentId)}`,
   AGENT_ORDERER_ENROLL_WITH_ID: (orgId, agentId, ordererId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID(orgId, agentId, ordererId)}`,
+  AGENT_ORDERER_ENROLL_WITH_ID_STOP: (orgId, agentId, ordererId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID_STOP(orgId, agentId, ordererId)}`,
+  AGENT_ORDERER_ENROLL_WITH_ID_RESTART: (orgId, agentId, ordererId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID_RESTART(orgId, agentId, ordererId)}`,
   AGENT_PEER_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_ENROLL(orgId, agentId)}`,
   AGENT_PEER_ENROLL_WITH_ID: (orgId, agentId, peerId) =>
@@ -125,10 +145,14 @@ export const API_URLS = {
   // Peers
   AGENT_PEERS: (orgId, agentId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEERS(orgId, agentId)}`,
   AGENT_PEER: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER(orgId, agentId, peerId)}`,
+  AGENT_PEER_STOP: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_STOP(orgId, agentId, peerId)}`,
+  AGENT_PEER_RESTART: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_RESTART(orgId, agentId, peerId)}`,
 
   // Fabric CA
   FABRIC_CA: (orgId, agentId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA(orgId, agentId)}`,
   FABRIC_CA_WITH_ID: (orgId, agentId, caId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID(orgId, agentId, caId)}`,
+  FABRIC_CA_WITH_ID_STOP: (orgId, agentId, caId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID_STOP(orgId, agentId, caId)}`,
+  FABRIC_CA_WITH_ID_RESTART: (orgId, agentId, caId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID_RESTART(orgId, agentId, caId)}`,
 
   // DB INFO
   DB_INFO: `${API_BASE_URL}${API_ENDPOINTS.DB_INFO}`,

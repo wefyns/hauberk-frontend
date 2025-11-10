@@ -132,7 +132,7 @@ function AgentsPage() {
                   <div className={styles.wrapperTop}>
                     <div>
                       <div className={styles.orgHeader}>
-                        <div className={styles.name}>{agent.uuid}</div>
+                        <div className={styles.name}>{agent.host}:{agent.port}</div>
                         <span className={styles.orgId}>ID: {agent.id}</span>
                       </div>
                       <div className={styles.description}>
@@ -143,8 +143,9 @@ function AgentsPage() {
                             <div style={{ width: 24 }} />
                           </>
                         )}
-                        <div className={styles.reduction}>Host:</div>
-                        <div className={styles.value}>{agent.host}:{agent.port}</div>
+                        <div className={styles.reduction}>UUID:</div>
+                        <div className={styles.value}>{agent.uuid}</div> 
+                        
                         <div style={{ width: 24 }} />
                         <div className={styles.reduction}>Protocol:</div>
                         <div className={styles.value}>{agent.protocol}</div>

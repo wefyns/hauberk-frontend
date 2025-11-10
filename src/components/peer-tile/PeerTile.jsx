@@ -5,7 +5,7 @@ import styles from './PeerTile.module.css'
 const STATUS_MAP = {
   healthy: "green",
   running: "green",
-  ok: "green",
+  available: "green",
   degraded: "yellow",
   warn: "yellow",
   warning: "yellow",
@@ -44,14 +44,16 @@ export function PeerTile({ peer, agent, onClick }) {
       </div>
 
       <div className={styles.tileBody}>
+        <div><strong>Name:</strong> {peer?.peer_name ?? peer?.hostname ?? peer?.host_name ?? "—"}</div>
+        <div><strong>ID:</strong> {peer?.id ?? "—"}</div>
         <div><strong>Version:</strong> {peer?.version ?? "—"}</div>
         <div><strong>MSP:</strong> {peer?.msp_id ?? "—"}</div>
-        <div><strong>Network:</strong> {peer?.network_name ?? peer?.network ?? "—"}</div>
-        {status && <div><strong>Status:</strong> {status}</div>}
+        <div><strong>Domain:</strong> {peer?.domain_name ?? "—"}</div>
+        <div><strong>Status:</strong> {status || "—"}</div>
       </div>
 
       <div className={styles.tileFooter}>
-        <small>Agent: {agent?.id ?? agent?.name ?? "—"}</small>
+        <small>Agent ID: {agent?.id ?? "—"}</small>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import footerIconUrl from '../../assets/images/footer.jpg'
@@ -13,13 +13,18 @@ import styles from "./CreateOrganization.module.css";
 function CreateOrganization() {
   const navigate = useNavigate();
 
+  const fetchedRef = useRef(false);
+  
   const { logoutFromApp, currentUser } = useAuthContext();
   const { organizations, loading, fetchOrganizations } = useOrganization();
 
   const [showWizard, setShowWizard] = useState(false);
 
   useEffect(() => {
-    fetchOrganizations();
+    if (!fetchedRef.current) {
+      fetchedRef.current = true;
+      fetchOrganizations();
+    }
   }, [fetchOrganizations]);
 
   useEffect(() => {

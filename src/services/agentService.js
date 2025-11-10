@@ -35,6 +35,12 @@ export const agentService = {
     return apiRequest(url, options);
   },
 
+  getOrderer: async (orgId, agentId, ordererId) => {
+    const url = API_URLS.AGENT_ORDERER(orgId, agentId, ordererId);
+    const options = { method: "GET" };
+    return apiRequest(url, options);
+  },
+
   getAllCAs: async () => {
     const url = API_URLS.CAS;
     const options = { method: "GET" };
@@ -179,12 +185,31 @@ export const agentService = {
    * @param {number} agentId - Agent ID
    * @returns {Promise} - Resolves with enrollment data
    */
-  enrollCA: async (orgId, agentId) => {
-    const url = API_URLS.AGENT_CA_ENROLL(orgId, agentId);
+  enrollCA: async (orgId, agentId, caId) => {
+    let url;
+
+    if (typeof caId !== "undefined" && caId !== null) {
+      url = API_URLS.AGENT_CA_ENROLL_WITH_ID(orgId, agentId, caId)
+    } else {
+      url = API_URLS.AGENT_CA_ENROLL(orgId, agentId);
+    }
+
     const options = {
       method: "POST",
     };
 
+    return apiRequest(url, options);
+  },
+
+  fabricCAStop: async (orgId, agentId, caId) => {
+    const url = API_URLS.FABRIC_CA_WITH_ID_STOP(orgId, agentId, caId);
+    const options = { method: "POST" };
+    return apiRequest(url, options);
+  },
+
+  fabricCARestart: async (orgId, agentId, caId) => {
+    const url = API_URLS.FABRIC_CA_WITH_ID_RESTART(orgId, agentId, caId);
+    const options = { method: "POST" };
     return apiRequest(url, options);
   },
 
@@ -210,6 +235,18 @@ export const agentService = {
     return apiRequest(url, options);
   },
 
+  enrollOrdererStop: async (orgId, agentId, caId) => {
+    const url = API_URLS.AGENT_ORDERER_ENROLL_WITH_ID_STOP(orgId, agentId, caId);
+    const options = { method: "POST" };
+    return apiRequest(url, options);
+  },
+
+  enrollOrdererRestart: async (orgId, agentId, ordererId) => {
+    const url = API_URLS.AGENT_ORDERER_ENROLL_WITH_ID_RESTART(orgId, agentId, ordererId);
+    const options = { method: "POST" };
+    return apiRequest(url, options);
+  },
+
   /**
    * Enroll a peer for an organization's agent
    * @param {number} orgId - Organization ID
@@ -218,7 +255,8 @@ export const agentService = {
    * @param {number} peerNumber - Peer number
    * @returns {Promise} - Resolves with enrollment data
    */
-  enrollPeer: async (orgId, agentId, peerId, peerNumber) => {
+  // enrollPeer: async (orgId, agentId, peerId, peerNumber) => {
+  enrollPeer: async (orgId, agentId, peerId) => {
     let url;
 
     if (typeof peerId !== "undefined" && peerId !== null) {
@@ -229,13 +267,26 @@ export const agentService = {
 
     const options = {
       method: "POST",
-      body: JSON.stringify({
-        peer_number: peerNumber,
-      }),
+      // body: JSON.stringify({
+      //   peer_number: peerNumber,
+      // }),
     };
 
     return apiRequest(url, options);
   },
+
+  enrollPeerStop: async (orgId, agentId, peerId) => {
+    const url = API_URLS.AGENT_PEER_STOP(orgId, agentId, peerId);
+    const options = { method: "POST" };
+    return apiRequest(url, options);
+  },
+
+  enrollPeerRestart: async (orgId, agentId, peerId) => {
+    const url = API_URLS.AGENT_PEER_RESTART(orgId, agentId, peerId);
+    const options = { method: "POST" };
+    return apiRequest(url, options);
+  },
+
 
   /**
    * Create a connection document for an organization's agent

@@ -5,6 +5,12 @@
   font-family: 'Inter', sans-serif;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .title {
   font-size: 32px;
   font-weight: bold;
@@ -16,7 +22,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
   font-size: 16px;
   font-weight: 500;
 }
@@ -26,4 +32,46 @@
   text-align: center;
   font-size: 18px;
   color: #333;
+}
+
+.errorMessage {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.infoSection {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.value {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 14px;
+  text-align: right;
 }

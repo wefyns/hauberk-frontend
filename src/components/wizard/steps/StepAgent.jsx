@@ -102,8 +102,7 @@ export function StepAgent({ registerSubmit, isSubmitting, orgId, agentId }) {
     if (orgId && !secretsLoading) {
       registerSubmit(submitWrapper);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitWrapper, orgId, secretsLoading]);
+  }, [submitWrapper, orgId, secretsLoading, registerSubmit]);
 
   if (!orgId) {
     return (

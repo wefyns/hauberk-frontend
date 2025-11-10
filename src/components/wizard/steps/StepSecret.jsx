@@ -87,8 +87,7 @@ export function StepSecret({ registerSubmit, isSubmitting, orgId }) {
     if (orgId) {
       registerSubmit(submitWrapper);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitWrapper, orgId]);
+  }, [submitWrapper, orgId, registerSubmit]);
 
   if (!orgId) {
     return (

@@ -410,6 +410,17 @@ input::placeholder {
   width: 100%;
 }
 
+.cardReset {
+  width: 100%;
+  text-align: center;
+  margin-top: 60px;
+}
+
+.cardHeader h1 {
+  font-size: 32px;
+  padding-bottom: 10px;
+}
+
 @media (min-width: 1024px) {
   .recoverButton {
     background: #ffffff;
@@ -437,6 +448,10 @@ input::placeholder {
     width: 50px;
     height: 50px;
     margin-left: 18px;
+  }
+
+  .cardReset {
+    margin-top: 40px;
   }
 }
 

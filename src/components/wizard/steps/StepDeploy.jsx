@@ -10,9 +10,10 @@ export function StepDeploy({ registerSubmit, isSubmitting, orgId, agentId }) {
   const [deploymentStatus, setDeploymentStatus] = useState({
     started: false,
     completed: false,
-    orderer: "pending",
+    ca: "pending",
     peer0: "pending",
     peer1: "pending",
+    orderer: "pending",
   });
 
   const [logs, setLogs] = useState([]);
@@ -35,19 +36,24 @@ export function StepDeploy({ registerSubmit, isSubmitting, orgId, agentId }) {
       
       const deploymentSteps = [
         {
-          key: "orderer",
-          label: "Развертывание Orderer узла",
-          action: () => agentService.enrollOrderer(parseInt(orgId), parseInt(agentId), "default")
+          key: "ca",
+          label: "Развертывание CA",
+          action: () => agentService.enrollCA(parseInt(orgId), parseInt(agentId), "default")
         },
         {
           key: "peer0",
           label: "Развертывание первого Peer узла",
-          action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 0, 0)
+          action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 0)
         },
         {
           key: "peer1", 
           label: "Развертывание второго Peer узла",
-          action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 1, 1)
+          action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 1)
+        },
+        {
+          key: "orderer",
+          label: "Развертывание Orderer узла",
+          action: () => agentService.enrollOrderer(parseInt(orgId), parseInt(agentId), "default")
         }
       ];
 
@@ -109,8 +115,7 @@ export function StepDeploy({ registerSubmit, isSubmitting, orgId, agentId }) {
     if (orgId && agentId) {
       registerSubmit(handleWizardSubmit);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleWizardSubmit, orgId, agentId]);
+  }, [handleWizardSubmit, orgId, agentId, registerSubmit]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -166,17 +171,23 @@ export function StepDeploy({ registerSubmit, isSubmitting, orgId, agentId }) {
           
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontWeight: "500" }}>Orderer узел</span>
-              {renderStatusBadge("orderer")}
+              <span style={{ fontWeight: "500" }}>CA узел</span>
+              {renderStatusBadge("ca")}
             </div>
             
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontWeight: "500" }}>Peer 0 узел</span>
               {renderStatusBadge("peer0")}
             </div>
+            
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontWeight: "500" }}>Peer 1 узел</span>
               {renderStatusBadge("peer1")}
+            </div>
+            
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontWeight: "500" }}>Orderer узел</span>
+              {renderStatusBadge("orderer")}
             </div>
           </div>
         </div>

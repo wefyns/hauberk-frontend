@@ -14,9 +14,10 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
   const timeoutRef = useRef(null);
 
   const [status, setStatus] = useState({
-    orderer: "pending",
+    ca: "pending",
     peer0: "pending",
     peer1: "pending",
+    orderer: "pending",
   });
 
   const [logs, setLogs] = useState([]);
@@ -27,7 +28,7 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
   useEffect(() => {
     mountedRef.current = true;
     if (!visible) {
-      setStatus({ orderer: "pending", peer0: "pending", peer1: "pending" });
+      setStatus({ ca: "pending", peer0: "pending", peer1: "pending", orderer: "pending" });
       setDeploying(false);
       setLogs([]);
       setDeploySuccess(false);
@@ -53,9 +54,10 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
     const nextStatus = { ...status };
 
     const steps = [
-      { key: "orderer", label: "Deploy Orderer", action: () => agentService.enrollOrderer(parseInt(orgId), parseInt(agentId), "default"), },
-      { key: "peer0", label: "Deploy Peer 0", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 0, 0) },
-      { key: "peer1", label: "Deploy Peer 1", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 1, 1) },
+      { key: "ca", label: "Deploy CA", action: () => agentService.enrollCA(parseInt(orgId), parseInt(agentId), "default") },
+      { key: "peer0", label: "Deploy Peer 0", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 0) },
+      { key: "peer1", label: "Deploy Peer 1", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 1) },
+      { key: "orderer", label: "Deploy Orderer", action: () => agentService.enrollOrderer(parseInt(orgId), parseInt(agentId), "default") },
     ];
 
     let allSuccess = true;
@@ -134,7 +136,7 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
               className={styles.primary}
               onClick={() => {
                 setDeploySuccess(false);
-                setStatus({ orderer: "pending", peer0: "pending", peer1: "pending" });
+                setStatus({ ca: "pending", peer0: "pending", peer1: "pending", orderer: "pending" });
                 setLogs([]);
                 handleCloseAndNavigate();
               }}
@@ -152,8 +154,8 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
 
         <div className={styles.steps}>
           <div className={styles.stepRow}>
-            {renderStatusTag("orderer")}
-            <div className={styles.stepLabel}>Deploy Orderer</div>
+            {renderStatusTag("ca")}
+            <div className={styles.stepLabel}>Deploy CA</div>
           </div>
           <div className={styles.stepRow}>
             {renderStatusTag("peer0")}
@@ -162,6 +164,10 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
           <div className={styles.stepRow}>
             {renderStatusTag("peer1")}
             <div className={styles.stepLabel}>Deploy Peer 1</div>
+          </div>
+          <div className={styles.stepRow}>
+            {renderStatusTag("orderer")}
+            <div className={styles.stepLabel}>Deploy Orderer</div>
           </div>
         </div>
 

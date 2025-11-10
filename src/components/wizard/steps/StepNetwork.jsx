@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { agentService } from "../../../services";
 import { useTaskWebSocket } from "../../../hooks/useTaskWebSocket";
 import styles from "./Steps.module.css";
@@ -10,15 +10,7 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
   const [taskId, setTaskId] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState("idle");
 
-  const { data: agentsData } = useQuery({
-    queryKey: ["agents"],
-    queryFn: () => agentService.getAgents(),
-    enabled: !!agentId,
-  });
-
-  const currentAgent = agentsData?.agents?.find(a => a.id === agentId) || null;
-
-  const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId, currentAgent);
+  const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId);
 
   const createConnectionMutation = useMutation({
     mutationFn: () => agentService.createConnectionDocument(parseInt(orgId), parseInt(agentId)),
@@ -94,8 +86,7 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
     if (orgId && agentId) {
       registerSubmit(handleWizardSubmit);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleWizardSubmit, orgId, agentId]);
+  }, [handleWizardSubmit, orgId, agentId, registerSubmit]);
 
   useEffect(() => {
     if (wsEvents.length > 0) {

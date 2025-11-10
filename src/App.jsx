@@ -17,7 +17,7 @@ import CreateOrganization from "./pages/organizations/CreateOrganization";
 
 import ResetPasswordInner from "./pages/home/ResetPasswordInner";
 import ResetPasswordConfirmInner from "./pages/home/ResetPasswordConfirmInner";
-import { PeerDetailsPage, FabricCADetailsPage } from "./pages/details";
+import { PeerDetailsPage, FabricCADetailsPage, OrdererDetailsPage } from "./pages/details";
 
 import {
   Onboarding,
@@ -137,6 +137,10 @@ function App() {
         <Route 
           path="agents/:agentId/ca/:caId" 
           element={<FabricCADetailsPage />} 
+        />
+        <Route 
+          path="agents/:agentId/orderers/:ordererId" 
+          element={<OrdererDetailsPage />} 
         />
         <Route 
           path='reset-password' 

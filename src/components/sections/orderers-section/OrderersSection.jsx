@@ -6,47 +6,47 @@ import { PeerTile } from "../../peer-tile/PeerTile";
 
 import { agentService } from "../../../services";
 
-export function PeersSection() {
+export function OrderersSection() {
   const navigate = useNavigate();
 
   const fetcher = async () => {
-    return agentService.getAllPeersInOrg();
+    return agentService.getAllOrderers();
   };
 
-  const handlePeerClick = useCallback(
-    (agentId, peerId) => {
+  const handleOrdererClick = useCallback(
+    (agentId, ordererId) => {
       navigate(
-        `/home/agents/${agentId}/peers/${encodeURIComponent(peerId)}`
+        `/home/agents/${agentId}/orderers/${encodeURIComponent(ordererId)}`
       );
     },
     [navigate]
   );
 
   const renderItem = (item) => {
-    const agentPeers = item.agent_peers || [];
+    const agentOrderers = item.agent_orderers || [];
     const agentId = item.agent_id;
     const agentStatus = item.agent_status;
     
-    return agentPeers.map((peer, index) => (
+    return agentOrderers.map((orderer, index) => (
       <PeerTile
-        key={peer.id || index}
-        peer={{ ...peer, agent_status: agentStatus }}
+        key={orderer.id || index}
+        peer={{ ...orderer, agent_status: agentStatus }}
         agent={{ id: agentId }}
-        onClick={() => handlePeerClick(agentId, peer.id)}
+        onClick={() => handleOrdererClick(agentId, orderer.id)}
       />
     ));
   };
 
   return (
     <ListSection
-      title="Peers"
-      queryKey={["peers"]}
+      title="Orderers"
+      queryKey={["orderers"]}
       fetcher={fetcher}
       renderItem={renderItem}
       defaultPageSize={20}
       pageSizeOptions={[10, 20, 50, 100]}
       label="Показать"
-      keyExtractor='peers'
+      keyExtractor='orderers'
       enablePagination={true}
     />
   );

@@ -31,7 +31,7 @@ function CreateOrganizationDashboardPage() {
       country: "",
       country_code: "",
       region: "",
-      domain: "",
+      domain: "haub.procsy.tech",
       settlement: "",
       ogrn: "",
     }
@@ -218,7 +218,7 @@ function CreateOrganizationDashboardPage() {
             <input
               type="text"
               id="domain"
-              placeholder="example.com"
+              placeholder="haub.procsy.tech"
               className={styles.input}
               disabled={createOrganizationMutation.isPending}
               {...register("domain", {

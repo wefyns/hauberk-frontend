@@ -9,6 +9,7 @@ import channelIconUrl from '../../assets/images/channel.svg'
 import smartIconUrl from '../../assets/images/smart.svg'
 import sertificateIconUrl from '../../assets/images/sertificate.svg'
 import searchIconUrl from '../../assets/images/search.svg'
+import organizationUrl from '../../assets/images/organization.svg'
 
 import styles from "../../pages/Home.module.css";
 
@@ -85,7 +86,7 @@ function Sidebar({ sidebarCollapsed, activeSection }) {
           onClick={() => handleSectionClick("organizations")}
         >
           <span className={styles.navIcon}>
-            <img src={agentIconUrl} alt="organizations icon" />
+            <img src={organizationUrl} alt="organizations icon" />
           </span>
           {!sidebarCollapsed && <span className={styles.navText}>Организации</span>}
         </button>
