@@ -1,19 +1,25 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Switch } from "../../components/switch/Switch";
 
 import { agentService, organizationService } from "../../services";
 import { useOrganization } from "../../contexts/useOrganization";
 
+import deleteIconUrl from '../../assets/images/delete.svg'
+
 import styles from './DetailsPage.module.css';
 
 export function FabricCADetailsPage() {
   const { agentId, caId } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const { selectedOrganization } = useOrganization();
 
   const [enabled, setEnabled] = useState(false);
   const [error, setError] = useState(null);
+  const [action, setAction] = useState(null); 
 
   const { 
     data: caData, 
@@ -39,38 +45,109 @@ export function FabricCADetailsPage() {
   );
 
   useEffect(() => {
-    if (caData?.status === 'running' || caData?.status === 'deployed') {
+    if (caData?.status === 'running') {
+    // if (caData?.status === 'running' || caData?.status === 'deployed') {
       setEnabled(true);
     } else {
       setEnabled(false);
     }
   }, [caData]);
 
-    const mutationStop = useMutation({
-    mutationFn: () => agentService.enrollPeerStop(selectedOrganization?.id, agentId, caId),
+  const mutationStop = useMutation({
+    mutationFn: () =>
+      agentService.fabricCAStop(selectedOrganization?.id, agentId, caId),
+    onSuccess: async () => {
+      setEnabled(false);
+      await queryClient.invalidateQueries([
+        "peer",
+        selectedOrganization?.id,
+        agentId,
+        caId,
+      ]);
+    },
     onError: (err) => {
+      setAction(null);
       setError(`Ошибка остановки CA: ${err.message}`);
     },
-  })
+    onSettled: () => {
+      setAction(null);
+    }
+  });
 
   const mutationRestart = useMutation({
-    mutationFn: () => agentService.enrollPeerRestart(selectedOrganization?.id, agentId, caId),
+    mutationFn: () =>
+      agentService.fabricCARestart(selectedOrganization?.id, agentId, caId),
+    onSuccess: async () => {
+      setEnabled(true);
+      await queryClient.invalidateQueries([
+        "peer",
+        selectedOrganization?.id,
+        agentId,
+        caId,
+      ]);
+    },
     onError: (err) => {
+      setAction(null);
       setError(`Ошибка перезапуска CA: ${err.message}`);
     },
-  })
+    onSettled: () => {
+      setAction(null);
+    }
+  });
+
+  const mutationDrop = useMutation({
+    mutationFn: () =>
+      agentService.fabricCADrop(selectedOrganization?.id, agentId, caId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries([
+        "peer",
+        selectedOrganization?.id,
+        agentId,
+        caId,
+      ]);
+      setTimeout(async () => {
+        navigate('/home', { replace: true });
+      }, 500);
+    },
+    onError: (err) => {
+      setAction(null);
+      setError(`Ошибка дропа CA: ${err.message}`);
+    },
+    onSettled: () => {
+      setAction(null);
+    }
+  });
 
   const handleToggle = useCallback(async () => {
+    setError(null);
     if (enabled) {
-      await mutationStop.mutateAsync(undefined, {
-        onSuccess: () => setEnabled(false),
-      });
+      setAction("stop");
+      await mutationStop.mutateAsync();
     } else {
-      await mutationRestart.mutateAsync(undefined, {
-        onSuccess: () => setEnabled(true)
-      })
+      setAction("restart");
+      await mutationRestart.mutateAsync();
     }
-  }, [enabled, mutationRestart, mutationStop])
+  }, [enabled, mutationRestart, mutationStop]);
+
+  const handleDrop = useCallback(async () => {
+      setAction("drop");
+      await mutationDrop.mutateAsync();
+  }, [mutationDrop]);
+
+  const isMutating = mutationStop.isPending || mutationRestart.isPending || mutationDrop.isPending;
+
+  if (isMutating) {
+    const loadingText =
+      action === "stop" ? "Останавливаем CA..." : 
+      action === "restart" ? "Перезапускаем CA..." :
+      "Выполняем DROP CA...";
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>{loadingText}</p>
+      </div>
+    );
+  }
 
   if (caPending) return <div className={styles.loading}>Загрузка...</div>;
   if (caError || !caData) return <div className={styles.error}>Сертификат не найден</div>;
@@ -80,8 +157,10 @@ export function FabricCADetailsPage() {
       <div className={styles.header}>
         <h1 className={styles.title}>Управление Fabric CA: {caData?.hostname || caData?.id || 'Неизвестный'}</h1>
 
-        <div className={styles.switchRow}>
-          <Switch checked={enabled} onChange={handleToggle} />
+        <div className={styles.controlsRow}>
+          <div className={styles.switchRow}>
+            <Switch checked={enabled} onChange={handleToggle} />
+          </div>
         </div>
       </div>
 
@@ -128,6 +207,16 @@ export function FabricCADetailsPage() {
             <span className={styles.value}>{organization.name}</span>
           </div>
         )}
+      </div>
+
+      <div className={styles.footerButton}>
+        <button 
+          className={styles.dropButton} 
+          onClick={handleDrop}
+          disabled={isMutating}
+        >
+          <img src={deleteIconUrl} alt="delete icon" />
+        </button>
       </div>
     </div>
   );

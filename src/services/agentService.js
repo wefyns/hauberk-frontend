@@ -213,6 +213,12 @@ export const agentService = {
     return apiRequest(url, options);
   },
 
+  fabricCADrop: async (orgId, agentId, caId) => {
+    const url = API_URLS.FABRIC_CA_WITH_ID_DROP(orgId, agentId, caId);
+    const options = { method: "POST" };
+    return apiRequest(url, options);
+  },
+
   /**
    * Enroll an orderer for an organization's agent
    * @param {number} orgId - Organization ID
@@ -243,6 +249,12 @@ export const agentService = {
 
   enrollOrdererRestart: async (orgId, agentId, ordererId) => {
     const url = API_URLS.AGENT_ORDERER_ENROLL_WITH_ID_RESTART(orgId, agentId, ordererId);
+    const options = { method: "POST" };
+    return apiRequest(url, options);
+  },
+
+  enrollOrdererDrop: async (orgId, agentId, ordererId) => {
+    const url = API_URLS.AGENT_ORDERER_DROP(orgId, agentId, ordererId);
     const options = { method: "POST" };
     return apiRequest(url, options);
   },
@@ -283,6 +295,12 @@ export const agentService = {
 
   enrollPeerRestart: async (orgId, agentId, peerId) => {
     const url = API_URLS.AGENT_PEER_RESTART(orgId, agentId, peerId);
+    const options = { method: "POST" };
+    return apiRequest(url, options);
+  },
+
+  enrollPeerDrop: async (orgId, agentId, peerId) => {
+    const url = API_URLS.AGENT_PEER_DROP(orgId, agentId, peerId);
     const options = { method: "POST" };
     return apiRequest(url, options);
   },

@@ -43,11 +43,11 @@ export function OrderersSection() {
       queryKey={["orderers"]}
       fetcher={fetcher}
       renderItem={renderItem}
-      defaultPageSize={20}
+      defaultPageSize={10}
       pageSizeOptions={[10, 20, 50, 100]}
       label="Показать"
       keyExtractor='orderers'
-      enablePagination={true}
+      enablePagination
     />
   );
 }

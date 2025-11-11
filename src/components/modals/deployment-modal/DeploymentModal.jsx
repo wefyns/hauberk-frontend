@@ -181,17 +181,19 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
             )}
           </div>
         </div>
-
-        <div className={styles.footerButton}>
-          <button
-            type="button"
-            className={styles.primary}
-            onClick={handleDeploy}
-            disabled={deploying}
-          >
-            {deploying ? "Выполняется..." : "Начать развертывание"}
-          </button>
-        </div>
+        
+        {!deploySuccess && (
+          <div className={styles.footerButton}>
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={handleDeploy}
+              disabled={deploying}
+            >
+              {deploying ? "Выполняется..." : "Начать развертывание"}
+            </button>
+          </div>
+        )}
       </div>
     </Dialog>
   );

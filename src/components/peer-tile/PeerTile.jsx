@@ -14,6 +14,7 @@ const STATUS_MAP = {
   failed: "red",
   unknown: "gray",
   unavailable: "gray",
+  deployed: "gray",
   "": "gray",
 };
 
@@ -29,7 +30,7 @@ function pickBadgeColor(statusRaw) {
 }
 
 export function PeerTile({ peer, agent, onClick }) {
-  const status = peer?.agent_status ?? peer?.status ?? "";
+  const status = peer?.status ?? "";
   const badgeColor = pickBadgeColor(status);
 
   return (

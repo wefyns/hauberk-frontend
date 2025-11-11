@@ -1,19 +1,25 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Switch } from "../../components/switch/Switch";
 
 import { agentService, organizationService } from "../../services";
 import { useOrganization } from "../../contexts/useOrganization";
 
+import deleteIconUrl from '../../assets/images/delete.svg'
+
 import styles from './DetailsPage.module.css';
 
 export function OrdererDetailsPage() {
   const { agentId, ordererId } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const { selectedOrganization } = useOrganization();
 
   const [enabled, setEnabled] = useState(false);
   const [error, setError] = useState(null);
+  const [action, setAction] = useState(null);
 
   const { 
     data: ordererData, 
@@ -39,7 +45,7 @@ export function OrdererDetailsPage() {
   );
 
   useEffect(() => {
-    if (ordererData?.status === 'running' || ordererData?.status === 'deployed') {
+    if (ordererData?.status === 'running') {
       setEnabled(true);
     } else {
       setEnabled(false);
@@ -48,29 +54,95 @@ export function OrdererDetailsPage() {
 
   const mutationStop = useMutation({
     mutationFn: () => agentService.enrollOrdererStop(selectedOrganization?.id, agentId, ordererId),
+    onSuccess: async () => {
+      setEnabled(false);
+      await queryClient.invalidateQueries([
+        "orderer",
+        selectedOrganization?.id,
+        agentId,
+        ordererId,
+      ]);
+    },
     onError: (err) => {
+      setAction(null);
       setError(`Ошибка остановки orderer: ${err.message}`);
     },
+    onSettled: () => {
+      setAction(null);
+    }
   })
 
   const mutationRestart = useMutation({
     mutationFn: () => agentService.enrollOrdererRestart(selectedOrganization?.id, agentId, ordererId),
+    onSuccess: async () => {
+      setEnabled(true);
+      await queryClient.invalidateQueries([
+        "orderer",
+        selectedOrganization?.id,
+        agentId,
+        ordererId,
+      ]);
+    },
     onError: (err) => {
+      setAction(null);
       setError(`Ошибка перезапуска orderer: ${err.message}`);
     },
+    onSettled: () => {
+      setAction(null);
+    }
+  })
+
+  const mutationDrop = useMutation({
+    mutationFn: () => agentService.enrollOrdererDrop(selectedOrganization?.id, agentId, ordererId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries([
+        "orderer",
+        selectedOrganization?.id,
+        agentId,
+        ordererId,
+      ]);
+      setTimeout(async () => {
+        navigate('/home', { replace: true });
+      }, 500);
+    },
+    onError: (err) => {
+      setAction(null);
+      setError(`Ошибка дропа orderer: ${err.message}`);
+    },
+    onSettled: () => {
+      setAction(null);
+    }
   })
 
   const handleToggle = useCallback(async () => {
     if (enabled) {
-      await mutationStop.mutateAsync(undefined, {
-        onSuccess: () => setEnabled(false),
-      });
+      setAction("stop");
+      await mutationStop.mutateAsync(undefined);
     } else {
-      await mutationRestart.mutateAsync(undefined, {
-        onSuccess: () => setEnabled(true)
-      })
+      setAction("restart");
+      await mutationRestart.mutateAsync(undefined);
     }
   }, [enabled, mutationRestart, mutationStop])
+
+  const handleDrop = useCallback(async () => {
+    setAction("drop");
+    await mutationDrop.mutateAsync(undefined);
+  }, [mutationDrop])
+
+  const isMutating = mutationStop.isPending || mutationRestart.isPending || mutationDrop.isPending;
+
+  if (isMutating) {
+    const loadingText =
+      action === "stop" ? "Останавливаем Orderer..." : 
+      action === "restart" ? "Перезапускаем Orderer..." :
+      "Выполняем DROP Orderer...";
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>{loadingText}</p>
+      </div>
+    );
+  }
 
   if (ordererPending) return <div className={styles.loading}>Загрузка...</div>;
   if (ordererError || !ordererData) return <div className={styles.error}>Orderer не найден</div>;
@@ -80,8 +152,10 @@ export function OrdererDetailsPage() {
       <div className={styles.header}>
         <h1 className={styles.title}>Управление Orderer: {ordererData.host_name || ordererData.id || 'Неизвестный'}</h1>
 
-        <div className={styles.switchRow}>
-          <Switch checked={enabled} onChange={handleToggle} />
+        <div className={styles.controlsRow}>
+          <div className={styles.switchRow}>
+            <Switch checked={enabled} onChange={handleToggle} />
+          </div>
         </div>
       </div>
 
@@ -124,7 +198,7 @@ export function OrdererDetailsPage() {
         
         <div className={styles.infoRow}>
           <span className={styles.label}>Local:</span>
-          <span className={styles.value}>{ordererData.local ? 'Yes' : 'No'}</span>
+          <span className={styles.value}>{ordererData.local ? 'Да' : 'Нет'}</span>
         </div>
 
         {organization && (
@@ -133,6 +207,16 @@ export function OrdererDetailsPage() {
             <span className={styles.value}>{organization.name}</span>
           </div>
         )}
+      </div>
+      
+      <div className={styles.footerButton}>
+        <button 
+          className={styles.dropButton} 
+          onClick={handleDrop}
+          disabled={isMutating}
+        >
+          <img src={deleteIconUrl} alt="delete icon" />
+        </button>
       </div>
     </div>
   );

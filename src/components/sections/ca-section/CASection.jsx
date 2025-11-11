@@ -41,10 +41,11 @@ export function CAsSection() {
       queryKey={["cas"]}
       fetcher={fetcher}
       renderItem={renderItem}
-      defaultPageSize={5}
-      pageSizeOptions={[5, 10, 15]}
+      defaultPageSize={10}
+      pageSizeOptions={[10, 20, 50, 100]}
       label="Показать"
       keyExtractor={'cas'}
+      enablePagination
     />
   );
 }
