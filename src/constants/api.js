@@ -18,7 +18,10 @@ export const API_ENDPOINTS = {
   // Organization endpoints
   ORGANIZATIONS: "/api/v1/organizations",
   ORGANIZATION_SECRETS: (orgId) => `/api/v1/organizations/${orgId}/secrets`,
+  ORGANIZATION_SECRET: (orgId, secretId) => `/api/v1/organizations/${orgId}/secrets/${secretId}`,
   ORGANIZATION_AGENTS: (orgId) => `/api/v1/organizations/${orgId}/agents`,
+  ORGANIZATION_AGENT: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}`,
+  ORGANIZATION_BY_ID: (orgId) => `/api/v1/organizations/${orgId}`,
 
   // List By Current User
   AGENTS: "/api/v1/agents",
@@ -105,8 +108,14 @@ export const API_URLS = {
   ORGANIZATIONS: `${API_BASE_URL}${API_ENDPOINTS.ORGANIZATIONS}`,
   ORGANIZATION_SECRETS: (orgId) =>
     `${API_BASE_URL}${API_ENDPOINTS.ORGANIZATION_SECRETS(orgId)}`,
+  ORGANIZATION_SECRET: (orgId, secretId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.ORGANIZATION_SECRET(orgId, secretId)}`,
   ORGANIZATION_AGENTS: (orgId) =>
     `${API_BASE_URL}${API_ENDPOINTS.ORGANIZATION_AGENTS(orgId)}`,
+  ORGANIZATION_AGENT: (orgId, agentId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.ORGANIZATION_AGENT(orgId, agentId)}`,
+  ORGANIZATION_BY_ID: (orgId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.ORGANIZATION_BY_ID(orgId)}`,
 
   // List By Current User
   AGENTS: `${API_BASE_URL}${API_ENDPOINTS.AGENTS}`,

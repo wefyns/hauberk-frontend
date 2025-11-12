@@ -42,14 +42,33 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
   }, [visible, editingSecret, selectedOrganization, orgId]);
 
   const createMutation = useMutation({
-    mutationFn: ({ orgId, payload }) => secretService.addSecret(orgId, payload),
+    mutationFn: ({ orgId, secretId, payload }) => {
+      if (secretId) {
+        return secretService.updateSecret(orgId, secretId, payload);
+      }
+      return secretService.addSecret(orgId, payload);
+    },
     onSuccess: () => {
       reset();
       onSuccess?.();
       onClose?.("custom");
     },
     onError: (err) => {
-      console.error("addSecret error:", err);
+      console.error("addSecret/updateSecret error:", err);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: ({ orgId, secretId }) => {
+      return secretService.deleteSecret(orgId, secretId);
+    },
+    onSuccess: () => {
+      reset();
+      onSuccess?.();
+      onClose?.("custom");
+    },
+    onError: (err) => {
+      console.error("deleteSecret error:", err);
     },
   });
 
@@ -58,18 +77,32 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
     
     const payload = {
       secret_mark: data.secret_mark,
-      secret_value: data.secret_value,
       secret_type: data.secret_type,
     };
 
+    if (data.secret_value) {
+      payload.secret_value = data.secret_value;
+    }
+
     try {
-      await createMutation.mutateAsync({ orgId: selectedOrgId, payload });
+      await createMutation.mutateAsync({ 
+        orgId: selectedOrgId, 
+        secretId: editingSecret?.id || null,
+        payload 
+      });
     } catch (err) {
-      return { error: err.message || "Failed to add secret" };
+      return { error: err.message || "Failed to add/update secret" };
     }
   };
 
-  const isPending = createMutation.isPending;
+  const handleDelete = () => {
+    if (!editingSecret?.id) return;
+
+    const orgId = parseInt(editingSecret.organization_id || selectedOrganization?.id);
+    deleteMutation.mutate({ orgId, secretId: editingSecret.id });
+  };
+
+  const isPending = createMutation.isPending || deleteMutation.isPending;
 
   return (
     <Dialog
@@ -115,7 +148,9 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="secret_value" className={styles.label}>Значение секрета *</label>
+            <label htmlFor="secret_value" className={styles.label}>
+              Значение секрета *
+            </label>
             <input
               type="password"
               id="secret_value"
@@ -123,6 +158,7 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
               {...register("secret_value", {
                 required: editingSecret ? false : "Требуется указать значение секрета",
               })}
+              placeholder={editingSecret ? "Новое значение секрета" : ""}
             />
             {errors.secret_value && <span className={styles.error}>{errors.secret_value.message}</span>}
           </div>
@@ -139,7 +175,32 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
             {errors.secret_type && <span className={styles.error}>{errors.secret_type.message}</span>}
           </div>
 
+          {createMutation.isError && (
+            <div className={styles.serverError}>
+              {createMutation.error?.message || "Ошибка сервера при сохранении секрета"}
+            </div>
+          )}
+
+          {deleteMutation.isError && (
+            <div className={styles.serverError}>
+              {deleteMutation.error?.message || "Ошибка сервера при удалении секрета"}
+            </div>
+          )}
+
           <div className={styles.actions}>
+            {editingSecret && (
+              <button 
+                type="button" 
+                className={styles.dangerButton} 
+                onClick={handleDelete} 
+                disabled={isPending}
+              >
+                {deleteMutation.isPending ? "Удаление..." : "Удалить секрет"}
+              </button>
+            )}
+
+            <div style={{ flex: 1 }} />
+
             <button type="button" className={styles.cancelButton} onClick={() => onClose?.("custom")} disabled={isPending}>
               Отменить
             </button>

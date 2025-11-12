@@ -41,6 +41,25 @@ export const organizationService = {
     return apiRequest(url, options);
   },
 
+  updateOrganization: async (orgId, organizationData) => {
+    const url = API_URLS.ORGANIZATION_BY_ID(orgId);
+    const options = {
+      method: "PATCH",
+      body: JSON.stringify(organizationData),
+    };
+
+    return apiRequest(url, options);
+  },
+
+  deleteOrganization: async (orgId) => {
+    const url = API_URLS.ORGANIZATION_BY_ID(orgId);
+    const options = {
+      method: "DELETE",
+    };
+
+    return apiRequest(url, options);
+  },
+
   /**
    * Add secrets to an organization
    * @param {number} orgId - Organization ID

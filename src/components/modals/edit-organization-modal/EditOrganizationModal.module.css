@@ -20,15 +20,10 @@
   font-weight: 600;
 }
 
-.column {
-  display: flex;
-  flex-direction: column;
-}
-
 .formRow {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 @media (max-width: 880px) {
@@ -39,7 +34,7 @@
 
 .input {
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 0px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #ffffff;
   font-size: 14px;
@@ -54,6 +49,11 @@
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.06);
 }
 
+input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .inputError {
   border-color: rgba(239, 68, 68, 0.85) !important;
   box-shadow: 0 6px 18px rgba(239, 68, 68, 0.06) !important;
@@ -65,9 +65,31 @@
   margin-top: 2px;
 }
 
-.formHelp {
+.readOnlyInfo {
+  background: rgba(15, 23, 42, 0.02);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.infoLabel {
   font-size: 13px;
-  color: rgba(15, 23, 42, 0.5);
+  color: #64748b;
+  font-weight: 600;
+}
+
+.infoValue {
+  font-size: 13px;
+  color: #0f172a;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
 }
 
 .serverError {
@@ -157,29 +179,4 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-}
-
-.submitButton {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.meta {
-  font-size: 12px;
-  color: rgba(15, 23, 42, 0.5);
-  margin-top: 6px;
-}
-
-.panel {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 10px;
-  padding: 12px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  border: 1px solid rgba(15, 23, 42, 0.04);
 }

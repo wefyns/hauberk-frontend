@@ -28,5 +28,24 @@ export const secretService = {
     };
 
     return apiRequest(url, options);
+  },
+
+  updateSecret: async (orgId, secretId, secretData) => {
+    const url = API_URLS.ORGANIZATION_SECRET(orgId, secretId);
+    const options = {
+      method: "PATCH",
+      body: JSON.stringify(secretData),
+    };
+
+    return apiRequest(url, options);
+  },
+
+  deleteSecret: async (orgId, secretId) => {
+    const url = API_URLS.ORGANIZATION_SECRET(orgId, secretId);
+    const options = {
+      method: "DELETE",
+    };
+
+    return apiRequest(url, options);
   }
 };

@@ -1,12 +1,15 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOrganization } from "../../contexts/useOrganization";
+import EditOrganizationModal from "../../components/modals/edit-organization-modal/EditOrganizationModal";
 import styles from "./OrganizationsPage.module.css";
 
 function OrganizationsPage() {
   const navigate = useNavigate();
-  const { organizations, error } = useOrganization();
+  const { organizations, error, fetchOrganizations } = useOrganization();
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingOrganization, setEditingOrganization] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   const filteredOrganizations = useMemo(() => {
     if (!searchTerm) return organizations;
@@ -23,6 +26,11 @@ function OrganizationsPage() {
 
   const handleCreateOrganization = () => {
     navigate(`/home/create-organization`);
+  };
+
+  const handleEditOrganization = (org) => {
+    setEditingOrganization(org);
+    setEditModalOpen(true);
   };
 
   if (error) {
@@ -80,7 +88,9 @@ function OrganizationsPage() {
               <div
                 key={org.id}
                 className={styles.orgCard}
-                // onClick={() => handleSelectOrganization(org.id)}
+                onClick={() => handleEditOrganization(org)}
+                role="button"
+                tabIndex={0}
               >
                 <div className={styles.orgInfo}>
                   <div className={styles.orgHeader}>
@@ -129,6 +139,22 @@ function OrganizationsPage() {
           </div>
         )}
       </div>
+
+      {editingOrganization && (
+        <EditOrganizationModal
+          visible={editModalOpen}
+          onClose={() => {
+            setEditModalOpen(false);
+            setEditingOrganization(null);
+          }}
+          organization={editingOrganization}
+          onSuccess={() => {
+            fetchOrganizations();
+            setEditModalOpen(false);
+            setEditingOrganization(null);
+          }}
+        />
+      )}
     </div>
   );
 }

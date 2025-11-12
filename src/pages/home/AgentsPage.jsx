@@ -24,7 +24,6 @@ function AgentsPage() {
   const [deploymentModalOpen, setDeploymentModalOpen] = useState(false);
 
   const [addAgentModalOpen, setAddAgentModalOpen] = useState(false);
-  
   const { data: organizationsData } = useQuery({
     queryKey: ['organizations'],
     queryFn: () => organizationService.getOrganizations(),
@@ -71,6 +70,25 @@ function AgentsPage() {
   const handleAddClick = () => {
     setEditingAgent(null);
     setAddAgentModalOpen(true);
+  };
+
+  const handleAgentAction = (agent) => {
+    if (agent.status === 'not_discoverable') {
+      setDeploymentAgent(agent);
+      setDeploymentModalOpen(true);
+    } else if (agent.status === 'discoverable') {
+      setNetworkAgent(agent);
+      setNetworkModalOpen(true);
+    }
+  };
+
+  const getActionButtonText = (agent) => {
+    if (agent.status === 'not_discoverable') {
+      return 'Развертывание';
+    } else if (agent.status === 'discoverable') {
+      return 'Сеть';
+    }
+    return 'Настроить';
   };
 
   const noDataOrFound = (agentsData?.length || 0) === 0;
@@ -150,6 +168,12 @@ function AgentsPage() {
                         <div className={styles.reduction}>Protocol:</div>
                         <div className={styles.value}>{agent.protocol}</div>
                         <div style={{ width: 24 }} />
+                        <div className={styles.reduction}>Статус:</div>
+                        <div className={styles.value} style={{ 
+                          color: agent.status === 'discoverable' ? '#10b981' : '#ef4444' 
+                        }}>
+                          {agent.status === 'discoverable' ? 'Доступен' : 'Недоступен'}
+                        </div>
                       </div>
                     </div>
                   </div>

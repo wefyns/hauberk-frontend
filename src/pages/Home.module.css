@@ -586,12 +586,12 @@ button[data-component='disabled'] {
 
 .button {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   height: 40px;
   padding: 8px 12px;
   text-transform: none;
   white-space: nowrap;
-  background: #2d2eb7;
+  background: #2563eb;
   color: #fff;
   border: none;
   border-radius: 0px;
@@ -769,6 +769,14 @@ button[data-component='disabled'] {
   font-size: 13px;
   color: #111827;
   font-weight: 500;
+}
+
+.statusReason {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(239, 68, 68, 0.06);
+  border-left: 3px solid #ef4444;
+  border-radius: 4px;
 }
 
 .status {

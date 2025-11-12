@@ -179,6 +179,25 @@ export const agentService = {
     return apiRequest(url, options);
   },
 
+  updateAgent: async (orgId, agentId, agentData) => {
+    const url = API_URLS.ORGANIZATION_AGENT(orgId, agentId);
+    const options = {
+      method: "PATCH",
+      body: JSON.stringify(agentData),
+    };
+
+    return apiRequest(url, options);
+  },
+
+  deleteAgent: async (orgId, agentId) => {
+    const url = API_URLS.ORGANIZATION_AGENT(orgId, agentId);
+    const options = {
+      method: "DELETE",
+    };
+
+    return apiRequest(url, options);
+  },
+
   /**
    * Enroll a CA for an organization's agent
    * @param {number} orgId - Organization ID
