@@ -133,9 +133,8 @@ export const Wizard = ({
     }
   };
 
-  const handleRetry = () => {
-    setError(null);
-    setIsSubmitting(false);
+  const handleRetry = async () => {
+    await wizardNext();
   };
 
   const handleGoHome = () => {

@@ -1,10 +1,11 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { agentService } from "../../../services";
 import { useTaskWebSocket } from "../../../hooks/useTaskWebSocket";
 import styles from "./Steps.module.css";
 
 export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
+  const submitWrapperRef = useRef(null);
   const [error, setError] = useState(null);
   const [networkConnected, setNetworkConnected] = useState(false);
   const [taskId, setTaskId] = useState(null);
@@ -83,10 +84,15 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
   }, [networkConnected, connectionStatus]);
 
   useEffect(() => {
+    submitWrapperRef.current = handleWizardSubmit;
+  }, [handleWizardSubmit]);
+
+  useEffect(() => {
     if (orgId && agentId) {
-      registerSubmit(handleWizardSubmit);
+      registerSubmit(() => submitWrapperRef.current());
     }
-  }, [handleWizardSubmit, orgId, agentId, registerSubmit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId, agentId]);
 
   useEffect(() => {
     if (wsEvents.length > 0) {

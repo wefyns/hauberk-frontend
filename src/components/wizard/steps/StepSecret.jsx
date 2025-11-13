@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 
@@ -10,6 +10,7 @@ import styles from "./Steps.module.css";
 export function StepSecret({ registerSubmit, isSubmitting, orgId }) {
   const [error, setError] = useState(null);
   const [secretCreated, setSecretCreated] = useState(false);
+  const submitWrapperRef = useRef(null);
 
   const {
     register,
@@ -84,10 +85,15 @@ export function StepSecret({ registerSubmit, isSubmitting, orgId }) {
   }, [handleSubmit, onSubmit, secretCreated]);
 
   useEffect(() => {
+    submitWrapperRef.current = submitWrapper;
+  }, [submitWrapper]);
+
+  useEffect(() => {
     if (orgId) {
-      registerSubmit(submitWrapper);
+      registerSubmit(() => submitWrapperRef.current());
     }
-  }, [submitWrapper, orgId, registerSubmit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId]);
 
   if (!orgId) {
     return (

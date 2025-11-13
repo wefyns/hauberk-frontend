@@ -5,6 +5,7 @@ import styles from "./Steps.module.css";
 
 export function StepDeploy({ registerSubmit, isSubmitting, orgId, agentId }) {
   const mountedRef = useRef(true);
+  const submitWrapperRef = useRef(null);
   const [error, setError] = useState(null);
 
   const [deploymentStatus, setDeploymentStatus] = useState({
@@ -104,18 +105,19 @@ export function StepDeploy({ registerSubmit, isSubmitting, orgId, agentId }) {
       return { success: true, meta: { deploymentCompleted: true } };
     }
     
-    if (!deploymentStatus.started) {
-      return await performDeployment();
-    }
-    
-    return { success: false, error: "Развертывание еще не завершено" };
+    return await performDeployment();
   }, [deploymentStatus, performDeployment]);
 
   useEffect(() => {
+    submitWrapperRef.current = handleWizardSubmit;
+  }, [handleWizardSubmit]);
+
+  useEffect(() => {
     if (orgId && agentId) {
-      registerSubmit(handleWizardSubmit);
+      registerSubmit(() => submitWrapperRef.current());
     }
-  }, [handleWizardSubmit, orgId, agentId, registerSubmit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId, agentId]);
 
   useEffect(() => {
     mountedRef.current = true;
