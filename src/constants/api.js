@@ -1,3 +1,7 @@
+import { getEnvConfig } from "../config/envConfig";
+
+const config = getEnvConfig();
+
 /**
  * API endpoints
  */
@@ -18,9 +22,11 @@ export const API_ENDPOINTS = {
   // Organization endpoints
   ORGANIZATIONS: "/api/v1/organizations",
   ORGANIZATION_SECRETS: (orgId) => `/api/v1/organizations/${orgId}/secrets`,
-  ORGANIZATION_SECRET: (orgId, secretId) => `/api/v1/organizations/${orgId}/secrets/${secretId}`,
+  ORGANIZATION_SECRET: (orgId, secretId) =>
+    `/api/v1/organizations/${orgId}/secrets/${secretId}`,
   ORGANIZATION_AGENTS: (orgId) => `/api/v1/organizations/${orgId}/agents`,
-  ORGANIZATION_AGENT: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}`,
+  ORGANIZATION_AGENT: (orgId, agentId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}`,
   ORGANIZATION_BY_ID: (orgId) => `/api/v1/organizations/${orgId}`,
 
   // List By Current User
@@ -59,21 +65,32 @@ export const API_ENDPOINTS = {
     `/api/v1/organizations/${orgId}/agents/${agentId}/journal/${journalId}`,
 
   // Peers
-  AGENT_PEERS: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer`,
-  AGENT_PEER: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}`,
-  AGENT_PEER_STOP: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/stop`,
-  AGENT_PEER_RESTART: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/restart`,
-  AGENT_PEER_DROP: (orgId, agentId, peerId) => `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/drop`,
-  
+  AGENT_PEERS: (orgId, agentId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/peer`,
+  AGENT_PEER: (orgId, agentId, peerId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}`,
+  AGENT_PEER_STOP: (orgId, agentId, peerId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/stop`,
+  AGENT_PEER_RESTART: (orgId, agentId, peerId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/restart`,
+  AGENT_PEER_DROP: (orgId, agentId, peerId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/peer/${peerId}/drop`,
+
   // Fabric CA
-  FABRIC_CA: (orgId, agentId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca`,
-  FABRIC_CA_WITH_ID: (orgId, agentId, caId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}`,
-  FABRIC_CA_WITH_ID_STOP: (orgId, agentId, caId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/stop`,
-  FABRIC_CA_WITH_ID_RESTART: (orgId, agentId, caId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/restart`,
-  FABRIC_CA_WITH_ID_DROP: (orgId, agentId, caId) => `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/drop`,
-  
+  FABRIC_CA: (orgId, agentId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/ca`,
+  FABRIC_CA_WITH_ID: (orgId, agentId, caId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}`,
+  FABRIC_CA_WITH_ID_STOP: (orgId, agentId, caId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/stop`,
+  FABRIC_CA_WITH_ID_RESTART: (orgId, agentId, caId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/restart`,
+  FABRIC_CA_WITH_ID_DROP: (orgId, agentId, caId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/ca/${caId}/drop`,
+
   // Orderer
-  AGENT_ORDERER_DROP: (orgId, agentId, ordererId) => `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}/drop`,
+  AGENT_ORDERER_DROP: (orgId, agentId, ordererId) =>
+    `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}/drop`,
 
   // DB INFO
   DB_INFO: "/api/v1/db-info",
@@ -83,9 +100,7 @@ export const API_ENDPOINTS = {
  * Base API URL
  * Uses environment variables or defaults to localhost:8080
  */
-const PROTOCOL = import.meta.env.VITE_API_PROTOCOL || "https";
-const HOST = import.meta.env.VITE_API_HOST || "localhost";
-export const API_BASE_URL = `${PROTOCOL}://${HOST}:8080`;
+export const API_BASE_URL = config.api_url || "localhost";
 
 /**
  * Full API URLs
@@ -128,21 +143,41 @@ export const API_URLS = {
   AGENT_CA_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_CA_ENROLL(orgId, agentId)}`,
   AGENT_CA_ENROLL_WITH_ID: (orgId, agentId, caId) =>
-    `${API_BASE_URL}${API_ENDPOINTS.AGENT_CA_ENROLL_WITH_ID(orgId, agentId, caId)}`,
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_CA_ENROLL_WITH_ID(
+      orgId,
+      agentId,
+      caId
+    )}`,
   AGENT_ORDERER: (orgId, agentId, ordererId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER(orgId, agentId, ordererId)}`,
   AGENT_ORDERER_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL(orgId, agentId)}`,
   AGENT_ORDERER_ENROLL_WITH_ID: (orgId, agentId, ordererId) =>
-    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID(orgId, agentId, ordererId)}`,
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID(
+      orgId,
+      agentId,
+      ordererId
+    )}`,
   AGENT_ORDERER_ENROLL_WITH_ID_STOP: (orgId, agentId, ordererId) =>
-    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID_STOP(orgId, agentId, ordererId)}`,
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID_STOP(
+      orgId,
+      agentId,
+      ordererId
+    )}`,
   AGENT_ORDERER_ENROLL_WITH_ID_RESTART: (orgId, agentId, ordererId) =>
-    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID_RESTART(orgId, agentId, ordererId)}`,
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_ENROLL_WITH_ID_RESTART(
+      orgId,
+      agentId,
+      ordererId
+    )}`,
   AGENT_PEER_ENROLL: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_ENROLL(orgId, agentId)}`,
   AGENT_PEER_ENROLL_WITH_ID: (orgId, agentId, peerId) =>
-    `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_ENROLL_WITH_ID(orgId, agentId, peerId)}`,
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_ENROLL_WITH_ID(
+      orgId,
+      agentId,
+      peerId
+    )}`,
   AGENT_CREATE_CONNECTION_DOC: (orgId, agentId) =>
     `${API_BASE_URL}${API_ENDPOINTS.AGENT_CREATE_CONNECTION_DOC(
       orgId,
@@ -157,21 +192,52 @@ export const API_URLS = {
     `${API_BASE_URL}${API_ENDPOINTS.JOURNAL(orgId, agentId, journalId)}`,
 
   // Peers
-  AGENT_PEERS: (orgId, agentId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEERS(orgId, agentId)}`,
-  AGENT_PEER: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER(orgId, agentId, peerId)}`,
-  AGENT_PEER_STOP: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_STOP(orgId, agentId, peerId)}`,
-  AGENT_PEER_RESTART: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_RESTART(orgId, agentId, peerId)}`,
-  AGENT_PEER_DROP: (orgId, agentId, peerId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_DROP(orgId, agentId, peerId)}`,
+  AGENT_PEERS: (orgId, agentId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEERS(orgId, agentId)}`,
+  AGENT_PEER: (orgId, agentId, peerId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER(orgId, agentId, peerId)}`,
+  AGENT_PEER_STOP: (orgId, agentId, peerId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_STOP(orgId, agentId, peerId)}`,
+  AGENT_PEER_RESTART: (orgId, agentId, peerId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_RESTART(
+      orgId,
+      agentId,
+      peerId
+    )}`,
+  AGENT_PEER_DROP: (orgId, agentId, peerId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_PEER_DROP(orgId, agentId, peerId)}`,
 
   // Fabric CA
-  FABRIC_CA: (orgId, agentId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA(orgId, agentId)}`,
-  FABRIC_CA_WITH_ID: (orgId, agentId, caId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID(orgId, agentId, caId)}`,
-  FABRIC_CA_WITH_ID_STOP: (orgId, agentId, caId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID_STOP(orgId, agentId, caId)}`,
-  FABRIC_CA_WITH_ID_RESTART: (orgId, agentId, caId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID_RESTART(orgId, agentId, caId)}`,
-  FABRIC_CA_WITH_ID_DROP: (orgId, agentId, caId) => `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID_DROP(orgId, agentId, caId)}`,
-  
+  FABRIC_CA: (orgId, agentId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA(orgId, agentId)}`,
+  FABRIC_CA_WITH_ID: (orgId, agentId, caId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID(orgId, agentId, caId)}`,
+  FABRIC_CA_WITH_ID_STOP: (orgId, agentId, caId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID_STOP(
+      orgId,
+      agentId,
+      caId
+    )}`,
+  FABRIC_CA_WITH_ID_RESTART: (orgId, agentId, caId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID_RESTART(
+      orgId,
+      agentId,
+      caId
+    )}`,
+  FABRIC_CA_WITH_ID_DROP: (orgId, agentId, caId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.FABRIC_CA_WITH_ID_DROP(
+      orgId,
+      agentId,
+      caId
+    )}`,
+
   // Orderer
-  AGENT_ORDERER_DROP: (orgId, agentId, ordererId) => `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_DROP(orgId, agentId, ordererId)}`,
+  AGENT_ORDERER_DROP: (orgId, agentId, ordererId) =>
+    `${API_BASE_URL}${API_ENDPOINTS.AGENT_ORDERER_DROP(
+      orgId,
+      agentId,
+      ordererId
+    )}`,
 
   // DB INFO
   DB_INFO: `${API_BASE_URL}${API_ENDPOINTS.DB_INFO}`,

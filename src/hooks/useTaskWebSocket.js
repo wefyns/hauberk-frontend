@@ -1,6 +1,9 @@
 /* eslint-disable no-empty */
 import { useEffect, useRef, useState, useCallback } from "react";
 import { authService } from "../services";
+import { getEnvConfig } from "../config/envConfig";
+
+const config = getEnvConfig();
 
 export function useTaskWebSocket(taskId) {
   const wsRef = useRef(null);
@@ -20,7 +23,10 @@ export function useTaskWebSocket(taskId) {
       }
       if (wsRef.current) {
         try {
-          wsRef.current.close(1000, intentional ? "client-closed" : "client-request");
+          wsRef.current.close(
+            1000,
+            intentional ? "client-closed" : "client-request"
+          );
         } catch {}
       }
     } catch {}
@@ -38,21 +44,22 @@ export function useTaskWebSocket(taskId) {
     if (!accessToken) {
       setEvents((prev) => [
         ...prev,
-        { type: "error", message: "No access token available for WebSocket connection" },
+        {
+          type: "error",
+          message: "No access token available for WebSocket connection",
+        },
       ]);
       setStatus("error");
       return;
     }
 
-    const protocol = import.meta.env.VITE_API_PROTOCOL || "https";
-    const host = import.meta.env.VITE_API_HOST || "localhost";
-    const scheme = protocol === "https" ? "wss" : "ws";
+    const host = config.api_url || "localhost";
     const hostPart = `${host}:8080`;
 
     const safeTaskId = encodeURIComponent(taskId);
     const safeToken = encodeURIComponent(accessToken);
 
-    const wsUrl = `${scheme}://${hostPart}/ws/subscribe?task_id=${safeTaskId}&access_token=${safeToken}`;
+    const wsUrl = `wss://${hostPart}/ws/subscribe?task_id=${safeTaskId}&access_token=${safeToken}`;
 
     if (wsRef.current) {
       try {
@@ -70,7 +77,10 @@ export function useTaskWebSocket(taskId) {
         ws = new WebSocket(wsUrl);
         wsRef.current = ws;
       } catch (err) {
-        setEvents((prev) => [...prev, { type: "error", message: "WebSocket constructor error", err }]);
+        setEvents((prev) => [
+          ...prev,
+          { type: "error", message: "WebSocket constructor error", err },
+        ]);
         setStatus("error");
         scheduleReconnect();
         return;
@@ -79,7 +89,10 @@ export function useTaskWebSocket(taskId) {
       ws.onopen = () => {
         retryCountRef.current = 0;
         setStatus("open");
-        setEvents((prev) => [...prev, { type: "info", message: "WebSocket opened" }]);
+        setEvents((prev) => [
+          ...prev,
+          { type: "info", message: "WebSocket opened" },
+        ]);
       };
 
       ws.onmessage = (event) => {
@@ -88,14 +101,20 @@ export function useTaskWebSocket(taskId) {
           setEvents((prev) => [...prev, data]);
         } catch (e) {
           console.error("Ошибка разбора события WebSocket:", e, event.data);
-          setEvents((prev) => [...prev, { type: "error", message: "Ошибка разбора события WebSocket" }]);
+          setEvents((prev) => [
+            ...prev,
+            { type: "error", message: "Ошибка разбора события WebSocket" },
+          ]);
         }
       };
 
       ws.onerror = (err) => {
         console.error("WebSocket error:", err);
         setStatus("error");
-        setEvents((prev) => [...prev, { type: "error", message: "WebSocket error", err }]);
+        setEvents((prev) => [
+          ...prev,
+          { type: "error", message: "WebSocket error", err },
+        ]);
       };
 
       ws.onclose = (ev) => {
@@ -103,7 +122,10 @@ export function useTaskWebSocket(taskId) {
         const { code, reason, wasClean } = ev;
         setEvents((prev) => [
           ...prev,
-          { type: "info", message: `WebSocket closed (code=${code}, reason=${reason}, clean=${wasClean})` },
+          {
+            type: "info",
+            message: `WebSocket closed (code=${code}, reason=${reason}, clean=${wasClean})`,
+          },
         ]);
 
         if (manuallyClosed || code === 1000) {
@@ -118,12 +140,21 @@ export function useTaskWebSocket(taskId) {
     const scheduleReconnect = () => {
       retryCountRef.current = (retryCountRef.current || 0) + 1;
       if (retryCountRef.current > MAX_RETRIES) {
-        setEvents((prev) => [...prev, { type: "error", message: "Max WS reconnect attempts reached" }]);
+        setEvents((prev) => [
+          ...prev,
+          { type: "error", message: "Max WS reconnect attempts reached" },
+        ]);
         setStatus("closed");
         return;
       }
       const delay = Math.min(30000, 1000 * 2 ** (retryCountRef.current - 1));
-      setEvents((prev) => [...prev, { type: "info", message: `Reconnecting in ${delay}ms (attempt ${retryCountRef.current})` }]);
+      setEvents((prev) => [
+        ...prev,
+        {
+          type: "info",
+          message: `Reconnecting in ${delay}ms (attempt ${retryCountRef.current})`,
+        },
+      ]);
       retryTimerRef.current = setTimeout(() => {
         connect();
       }, delay);
