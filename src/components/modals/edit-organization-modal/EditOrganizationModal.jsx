@@ -76,20 +76,6 @@ export default function EditOrganizationModal({ visible, onClose, organization, 
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: ({ orgId }) => {
-      return organizationService.deleteOrganization(orgId);
-    },
-    onSuccess: () => {
-      onSuccess?.();
-      onClose?.("custom");
-      reset();
-    },
-    onError: (err) => {
-      console.error("delete organization failed:", err);
-    },
-  });
-
   const handleCountryChange = (item) => {
     if (!item) {
       setValue("country", "", { shouldDirty: true, shouldValidate: true });
@@ -119,12 +105,6 @@ export default function EditOrganizationModal({ visible, onClose, organization, 
     };
 
     updateMutation.mutate({ orgId: organization.id, payload });
-  };
-
-  const handleDelete = () => {
-    if (!organization?.id) return;
-
-    deleteMutation.mutate({ orgId: organization.id });
   };
 
   const title = `Редактировать организацию — ${organization?.name || organization?.id || ""}`;
@@ -259,22 +239,7 @@ export default function EditOrganizationModal({ visible, onClose, organization, 
             </div>
           )}
 
-          {deleteMutation.isError && (
-            <div className={styles.serverError}>
-              {deleteMutation.error?.message || "Ошибка сервера при удалении организации"}
-            </div>
-          )}
-
           <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.danger}
-              onClick={handleDelete}
-              disabled={updateMutation.isPending || deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? "Удаление..." : "Удалить организацию"}
-            </button>
-
             <div style={{ flex: 1 }} />
 
             <button
@@ -284,7 +249,7 @@ export default function EditOrganizationModal({ visible, onClose, organization, 
                 reset();
                 onClose?.("custom");
               }}
-              disabled={updateMutation.isPending || deleteMutation.isPending}
+              disabled={updateMutation.isPending}
             >
               Отменить
             </button>
@@ -292,7 +257,7 @@ export default function EditOrganizationModal({ visible, onClose, organization, 
             <button
               type="submit"
               className={styles.primary}
-              disabled={updateMutation.isPending || deleteMutation.isPending}
+              disabled={updateMutation.isPending}
             >
               {submitLabel}
             </button>

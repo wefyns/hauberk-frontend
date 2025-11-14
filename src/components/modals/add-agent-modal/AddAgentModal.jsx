@@ -88,27 +88,6 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: ({ orgId, agentId }) => {
-      return agentService.deleteAgent(orgId, agentId);
-    },
-    onSuccess: () => {
-      onSuccess?.();
-      onClose?.("custom");
-      reset({
-        organization_id: "",
-        uuid: "",
-        secret_id: "",
-        protocol: "https",
-        host: "",
-        port: 8081,
-      });
-    },
-    onError: (err) => {
-      console.error("delete agent failed:", err);
-    },
-  });
-
   const onSubmit = (data) => {
     const selectedOrgId = parseInt(data.organization_id);
     
@@ -125,13 +104,6 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
       agentId: editingAgent?.id || null,
       payload 
     });
-  };
-
-  const handleDelete = () => {
-    if (!editingAgent?.id) return;
-    
-    const orgId = parseInt(editingAgent.organization_id || selectedOrganization?.id);
-    deleteMutation.mutate({ orgId, agentId: editingAgent.id });
   };
 
   const title = editingAgent ? `Редактировать агента — ${editingAgent.uuid || editingAgent.id}` : "Добавить агента";
@@ -246,24 +218,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
             </div>
           )}
 
-          {deleteMutation.isError && (
-            <div className={styles.serverError}>
-              {deleteMutation.error?.message || "Ошибка сервера при удалении агента"}
-            </div>
-          )}
-
           <div className={styles.actions}>
-            {editingAgent && (
-              <button
-                type="button"
-                className={styles.danger}
-                onClick={handleDelete}
-                disabled={mutation.isLoading || deleteMutation.isLoading}
-              >
-                {deleteMutation.isLoading ? "Удаление..." : "Удалить агента"}
-              </button>
-            )}
-
             <div style={{ flex: 1 }} />
 
             <button
@@ -273,7 +228,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
                 reset();
                 onClose?.("custom");
               }}
-              disabled={mutation.isLoading || deleteMutation.isLoading}
+              disabled={mutation.isLoading}
             >
               Отменить
             </button>
@@ -281,7 +236,7 @@ export default function AddAgentModal({ visible, onClose, orgId, onSuccess, edit
             <button 
               type="submit" 
               className={styles.primary} 
-              disabled={mutation.isLoading || deleteMutation.isLoading}
+              disabled={mutation.isLoading}
             >
               {submitLabel}
             </button>

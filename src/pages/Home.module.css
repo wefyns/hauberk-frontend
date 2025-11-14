@@ -619,11 +619,11 @@ button[data-component='disabled'] {
   border-color: #9ca3af;
 }
 
-.wrapperCounterparty:hover .buttonOutlineBlue {
+/* .wrapperCounterparty:hover .buttonOutlineBlue {
   background: #2563eb;
   color: white;
   border-color: #2563eb;
-}
+} */
 
 .buttonOutlineGreen {
   padding: 8px 16px;
@@ -642,13 +642,64 @@ button[data-component='disabled'] {
   border-color: #9ca3af;
 }
 
-.wrapperCounterparty:hover .buttonOutlineGreen {
+.buttonOutlineDelete {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buttonOutlineDelete:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.buttonOutlineDelete img {
+  width: 16px;
+  height: 16px;
+}
+
+.buttonOutlineArrow,
+.buttonOutlineArrowExp {
+  padding: 8px 12px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buttonOutlineArrow:hover,
+.buttonOutlineArrowExp {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.buttonOutlineArrow img,
+.buttonOutlineArrowExp img {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
+.buttonOutlineArrowExp img {
+  transform: rotate(90deg);
+}
+
+.buttonOutlineGreen:hover {
   background: #2563eb;
   color: white;
   border-color: #2563eb;
 }
 
-/* Специальные стили для кнопок агентов */
 .buttonAgentNetwork {
   padding: 8px 16px;
   background: #fff;
@@ -1024,6 +1075,15 @@ button[data-component='disabled'] {
 .bottomBtn button {
   width: 100%;
 }
+
+.arrowIcon {
+  transition: transform 0.3s ease;
+}
+
+.arrowIcon.expanded {
+  transform: rotate(90deg);
+}
+
 
 @media (max-width: 880px) {
   .top {

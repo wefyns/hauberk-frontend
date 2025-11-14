@@ -95,9 +95,23 @@ export const apiRequest = async (url, options) => {
     }
   };
 
+  const attachAcceptLanguage = () => {
+    const browserLang = navigator.language || 'ru-RU';
+    let serverLang = 'ru-RU';
+    
+    if (browserLang.toLowerCase().startsWith('en')) {
+      serverLang = 'en-EN';
+    } else if (browserLang.toLowerCase().startsWith('ru')) {
+      serverLang = 'ru-RU';
+    }
+    
+    baseOptions.headers["Accept-Language"] = serverLang;
+  };
+
   const doFetch = async () => {
     attachAuth();
     attachContentTypeIfNeeded();
+    attachAcceptLanguage();
     return fetch(url, baseOptions);
   };
 

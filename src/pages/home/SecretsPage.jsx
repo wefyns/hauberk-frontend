@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 
 import { secretService } from "../../services/secretService";
 import { organizationService } from "../../services/organizationService";
 import { useOrganization } from "../../contexts/useOrganization";
 import AddSecretModal from "../../components/modals/add-secret-modal/AddSecretModal";
+
+import deleteIconUrl from '../../assets/images/delete-b.svg'
 
 import styles from "../Home.module.css";
 
@@ -55,9 +57,30 @@ function SecretsPage() {
     setAddSecretModalOpen(true);
   };
 
-  const handleCardClick = (secret) => {
-    setEditingSecret(secret);
-    setAddSecretModalOpen(true);
+  // const handleCardClick = (secret) => {
+  //   setEditingSecret(secret);
+  //   setAddSecretModalOpen(true);
+  // };
+
+  const deleteMutation = useMutation({
+    mutationFn: ({ orgId, secretId }) => {
+      return secretService.deleteSecret(orgId, secretId);
+    },
+    onSuccess: () => {
+      refetchSecrets();
+    },
+    onError: (err) => {
+      console.error("delete secret failed:", err);
+      alert("Ошибка при удалении секрета: " + (err.message || String(err)));
+    },
+  });
+
+  const handleDeleteSecret = (e, secret) => {
+    e.stopPropagation();
+    deleteMutation.mutate({ 
+      orgId: secret.organization_id || selectedOrganization?.id, 
+      secretId: secret.id 
+    });
   };
 
  return (
@@ -108,10 +131,10 @@ function SecretsPage() {
               <div
                 key={secret.id}
                 className={styles.wrapperCounterparty}
-                onClick={() => handleCardClick(secret)}
+                // onClick={() => handleCardClick(secret)}
                 role="button"
                 tabIndex={0}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }}
               >
                 <div className={styles.info}>
                   <div className={styles.wrapperTop}>
@@ -147,6 +170,14 @@ function SecretsPage() {
                     }}
                   >
                     Редактировать
+                  </button>
+
+                  <button
+                    onClick={(e) => handleDeleteSecret(e, secret)}
+                    className={`${styles.button} ${styles.buttonOutlineDelete}`}
+                    title="Удалить секрет"
+                  >
+                     <img src={deleteIconUrl} alt="delete icon" />
                   </button>
                 </div>
               </div>

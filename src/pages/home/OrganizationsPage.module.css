@@ -180,7 +180,7 @@
   border-color: #9ca3af;
 }
 
-.orgCard:hover .selectButton {
+.selectButton:hover {
   background: #2563eb;
   color: white;
   border-color: #2563eb;
@@ -267,6 +267,52 @@
   color: #6b7280;
   margin: 0;
 }
+
+.button {
+  font-size: 14px;
+  font-weight: 600;
+  height: 40px;
+  padding: 8px 12px;
+  text-transform: none;
+  white-space: nowrap;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 0px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  width: fit-content !important;
+}
+
+.buttonOutlineDelete {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buttonOutlineDelete:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.buttonOutlineDelete img {
+  width: 16px;
+  height: 16px;
+}
+
+.orgActions {
+  display: flex;
+  gap: 8px;
+}
+
 
 @media (max-width: 768px) {
   .container {

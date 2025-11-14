@@ -1,7 +1,12 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { useOrganization } from "../../contexts/useOrganization";
+import { organizationService } from "../../services/organizationService";
 import EditOrganizationModal from "../../components/modals/edit-organization-modal/EditOrganizationModal";
+
+import deleteIconUrl from '../../assets/images/delete-b.svg'
+
 import styles from "./OrganizationsPage.module.css";
 
 function OrganizationsPage() {
@@ -31,6 +36,24 @@ function OrganizationsPage() {
   const handleEditOrganization = (org) => {
     setEditingOrganization(org);
     setEditModalOpen(true);
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: (orgId) => {
+      return organizationService.deleteOrganization(orgId);
+    },
+    onSuccess: () => {
+      fetchOrganizations();
+    },
+    onError: (err) => {
+      console.error("delete organization failed:", err);
+      alert("Ошибка при удалении организации: " + (err.message || String(err)));
+    },
+  });
+
+  const handleDeleteOrganization = (e, org) => {
+    e.stopPropagation();
+    deleteMutation.mutate(org.id);
   };
 
   if (error) {
@@ -91,6 +114,7 @@ function OrganizationsPage() {
                 onClick={() => handleEditOrganization(org)}
                 role="button"
                 tabIndex={0}
+                style={{ position: "relative" }}
               >
                 <div className={styles.orgInfo}>
                   <div className={styles.orgHeader}>
@@ -123,17 +147,25 @@ function OrganizationsPage() {
                   </div>
                 </div>
               
-                {/* <div className={styles.orgActions}>
+                <div className={styles.orgActions}>
                   <button 
                     className={styles.selectButton}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleSelectOrganization(org.id);
+                      handleEditOrganization(org)
                     }}
                   >
-                    Выбрать
+                    Редактировать
                   </button>
-                </div> */}
+
+                  <button
+                    onClick={(e) => handleDeleteOrganization(e, org)}
+                    className={`${styles.button} ${styles.buttonOutlineDelete}`}
+                    title="Удалить организацию"
+                  >
+                     <img src={deleteIconUrl} alt="delete icon" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

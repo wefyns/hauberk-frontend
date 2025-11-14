@@ -58,20 +58,6 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: ({ orgId, secretId }) => {
-      return secretService.deleteSecret(orgId, secretId);
-    },
-    onSuccess: () => {
-      reset();
-      onSuccess?.();
-      onClose?.("custom");
-    },
-    onError: (err) => {
-      console.error("deleteSecret error:", err);
-    },
-  });
-
   const onSubmit = async (data) => {
     const selectedOrgId = parseInt(data.organization_id);
     
@@ -94,15 +80,6 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
       return { error: err.message || "Failed to add/update secret" };
     }
   };
-
-  const handleDelete = () => {
-    if (!editingSecret?.id) return;
-
-    const orgId = parseInt(editingSecret.organization_id || selectedOrganization?.id);
-    deleteMutation.mutate({ orgId, secretId: editingSecret.id });
-  };
-
-  const isPending = createMutation.isPending || deleteMutation.isPending;
 
   return (
     <Dialog
@@ -181,31 +158,14 @@ export default function AddSecretModal({ visible, onClose, orgId, editingSecret,
             </div>
           )}
 
-          {deleteMutation.isError && (
-            <div className={styles.serverError}>
-              {deleteMutation.error?.message || "Ошибка сервера при удалении секрета"}
-            </div>
-          )}
-
           <div className={styles.actions}>
-            {editingSecret && (
-              <button 
-                type="button" 
-                className={styles.dangerButton} 
-                onClick={handleDelete} 
-                disabled={isPending}
-              >
-                {deleteMutation.isPending ? "Удаление..." : "Удалить секрет"}
-              </button>
-            )}
-
             <div style={{ flex: 1 }} />
 
-            <button type="button" className={styles.cancelButton} onClick={() => onClose?.("custom")} disabled={isPending}>
+            <button type="button" className={styles.cancelButton} onClick={() => onClose?.("custom")} disabled={createMutation.isPending}>
               Отменить
             </button>
-            <button type="submit" className={styles.submitButton} disabled={isSubmitting || isPending}>
-              {isPending ? (editingSecret ? "Сохранение..." : "Добавление...") : (editingSecret ? "Сохранить" : "Добавить секрет")}
+            <button type="submit" className={styles.submitButton} disabled={isSubmitting || createMutation.isPending}>
+              {createMutation.isPending ? (editingSecret ? "Сохранение..." : "Добавление...") : (editingSecret ? "Сохранить" : "Добавить секрет")}
             </button>
           </div>
         </form>

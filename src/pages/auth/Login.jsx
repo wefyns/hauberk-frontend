@@ -37,10 +37,18 @@ function Login() {
     onSuccess: (response) => {
       loginToApp(response);
       setFormError("");
-      setSuccessMessage("Login successful!");
+      setSuccessMessage("Вход в систему прошел успешно!");
     },
     onError: (error) => {
-      setFormError(error.message || "Login failed. Please try again.");
+      let errorMessage = error.message || "Не удалось войти. Попробуйте еще раз.";
+      
+      if (typeof error === 'string' && error.toLowerCase().includes('failed to fetch')) {
+        errorMessage = "Ошибка подключения к серверу. Проверьте интернет-соединение и попробуйте снова.";
+      } else if (error.message && error.message.toLowerCase().includes('failed to fetch')) {
+        errorMessage = "Ошибка подключения к серверу. Проверьте интернет-соединение и попробуйте снова.";
+      }
+      
+      setFormError(errorMessage);
     },
   });
 
@@ -146,7 +154,7 @@ function Login() {
 
                 <div className={styles.footerLinks}>
                   <Link to={Pages.ResetPassword} className={styles.link}>
-                    Забыли Пароль?
+                    Забыли пароль?
                   </Link>
                 </div>
               </div>

@@ -9,12 +9,13 @@ const STATUS_MAP = {
   degraded: "yellow",
   warn: "yellow",
   warning: "yellow",
+  deployed: "yellow",
   stopped: "red",
   error: "red",
   failed: "red",
   unknown: "gray",
   unavailable: "gray",
-  deployed: "gray",
+  not_deployed: "gray",
   "": "gray",
 };
 
