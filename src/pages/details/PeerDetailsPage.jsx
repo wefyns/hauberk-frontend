@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Switch } from "../../components/switch/Switch";
+import { ConfirmDialog } from "../../components/confirm-dialog/ConfirmDialog";
 
 import { agentService, organizationService } from "../../services";
 import { useOrganization } from "../../contexts/useOrganization";
@@ -19,7 +20,14 @@ export function PeerDetailsPage() {
 
   const [enabled, setEnabled] = useState(false);
   const [error, setError] = useState(null);
-  const [action, setAction] = useState(null); 
+  const [action, setAction] = useState(null);
+  
+  const [confirmDialog, setConfirmDialog] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  }); 
 
   const { 
     data: peerData, 
@@ -135,9 +143,16 @@ export function PeerDetailsPage() {
   }, [enabled, mutationRestart, mutationStop])
 
   const handleDrop = useCallback(async () => {
-    setAction("drop");
-    await mutationDrop.mutateAsync(undefined);
-  }, [mutationDrop])
+    setConfirmDialog({
+      visible: true,
+      title: "Drop Peer?",
+      message: `Вы уверены, что хотите удалить peer "${peerData?.peer || peerId}"?`,
+      onConfirm: async () => {
+        setAction("drop");
+        await mutationDrop.mutateAsync(undefined);
+      },
+    });
+  }, [mutationDrop, peerData, peerId])
 
   const isMutating = mutationStop.isPending || mutationRestart.isPending || mutationDrop.isPending;
 
@@ -218,6 +233,17 @@ export function PeerDetailsPage() {
           <img src={deleteIconUrl} alt="delete icon" />
         </button>
       </div>
+
+      <ConfirmDialog
+        visible={confirmDialog.visible}
+        onClose={() => setConfirmDialog({ ...confirmDialog, visible: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="Drop"
+        cancelText="Отмена"
+        variant="danger"
+      />
     </div>
   );
 }

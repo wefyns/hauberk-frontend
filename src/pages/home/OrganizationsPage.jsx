@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useOrganization } from "../../contexts/useOrganization";
 import { organizationService } from "../../services/organizationService";
 import EditOrganizationModal from "../../components/modals/edit-organization-modal/EditOrganizationModal";
+import { ConfirmDialog } from "../../components/confirm-dialog/ConfirmDialog";
 
 import deleteIconUrl from '../../assets/images/delete-b.svg'
 
@@ -15,6 +16,13 @@ function OrganizationsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingOrganization, setEditingOrganization] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  
+  const [confirmDialog, setConfirmDialog] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
 
   const filteredOrganizations = useMemo(() => {
     if (!searchTerm) return organizations;
@@ -53,7 +61,14 @@ function OrganizationsPage() {
 
   const handleDeleteOrganization = (e, org) => {
     e.stopPropagation();
-    deleteMutation.mutate(org.id);
+    setConfirmDialog({
+      visible: true,
+      title: "Удалить организацию?",
+      message: `Вы уверены, что хотите удалить организацию "${org.name}"?`,
+      onConfirm: () => {
+        deleteMutation.mutate(org.id);
+      },
+    });
   };
 
   if (error) {
@@ -187,6 +202,17 @@ function OrganizationsPage() {
           }}
         />
       )}
+
+      <ConfirmDialog
+        visible={confirmDialog.visible}
+        onClose={() => setConfirmDialog({ ...confirmDialog, visible: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="Удалить"
+        cancelText="Отмена"
+        variant="danger"
+      />
     </div>
   );
 }

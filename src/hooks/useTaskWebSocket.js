@@ -54,7 +54,9 @@ export function useTaskWebSocket(taskId) {
     }
 
     const host = config.api_url || "localhost";
-    const hostPart = `${host}:8080`;
+    
+    const cleanHost = host.replace(/^https?:\/\//, '').replace(/:\d+$/, '');
+    const hostPart = `${cleanHost}:8080`;
 
     const safeTaskId = encodeURIComponent(taskId);
     const safeToken = encodeURIComponent(accessToken);

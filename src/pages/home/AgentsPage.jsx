@@ -6,6 +6,7 @@ import NetworkModal from "../../components/modals/network-modal/NetworkModal";
 import DeploymentModal from "../../components/modals/deployment-modal/DeploymentModal";
 import AddAgentModal from "../../components/modals/add-agent-modal/AddAgentModal";
 import { PeerTile } from "../../components/peer-tile/PeerTile";
+import { ConfirmDialog } from "../../components/confirm-dialog/ConfirmDialog";
 
 import { agentService } from "../../services/agentService";
 import { organizationService } from "../../services/organizationService";
@@ -33,6 +34,13 @@ function AgentsPage() {
   const [deploymentModalOpen, setDeploymentModalOpen] = useState(false);
 
   const [addAgentModalOpen, setAddAgentModalOpen] = useState(false);
+  
+  const [confirmDialog, setConfirmDialog] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
   const { data: organizationsData } = useQuery({
     queryKey: ['organizations'],
     queryFn: () => organizationService.getOrganizations(),
@@ -114,9 +122,16 @@ function AgentsPage() {
 
   const handleDeleteAgent = (e, agent) => {
     e.stopPropagation();
-    deleteMutation.mutate({ 
-      orgId: agent.organization_id || selectedOrganization?.id, 
-      agentId: agent.id 
+    setConfirmDialog({
+      visible: true,
+      title: "Удалить агента?",
+      message: `Вы уверены, что хотите удалить агента ${agent.host}:${agent.port}?`,
+      onConfirm: () => {
+        deleteMutation.mutate({ 
+          orgId: agent.organization_id || selectedOrganization?.id, 
+          agentId: agent.id 
+        });
+      },
     });
   };
 
@@ -428,6 +443,17 @@ function AgentsPage() {
           }}
         />
       )}
+
+      <ConfirmDialog
+        visible={confirmDialog.visible}
+        onClose={() => setConfirmDialog({ ...confirmDialog, visible: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="Удалить"
+        cancelText="Отмена"
+        variant="danger"
+      />
     </>
   );
 }

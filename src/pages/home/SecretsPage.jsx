@@ -5,6 +5,7 @@ import { secretService } from "../../services/secretService";
 import { organizationService } from "../../services/organizationService";
 import { useOrganization } from "../../contexts/useOrganization";
 import AddSecretModal from "../../components/modals/add-secret-modal/AddSecretModal";
+import { ConfirmDialog } from "../../components/confirm-dialog/ConfirmDialog";
 
 import deleteIconUrl from '../../assets/images/delete-b.svg'
 
@@ -16,6 +17,13 @@ function SecretsPage() {
   const [filter, setFilter] = useState("");
   const [editingSecret, setEditingSecret] = useState(null);
   const [addSecretModalOpen, setAddSecretModalOpen] = useState(false);
+  
+  const [confirmDialog, setConfirmDialog] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
 
   const { data: organizationsData } = useQuery({
     queryKey: ['organizations'],
@@ -77,9 +85,16 @@ function SecretsPage() {
 
   const handleDeleteSecret = (e, secret) => {
     e.stopPropagation();
-    deleteMutation.mutate({ 
-      orgId: secret.organization_id || selectedOrganization?.id, 
-      secretId: secret.id 
+    setConfirmDialog({
+      visible: true,
+      title: "Удалить секрет?",
+      message: `Вы уверены, что хотите удалить секрет "${secret.secret_mark}"?`,
+      onConfirm: () => {
+        deleteMutation.mutate({ 
+          orgId: secret.organization_id || selectedOrganization?.id, 
+          secretId: secret.id 
+        });
+      },
     });
   };
 
@@ -202,6 +217,17 @@ function SecretsPage() {
           }}
         />
       )}
+
+      <ConfirmDialog
+        visible={confirmDialog.visible}
+        onClose={() => setConfirmDialog({ ...confirmDialog, visible: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="Удалить"
+        cancelText="Отмена"
+        variant="danger"
+      />
     </>
   );
 }
