@@ -145,7 +145,7 @@ export function PeerDetailsPage() {
   const handleDrop = useCallback(async () => {
     setConfirmDialog({
       visible: true,
-      title: "Drop Peer?",
+      title: "Удалить Peer?",
       message: `Вы уверены, что хотите удалить peer "${peerData?.peer || peerId}"?`,
       onConfirm: async () => {
         setAction("drop");
@@ -240,7 +240,7 @@ export function PeerDetailsPage() {
         onConfirm={confirmDialog.onConfirm}
         title={confirmDialog.title}
         message={confirmDialog.message}
-        confirmText="Drop"
+        confirmText="Удалить"
         cancelText="Отмена"
         variant="danger"
       />

@@ -253,7 +253,7 @@ export function StepDeploy({ registerSubmit, isSubmitting, orgId, agentId }) {
             textAlign: "center",
             color: "#15803d"
           }}>
-            <h4 style={{ margin: "0 0 8px 0" }}>Развертывание завершено!</h4>
+            <h4>Развертывание завершено!</h4>
           </div>
         )}
       </div>

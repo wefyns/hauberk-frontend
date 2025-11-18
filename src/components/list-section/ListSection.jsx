@@ -34,6 +34,7 @@ export function ListSection({
     if (Array.isArray(d.peers)) return d.peers;
     if (Array.isArray(d.orderers)) return d.orderers;
     if (Array.isArray(d.ca)) return d.ca;
+    if (Array.isArray(d.databases)) return d.databases;
     return [];
   }, [q.data]);
 

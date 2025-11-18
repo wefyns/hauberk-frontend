@@ -140,7 +140,7 @@ export function FabricCADetailsPage() {
   const handleDrop = useCallback(async () => {
     setConfirmDialog({
       visible: true,
-      title: "Drop CA?",
+      title: "Удалить CA?",
       message: `Вы уверены, что хотите удалить CA "${caData?.ca || caId}"?`,
       onConfirm: async () => {
         setAction("drop");
@@ -240,7 +240,7 @@ export function FabricCADetailsPage() {
         onConfirm={confirmDialog.onConfirm}
         title={confirmDialog.title}
         message={confirmDialog.message}
-        confirmText="Drop"
+        confirmText="Удалить"
         cancelText="Отмена"
         variant="danger"
       />

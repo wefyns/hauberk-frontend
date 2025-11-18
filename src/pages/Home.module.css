@@ -667,20 +667,21 @@ button[data-component='disabled'] {
 .buttonOutlineArrow,
 .buttonOutlineArrowExp {
   padding: 8px 12px;
-  background: #f3f4f6;
+  background: transparent;
   color: #374151;
-  border: 1px solid #d1d5db;
+  border: 1px solid transparent;
   border-radius: 0px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  transform: rotate(180deg);
 }
 
 .buttonOutlineArrow:hover,
 .buttonOutlineArrowExp {
-  background: #e5e7eb;
-  border-color: #9ca3af;
+  /* background: #e5e7eb;
+  border-color: #9ca3af; */
 }
 
 .buttonOutlineArrow img,
@@ -691,7 +692,7 @@ button[data-component='disabled'] {
 }
 
 .buttonOutlineArrowExp img {
-  transform: rotate(90deg);
+  transform: rotate(-90deg);
 }
 
 .buttonOutlineGreen:hover {
@@ -750,9 +751,9 @@ button[data-component='disabled'] {
 
 .wrapperCounterparty {
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid кув;
   border-radius: 0px;
-  padding: 20px;
+  padding: 20px 20px 20px 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;

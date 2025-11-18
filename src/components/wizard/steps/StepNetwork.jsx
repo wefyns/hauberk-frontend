@@ -1,67 +1,167 @@
 import React, { useEffect, useCallback, useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { agentService } from "../../../services";
+import { agentService, journalService } from "../../../services";
 import { useTaskWebSocket } from "../../../hooks/useTaskWebSocket";
 import styles from "./Steps.module.css";
 
-export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
+export function StepNetwork({ registerSubmit, orgId, agentId }) {
   const submitWrapperRef = useRef(null);
-  const [error, setError] = useState(null);
-  const [networkConnected, setNetworkConnected] = useState(false);
+  const fileRef = useRef(null);
+  
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [filePreview, setFilePreview] = useState("");
+  const [fileError, setFileError] = useState("");
+  
+  const [processingError, setProcessingError] = useState(null);
+  
+  const [createdDoc, setCreatedDoc] = useState(null);
+  const [createdDocMeta, setCreatedDocMeta] = useState(null);
+  
   const [taskId, setTaskId] = useState(null);
-  const [connectionStatus, setConnectionStatus] = useState("idle");
+  const [viewMode, setViewMode] = useState("idle");
+  const [networkConnected, setNetworkConnected] = useState(false);
 
   const { events: wsEvents, closeWebSocket } = useTaskWebSocket(taskId);
 
-  const createConnectionMutation = useMutation({
-    mutationFn: () => agentService.createConnectionDocument(parseInt(orgId), parseInt(agentId)),
+  const createDocMutation = useMutation({
+    mutationFn: ({file}) => {
+      return agentService.createConnectionDocument(orgId, agentId, file);
+    },
+    onMutate: () => {
+      setProcessingError(null);
+      setCreatedDoc(null);
+      setCreatedDocMeta(null);
+      setTaskId(null);
+      setViewMode(selectedFile ? "uploaded" : "idle");
+    },
+    onSuccess: (res) => {
+      if (res?.status && res.status >= 400) {
+        setProcessingError({
+          message: res.error || "Ошибка при обработке документа",
+          details: res.details ?? null,
+          journalId: res.journal_id ?? null,
+        });
+        setCreatedDoc(null);
+        setCreatedDocMeta(null);
+        setViewMode("error");
+        return;
+      }
+
+      const doc = res?.connection_document ?? null;
+      setCreatedDoc(doc);
+      setCreatedDocMeta({
+        document_id: doc?.id ?? null,
+        journal_id: res?.journal_id ?? null,
+      });
+      setProcessingError(null);
+      setViewMode("created");
+    },
     onError: (err) => {
-      setError(`Ошибка создания connection document: ${err.message}`);
-      setConnectionStatus("error");
+      console.error("createConnectionDocument error:", err);
+      const payload = err?.response?.data ?? err?.data ?? null;
+      const details = payload?.details ?? null;
+      const journalId = payload?.journal_id ?? payload?.journalId ?? payload?.journal ?? null;
+      setProcessingError({
+        message: payload?.message || err?.message || "Ошибка при обработке конфигурационного файла",
+        details,
+        journalId,
+      });
+      setViewMode("error");
     },
   });
 
-  const connectToNetworkMutation = useMutation({
-    mutationFn: (docId) => agentService.connectWithDocument(parseInt(orgId), parseInt(agentId), docId),
-    onSuccess: (result) => {
-      const taskIdFromResponse = result?.task_id;
-      if (taskIdFromResponse) {
-        setTaskId(taskIdFromResponse);
-        setConnectionStatus("connecting");
+  const connectMutation = useMutation({
+    mutationFn: ({ docId }) => agentService.connectWithDocument(orgId, agentId, docId),
+    onSuccess: (res) => {
+      const t = res?.task_id ?? null;
+      if (t) {
+        setTaskId(t);
+        setViewMode("task");
       } else {
-        setNetworkConnected(true);
-        setConnectionStatus("connected");
+        setViewMode("error");
+        console.warn("connect response (no task id):", res);
+        setProcessingError({ message: "Соединение запущено, но идентификатор задачи id получен не был.", details: res });
       }
     },
     onError: (err) => {
-      setError(`Ошибка подключения к сети: ${err.message}`);
-      setConnectionStatus("error");
+      setViewMode("error");
+      console.error("connectWithDocument error:", err);
+      setProcessingError({ message: err?.message || "Ошибка при запуске подключения", details: err?.response?.data ?? err?.data });
     },
   });
 
-  const performNetworkConnection = useCallback(async () => {
+  const onFileSelected = async (e) => {
+    setFileError("");
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setSelectedFile(f);
+
     try {
-      setError(null);
-      setConnectionStatus("connecting");
-
-      const connectionDoc = await createConnectionMutation.mutateAsync();
-      const docId = connectionDoc?.id || connectionDoc?.connection_document?.id;
-      
-      if (!docId) {
-        throw new Error("Не удалось получить ID connection document");
+      const text = await f.text();
+      try {
+        const parsed = JSON.parse(text);
+        setFilePreview(JSON.stringify(parsed, null, 2));
+      } catch {
+        setFilePreview(text.slice(0, 2000));
       }
-
-      await connectToNetworkMutation.mutateAsync(docId);
-      
-      return { success: true, meta: { networkConnected: true } };
+      setViewMode("uploaded");
     } catch (err) {
-      setConnectionStatus("error");
-      return { success: false, error: err.message || "Ошибка подключения к сети" };
+      console.error("read file error:", err);
+      setFilePreview("");
+      setFileError("Файл не может быть прочитан.");
+      setViewMode("idle");
     }
-  }, [createConnectionMutation, connectToNetworkMutation]);
+  };
+
+  const onClickPicker = () => {
+    fileRef.current?.click();
+    setViewMode("idle");
+  };
+
+  const onUploadDocument = () => {
+    setProcessingError(null);
+    setCreatedDoc(null);
+    setCreatedDocMeta(null);
+    if (!selectedFile) {
+      setFileError("Выберите файл конфигурации (.json).");
+      setViewMode("idle");
+      return;
+    }
+    createDocMutation.mutate({ file: selectedFile });
+  };
+
+  const onContinueConnect = () => {
+    const docId = createdDocMeta?.document_id ?? createdDoc?.id ?? createdDocMeta?.id;
+
+    if (!docId) {
+      setViewMode("error");
+      setProcessingError({ message: "Для продолжения работы нет идентификатора документа." });
+      return;
+    }
+    connectMutation.mutate({ docId });
+  };
+
+  const downloadJournal = async (journalId) => {
+    try {
+      const data = await journalService.getJournal(orgId, agentId, journalId);
+      const jsonStr = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `journal-${journalId}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+      alert("Не удалось скачать журнал");
+    }
+  };
 
   const handleWizardSubmit = useCallback(async () => {
-    if (networkConnected || connectionStatus === "connected") {
+    if (networkConnected) {
       return { 
         success: true, 
         meta: { 
@@ -71,17 +171,11 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
       };
     }
 
-    setNetworkConnected(true);
-    setConnectionStatus("connected");
-    
-    return { 
-      success: true, 
-      meta: { 
-        networkConfigured: true,
-        wizardCompleted: true 
-      } 
+    return {
+      success: false,
+      error: "Сначала подключитесь к сети"
     };
-  }, [networkConnected, connectionStatus]);
+  }, [networkConnected]);
 
   useEffect(() => {
     submitWrapperRef.current = handleWizardSubmit;
@@ -89,10 +183,14 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
 
   useEffect(() => {
     if (orgId && agentId) {
-      registerSubmit(() => submitWrapperRef.current());
+      if (networkConnected) {
+        registerSubmit(() => submitWrapperRef.current());
+      } else {
+        registerSubmit(null);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, agentId]);
+  }, [orgId, agentId, networkConnected]);
 
   useEffect(() => {
     if (wsEvents.length > 0) {
@@ -100,11 +198,14 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
       if (lastEvent.type === "success" || 
           (lastEvent.type === "event" && lastEvent.payload?.status === "completed")) {
         setNetworkConnected(true);
-        setConnectionStatus("connected");
+        setViewMode("connected");
         closeWebSocket();
       } else if (lastEvent.type === "error") {
-        setConnectionStatus("error");
-        setError(lastEvent.message || "Ошибка подключения к сети");
+        setViewMode("error");
+        setProcessingError({ 
+          message: lastEvent.message || "Ошибка подключения к сети",
+          details: lastEvent.payload 
+        });
         closeWebSocket();
       }
     }
@@ -128,7 +229,7 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
     );
   }
 
-  if (networkConnected || connectionStatus === "connected") {
+  if (networkConnected) {
     return (
       <div className={styles.stepContainer}>
         <div className={styles.stepContent}>
@@ -145,127 +246,131 @@ export function StepNetwork({ registerSubmit, isSubmitting, orgId, agentId }) {
       <div className={styles.stepContent}>
         <h2 className={styles.stepTitle}>Завершение настройки сети</h2>
 
-        {error && (
-          <div className={styles.errorMessage}>
-            <p>{error}</p>
-          </div>
-        )}
+        <input 
+          ref={fileRef} 
+          type="file" 
+          accept=".json,application/json" 
+          onChange={onFileSelected} 
+          style={{ display: "none" }} 
+        />
 
-        <div style={{ 
-          border: "1px solid #e5e7eb", 
-          borderRadius: "8px", 
-          padding: "20px",
-          marginBottom: "24px",
-          background: "#fafafa"
-        }}>
-          <h4 style={{ margin: "0 0 16px 0", color: "#374151" }}>Статус настройки сети</h4>
-          
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{
-                width: "12px",
-                height: "12px",
-                borderRadius: "50%",
-                backgroundColor: connectionStatus === "connected" ? "#10b981" : 
-                                connectionStatus === "connecting" ? "#f59e0b" : 
-                                connectionStatus === "error" ? "#ef4444" : "#6b7280"
-              }} />
-              <span style={{ fontWeight: "500" }}>
-                Blockchain-сеть: {
-                  connectionStatus === "connected" ? "Подключена" :
-                  connectionStatus === "connecting" ? "Подключается..." :
-                  connectionStatus === "error" ? "Ошибка подключения" : "Готова к настройке"
-                }
-              </span>
-            </div>
-            
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{
-                width: "12px",
-                height: "12px",
-                borderRadius: "50%",
-                backgroundColor: "#10b981"
-              }} />
-              <span style={{ fontWeight: "500" }}>Компоненты развернуты</span>
-            </div>
+        {(viewMode === 'idle' || viewMode === 'uploaded') && (
+          <>
+            <div className={styles.fileSection}>
+              <label className={styles.label}>Конфигурационный файл</label>
+              <div className={styles.fileArea}>
+                {selectedFile && (
+                  <textarea
+                    readOnly
+                    className={styles.preview}
+                    value={filePreview || (selectedFile ? selectedFile.name : "")}
+                    placeholder="Выберите файл в формате json"
+                  />
+                )}
+              </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{
-                width: "12px",
-                height: "12px",
-                borderRadius: "50%",
-                backgroundColor: "#10b981"
-              }} />
-              <span style={{ fontWeight: "500" }}>Конфигурация применена</span>
-            </div>
-          </div>
-        </div>
-
-        {taskId && wsEvents.length > 0 && (
-          <div style={{ marginBottom: "24px" }}>
-            <h4 style={{ margin: "0 0 12px 0", color: "#374151" }}>
-              Процесс подключения (задача {taskId})
-            </h4>
-            <div style={{
-              border: "1px solid #d1d5db",
-              borderRadius: "8px",
-              padding: "12px",
-              background: "#f9fafb",
-              maxHeight: "200px",
-              overflowY: "auto",
-              fontFamily: "monospace",
-              fontSize: "13px"
-            }}>
-              {wsEvents.map((event, index) => (
-                <div key={index} style={{ marginBottom: "4px", color: "#374151" }}>
-                  <strong>{event.type}:</strong> {
-                    event.type === "event" 
-                      ? event.payload?.message || JSON.stringify(event.payload)
-                      : event.message || JSON.stringify(event)
-                  }
+              {viewMode === 'uploaded' ? (
+                <div className={styles.actionsRow}>
+                  <button className={styles.primary} onClick={onUploadDocument} disabled={createDocMutation.isPending}>
+                    {createDocMutation.isPending ? "Обработка..." : "Создайте документ"}
+                  </button>
                 </div>
-              ))}
+              ) : (
+                <div className={styles.fileControls}>
+                  <button className={styles.btn} onClick={onClickPicker}>...</button>
+                </div>
+              )}
+
+              {fileError && <div className={styles.error}>{fileError}</div>}
+            </div>
+          </>
+        )}
+
+        {viewMode === "created" && createdDoc && (
+          <div className={styles.resultBlock}>
+            <h4>Созданный документ</h4>
+            <pre className={styles.docPreview}>{JSON.stringify(createdDoc, null, 2)}</pre>
+            <div className={styles.resultBtns}>
+              <button 
+                className={styles.ghost} 
+                onClick={() => { 
+                  setViewMode("idle");
+                  setCreatedDoc(null); 
+                  setCreatedDocMeta(null); 
+                }}
+              >
+                Назад
+              </button>
+              <button 
+                className={styles.primary} 
+                onClick={onContinueConnect} 
+                disabled={connectMutation.isPending}
+              >
+                {connectMutation.isPending ? "Подключение..." : "Подключить и продолжить"}
+              </button>
             </div>
           </div>
         )}
 
-        {connectionStatus === "idle" && (
-          <div style={{ textAlign: "center", marginBottom: "24px" }}>
-            <button
-              onClick={performNetworkConnection}
-              disabled={isSubmitting || connectionStatus === "connecting"}
-              style={{
-                padding: "12px 24px",
-                backgroundColor: "#0b66ff",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                fontSize: "14px",
-                fontWeight: "600",
-                cursor: connectionStatus === "connecting" ? "not-allowed" : "pointer",
-                opacity: connectionStatus === "connecting" ? 0.6 : 1
-              }}
-            >
-              {connectionStatus === "connecting" ? "Подключение..." : "Подключиться к сети"}
-            </button>
+        {viewMode === "task" && taskId && (
+          <div className={styles.taskBlock}>
+            <h4>Процесс подключения — задача {taskId}</h4>
+            <div className={styles.eventsList}>
+              {wsEvents.map((ev, idx) => {
+                const journalId = ev?.payload?.journal_id ?? ev?.payload?.journalId ?? ev?.payload?.journal;
+                const message = ev.type === "event" 
+                  ? (ev.payload?.message ?? JSON.stringify(ev.payload)) 
+                  : (ev.message ?? ev.raw ?? JSON.stringify(ev));
+                return (
+                  <div key={idx} className={styles.eventItem}>
+                    <div className={styles.eventText}>
+                      <strong>{ev.type}</strong>: {message}
+                    </div>
+                    {journalId && (
+                      <button 
+                        className={styles.btnSmall} 
+                        onClick={() => downloadJournal(journalId)}
+                      >
+                        Журнал
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
-        <div style={{
-          background: "#f0f9ff", 
-          border: "1px solid #bae6fd", 
-          borderRadius: "8px",
-          padding: "16px",
-          marginBottom: "16px"
-        }}>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
-            <div>
-              <h4 style={{ margin: "0 0 8px 0", color: "#0c4a6e", fontSize: "14px" }}>
-                Готово к запуску!
-              </h4>
+        {viewMode === "error" && processingError && (
+          <div className={styles.errorBlock}>
+            <h4>Ошибка</h4>
+            <p className={styles.processingError}>{processingError.message}</p>
+            {processingError.details && (
+              <pre className={styles.details}>
+                {JSON.stringify(processingError.details, null, 2)}
+              </pre>
+            )}
+            <div className={styles.errorBtns}>
+              {processingError.journalId && (
+                <button
+                  className={styles.btnDownload}
+                  onClick={() => downloadJournal(processingError.journalId)}
+                >
+                  Скачать журнал
+                </button>
+              )}
+              <button 
+                className={styles.btnSecondary} 
+                onClick={() => {
+                  setViewMode("idle");
+                  setProcessingError(null);
+                }}
+              >
+                Попробовать снова
+              </button>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

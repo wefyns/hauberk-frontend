@@ -27,6 +27,7 @@ function Home() {
   // Determine active section from URL path
   const getActiveSection = () => {
     const path = location.pathname;
+    if (path.match(/\/agents\/\d+\/(peers|orderers|ca)\//)) return "overview";
     if (path.includes("/search")) return "search";
     if (path.includes("/agents")) return "agents";
     if (path.includes("/secrets")) return "secrets";

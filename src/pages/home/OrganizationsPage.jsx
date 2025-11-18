@@ -50,8 +50,9 @@ function OrganizationsPage() {
     mutationFn: (orgId) => {
       return organizationService.deleteOrganization(orgId);
     },
-    onSuccess: () => {
-      fetchOrganizations();
+    onSuccess: async () => {
+      setConfirmDialog({ ...confirmDialog, visible: false });
+      await fetchOrganizations();
     },
     onError: (err) => {
       console.error("delete organization failed:", err);

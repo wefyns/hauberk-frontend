@@ -135,7 +135,7 @@ export function OrdererDetailsPage() {
   const handleDrop = useCallback(async () => {
     setConfirmDialog({
       visible: true,
-      title: "Drop Orderer?",
+      title: "Удалить Orderer?",
       message: `Вы уверены, что хотите удалить orderer "${ordererData?.orderer || ordererId}"?`,
       onConfirm: async () => {
         setAction("drop");
@@ -240,7 +240,7 @@ export function OrdererDetailsPage() {
         onConfirm={confirmDialog.onConfirm}
         title={confirmDialog.title}
         message={confirmDialog.message}
-        confirmText="Drop"
+        confirmText="Удалить"
         cancelText="Отмена"
         variant="danger"
       />

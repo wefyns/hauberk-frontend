@@ -93,7 +93,7 @@ export const API_ENDPOINTS = {
     `/api/v1/organizations/${orgId}/agents/${agentId}/orderer/${ordererId}/drop`,
 
   // DB INFO
-  DB_INFO: "/api/v1/db-info",
+  DB_INFO: "/api/v1/db-info-list",
 };
 
 /**

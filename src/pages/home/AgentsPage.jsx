@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -22,6 +22,7 @@ import styles from "../Home.module.css";
 function AgentsPage() {
   const { selectedOrganization } = useOrganization();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [filter, setFilter] = useState("");
   const [editingAgent, setEditingAgent] = useState(null);
@@ -41,6 +42,7 @@ function AgentsPage() {
     message: "",
     onConfirm: null,
   });
+  
   const { data: organizationsData } = useQuery({
     queryKey: ['organizations'],
     queryFn: () => organizationService.getOrganizations(),
@@ -49,30 +51,11 @@ function AgentsPage() {
 
   const { 
     data: agentsData, 
-    isLoading: agentsLoading, 
-    refetch: refetchAgents 
+    isLoading: agentsLoading
   } = useQuery({
     queryKey: ['agents'],
     queryFn: () => agentService.getAgents(),
     select: (data) => data?.agents || []
-  });
-
-  const { data: peersData } = useQuery({
-    queryKey: ['all-peers'],
-    queryFn: () => agentService.getAllPeers(),
-    select: (data) => data?.peers || []
-  });
-
-  const { data: orderersData } = useQuery({
-    queryKey: ['all-orderers'],
-    queryFn: () => agentService.getAllOrderers(),
-    select: (data) => data?.orderers || []
-  });
-
-  const { data: caData } = useQuery({
-    queryKey: ['all-ca'],
-    queryFn: () => agentService.getAllCAs(),
-    select: (data) => data?.ca || []
   });
 
   const getOrganizationName = (organizationId) => {
@@ -111,8 +94,19 @@ function AgentsPage() {
     mutationFn: ({ orgId, agentId }) => {
       return agentService.deleteAgent(orgId, agentId);
     },
-    onSuccess: () => {
-      refetchAgents();
+    onSuccess: async (data, variables) => {
+      queryClient.setQueryData(['agents'], (oldData) => {
+        if (!oldData) return oldData;
+        const agents = oldData.agents || [];
+        return {
+          ...oldData,
+          agents: agents.filter(agent => agent.id !== variables.agentId)
+        };
+      });
+      
+      setConfirmDialog({ ...confirmDialog, visible: false });
+
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
     },
     onError: (err) => {
       console.error("delete agent failed:", err);
@@ -148,22 +142,20 @@ function AgentsPage() {
     });
   };
 
-  const getAgentPeers = (agentId) => {
-    if (!peersData) return [];
-    const agentData = peersData.find(p => p.agent_id === agentId);
-    return agentData?.agent_peers || [];
-  };
+  const shouldShowDeployButton = (agent) => {
+    const caList = agent.ca_list || [];
+    const peerList = agent.peer_list || [];
+    const ordererList = agent.orderer_list || [];
 
-  const getAgentOrderers = (agentId) => {
-    if (!orderersData) return [];
-    const agentData = orderersData.find(o => o.agent_id === agentId);
-    return agentData?.agent_orderers || [];
-  };
+    if (caList.length === 0 && peerList.length === 0 && ordererList.length === 0) {
+      return true;
+    }
 
-  const getAgentCAs = (agentId) => {
-    if (!caData) return [];
-    const agentData = caData.find(c => c.agent_id === agentId);
-    return agentData?.agent_ca || [];
+    const caRunning = caList.length > 0 && caList.every(ca => ca.status === 'running' || ca.status === 'deployed');
+    const peersRunning = peerList.length >= 2 && peerList.every(p => p.status === 'running' || p.status === 'deployed');
+    const ordererRunning = ordererList.length > 0 && ordererList.every(o => o.status === 'running' || o.status === 'deployed');
+
+    return !(caRunning && peersRunning && ordererRunning);
   };
 
   const handlePeerClick = (e, agentId, peerId) => {
@@ -230,6 +222,7 @@ function AgentsPage() {
             filterData.map((agent) => {
               const isExpanded = expandedAgents.has(agent.id);
               const badgeColor = agent.status === 'discoverable' ? 'green' : 'red';
+              const showDeployButton = shouldShowDeployButton(agent);
               
               return (
                 <div key={agent.id} style={{ marginBottom: 8 }}>
@@ -240,21 +233,33 @@ function AgentsPage() {
                     tabIndex={0}
                     style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }}
                   >
-                    <div 
-                      style={{
-                        position: "absolute",
-                        left: 12,
-                        top: 12,
-                        width: 12,
-                        height: 12,
-                        borderRadius: 360,
-                        backgroundColor: badgeColor === 'green' ? '#10b981' : '#ef4444',
-                        border: '1px solid rgba(0,0,0,0.06)'
-                      }}
-                      title={agent.status === 'discoverable' ? 'Доступен' : 'Недоступен'}
-                    />
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 12 }}>
+                      <button
+                        type="button"
+                        onClick={(e) => toggleAgentExpanded(e, agent.id)}
+                        className={`${styles.button} ${isExpanded ? styles.buttonOutlineArrowExp : styles.buttonOutlineArrow }`}
+                        title="Показать/скрыть объекты агента" 
+                      >
+                        <img src={arrowIconUrl} alt="arrow icon" />
+                      </button>
 
-                    <div className={styles.info} style={{ paddingLeft: 20 }}>
+                      <div 
+                        style={{
+                          position: 'absolute',
+                          top: '0px',
+                          left: '0px',
+                          width: 12,
+                          height: 12,
+                          borderRadius: 0,
+                          backgroundColor: badgeColor === 'green' ? '#10b981' : '#ef4444',
+                          border: '1px solid rgba(0,0,0,0.06)',
+                          flexShrink: 0
+                        }}
+                        title={agent.status === 'discoverable' ? 'Доступен' : 'Недоступен'}
+                      />
+                    </div>
+
+                    <div className={styles.info} style={{ flex: 1, paddingLeft: 12 }}>
                       <div className={styles.wrapperTop}>
                         <div>
                           <div className={styles.orgHeader}>
@@ -281,27 +286,20 @@ function AgentsPage() {
                     </div>
 
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <button
-                        type="button"
-                        onClick={(e) => toggleAgentExpanded(e, agent.id)}
-                        className={`${styles.button} ${isExpanded ? styles.buttonOutlineArrowExp : styles.buttonOutlineArrow }`}
-                        title="Показать/скрыть объекты агента" 
-                      >
-                        <img src={arrowIconUrl} alt="arrow icon" />
-                      </button>
-
-                      <button
-                        type="button"
-                        className={`${styles.button} ${styles.buttonOutlineDelete}`}
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          setDeploymentAgent(agent); 
-                          setDeploymentModalOpen(true); 
-                        }}
-                        title="Мастер развертывания сегмента"
-                      >
-                        <img src={cloudIconUrl} alt="cloud icon" />
-                      </button>
+                      {showDeployButton && (
+                        <button
+                          type="button"
+                          className={`${styles.button} ${styles.buttonOutlineDelete}`}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            setDeploymentAgent(agent); 
+                            setDeploymentModalOpen(true); 
+                          }}
+                          title="Мастер развертывания сегмента"
+                        >
+                          <img src={cloudIconUrl} alt="cloud icon" />
+                        </button>
+                      )}
                       
                       <button
                         type="button"
@@ -340,11 +338,11 @@ function AgentsPage() {
                       
                       <div style={{ marginBottom: 16 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#334155", marginBottom: 8 }}>
-                          Peers ({getAgentPeers(agent.id).length})
+                          Peers ({(agent.peer_list || []).length})
                         </div>
-                        {getAgentPeers(agent.id).length > 0 ? (
+                        {(agent.peer_list || []).length > 0 ? (
                           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 8 }}>
-                            {getAgentPeers(agent.id).map((peer, index) => (
+                            {agent.peer_list.map((peer, index) => (
                               <PeerTile
                                 key={peer.id || index}
                                 peer={peer}
@@ -360,11 +358,11 @@ function AgentsPage() {
 
                       <div style={{ marginBottom: 16 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#334155", marginBottom: 8 }}>
-                          Orderers ({getAgentOrderers(agent.id).length})
+                          Orderers ({(agent.orderer_list || []).length})
                         </div>
-                        {getAgentOrderers(agent.id).length > 0 ? (
+                        {(agent.orderer_list || []).length > 0 ? (
                           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 8 }}>
-                            {getAgentOrderers(agent.id).map((orderer, index) => (
+                            {agent.orderer_list.map((orderer, index) => (
                               <PeerTile
                                 key={orderer.id || index}
                                 peer={orderer}
@@ -380,11 +378,11 @@ function AgentsPage() {
 
                       <div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#334155", marginBottom: 8 }}>
-                          Сертификаты ({getAgentCAs(agent.id).length})
+                          Сертификаты ({(agent.ca_list || []).length})
                         </div>
-                        {getAgentCAs(agent.id).length > 0 ? (
+                        {(agent.ca_list || []).length > 0 ? (
                           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 8 }}>
-                            {getAgentCAs(agent.id).map((ca, index) => (
+                            {agent.ca_list.map((ca, index) => (
                               <PeerTile
                                 key={ca.id || index}
                                 peer={ca}
@@ -437,7 +435,7 @@ function AgentsPage() {
           orgId={selectedOrganization?.id}
           editingAgent={editingAgent}
           onSuccess={() => {
-            refetchAgents();
+            queryClient.invalidateQueries({ queryKey: ['agents'] });
             setAddAgentModalOpen(false);
             setEditingAgent(null);
           }}

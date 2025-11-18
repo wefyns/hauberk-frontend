@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 import { Dialog } from "../../dialog/Dialog";
 
@@ -12,6 +13,15 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
 
   const mountedRef = useRef(true);
   const timeoutRef = useRef(null);
+
+  const { data: agentsData } = useQuery({
+    queryKey: ['agents'],
+    queryFn: () => agentService.getAgents(),
+    select: (data) => data?.agents || [],
+    enabled: visible
+  });
+
+  const currentAgent = agentsData?.find(a => a.id === agentId);
 
   const [status, setStatus] = useState({
     ca: "pending",
@@ -32,6 +42,33 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
       setDeploying(false);
       setLogs([]);
       setDeploySuccess(false);
+    } else if (currentAgent) {
+      const newStatus = {
+        ca: "pending",
+        peer0: "pending",
+        peer1: "pending",
+        orderer: "pending",
+      };
+      
+      const caList = currentAgent.ca_list || [];
+      if (caList.length > 0 && caList.some(ca => ca.status === 'running' || ca.status === 'deployed')) {
+        newStatus.ca = "deployed";
+      }
+
+      const peerList = currentAgent.peer_list || [];
+      if (peerList.length >= 1 && (peerList[0]?.status === 'running' || peerList[0]?.status === 'deployed')) {
+        newStatus.peer0 = "deployed";
+      }
+      if (peerList.length >= 2 && (peerList[1]?.status === 'running' || peerList[1]?.status === 'deployed')) {
+        newStatus.peer1 = "deployed";
+      }
+
+      const ordererList = currentAgent.orderer_list || [];
+      if (ordererList.length > 0 && ordererList.some(o => o.status === 'running' || o.status === 'deployed')) {
+        newStatus.orderer = "deployed";
+      }
+
+      setStatus(newStatus);
     }
     return () => {
       mountedRef.current = false;
@@ -40,7 +77,7 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
         timeoutRef.current = null;
       }
     };
-  }, [visible]);
+  }, [visible, currentAgent]);
 
   const pushLog = (line) => {
     setLogs((prev) => [...prev, `${new Date().toLocaleTimeString()}: ${line}`]);
@@ -54,16 +91,42 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
     const nextStatus = { ...status };
 
     const steps = [
-      { key: "ca", label: "Deploy CA", action: () => agentService.enrollCA(parseInt(orgId), parseInt(agentId), "default") },
-      { key: "peer0", label: "Deploy Peer 0", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 0) },
-      { key: "peer1", label: "Deploy Peer 1", action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 1) },
-      { key: "orderer", label: "Deploy Orderer", action: () => agentService.enrollOrderer(parseInt(orgId), parseInt(agentId), "default") },
+      { 
+        key: "ca", 
+        label: "Deploy CA", 
+        action: () => agentService.enrollCA(parseInt(orgId), parseInt(agentId), "default"),
+        shouldSkip: status.ca === "deployed"
+      },
+      { 
+        key: "peer0", 
+        label: "Deploy Peer 0", 
+        action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 0),
+        shouldSkip: status.peer0 === "deployed"
+      },
+      { 
+        key: "peer1", 
+        label: "Deploy Peer 1", 
+        action: () => agentService.enrollPeer(parseInt(orgId), parseInt(agentId), 1),
+        shouldSkip: status.peer1 === "deployed"
+      },
+      { 
+        key: "orderer", 
+        label: "Deploy Orderer", 
+        action: () => agentService.enrollOrderer(parseInt(orgId), parseInt(agentId), "default"),
+        shouldSkip: status.orderer === "deployed"
+      },
     ];
 
     let allSuccess = true;
 
     for (const step of steps) {
       if (!mountedRef.current) break;
+      
+      if (step.shouldSkip) {
+        pushLog(`${step.label} — уже развернут, пропускаем.`);
+        continue;
+      }
+
       nextStatus[step.key] = "in_progress";
       setStatus({ ...nextStatus });
       pushLog(`Начинаем: ${step.label}`);
@@ -74,6 +137,7 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
         setStatus({ ...nextStatus });
       } catch (err) {
         console.error(`Deployment step ${step.key} failed:`, err);
+        pushLog(`${step.label} — ошибка: ${err.message || String(err)}`);
         allSuccess = false;
         nextStatus[step.key] = "error";
         setStatus({ ...nextStatus });
@@ -108,6 +172,8 @@ export default function DeploymentModal({ visible, onClose, orgId, agentId }) {
 
   const renderStatusTag = (key) => {
     switch (status[key]) {
+      case "deployed":
+        return <span className={styles.statusSuccess}>Уже развернут</span>;
       case "success":
         return <span className={styles.statusSuccess}>Успех</span>;
       case "error":

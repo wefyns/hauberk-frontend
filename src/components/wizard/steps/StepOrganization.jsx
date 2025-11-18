@@ -25,7 +25,7 @@ export function StepOrganization({ registerSubmit, isSubmitting, orgId }) {
       country: "",
       country_code: "",
       region: "",
-      domain: "haub.procsy.tech",
+      domain: "",
       settlement: "",
       ogrn: "",
     }

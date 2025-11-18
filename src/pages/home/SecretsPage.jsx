@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 
 import { secretService } from "../../services/secretService";
@@ -13,6 +13,7 @@ import styles from "../Home.module.css";
 
 function SecretsPage() {
   const { selectedOrganization } = useOrganization();
+  const queryClient = useQueryClient();
 
   const [filter, setFilter] = useState("");
   const [editingSecret, setEditingSecret] = useState(null);
@@ -34,9 +35,8 @@ function SecretsPage() {
   const {
     data: secrets,
     isLoading: loading,
-    refetch: refetchSecrets,
   } = useQuery({
-    queryKey: ["secrets"],
+    queryKey: ["secrets", selectedOrganization?.id],
     queryFn: () => secretService.getSecrets(),
     select: (data) => data?.secrets || [],
   });
@@ -74,8 +74,19 @@ function SecretsPage() {
     mutationFn: ({ orgId, secretId }) => {
       return secretService.deleteSecret(orgId, secretId);
     },
-    onSuccess: () => {
-      refetchSecrets();
+    onSuccess: async (data, variables) => {
+      queryClient.setQueryData(["secrets", selectedOrganization?.id], (oldData) => {
+        if (!oldData) return oldData;
+        const secrets = oldData.secrets || [];
+        return {
+          ...oldData,
+          secrets: secrets.filter(secret => secret.id !== variables.secretId)
+        };
+      });
+      
+      setConfirmDialog({ ...confirmDialog, visible: false });
+      
+      queryClient.invalidateQueries({ queryKey: ["secrets"] });
     },
     onError: (err) => {
       console.error("delete secret failed:", err);
@@ -149,7 +160,7 @@ function SecretsPage() {
                 // onClick={() => handleCardClick(secret)}
                 role="button"
                 tabIndex={0}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", paddingLeft: 20 }}
               >
                 <div className={styles.info}>
                   <div className={styles.wrapperTop}>
@@ -211,7 +222,7 @@ function SecretsPage() {
           orgId={selectedOrganization?.id}
           editingSecret={editingSecret}
           onSuccess={() => {
-            refetchSecrets();
+            queryClient.invalidateQueries({ queryKey: ["secrets"] });
             setAddSecretModalOpen(false);
             setEditingSecret(null);
           }}
