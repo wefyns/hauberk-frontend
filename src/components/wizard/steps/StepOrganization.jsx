@@ -281,7 +281,7 @@ export function StepOrganization({ registerSubmit, isSubmitting, orgId }) {
                 {...register("domain", {
                   required: "Требуется указать домен",
                   pattern: {
-                    value: /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/,
+                    value: /^(?!-)(?:[a-zA-Z0-9-]{1,63}\.)+[a-zA-Z0-9-]{2,}$/i,
                     message: "Введите действительное доменное имя"
                   }
                 })}

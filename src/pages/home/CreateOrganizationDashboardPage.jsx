@@ -31,7 +31,7 @@ function CreateOrganizationDashboardPage() {
       country: "",
       country_code: "",
       region: "",
-      domain: "haub.procsy.tech",
+      domain: "",
       settlement: "",
       ogrn: "",
     }
@@ -224,7 +224,7 @@ function CreateOrganizationDashboardPage() {
               {...register("domain", {
                 required: "Требуется указать домен",
                 pattern: {
-                  value: /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/,
+                  value: /^(?!-)(?:[a-zA-Z0-9-]{1,63}\.)+[a-zA-Z0-9-]{2,}$/i,
                   message: "Введите действительное доменное имя"
                 }
               })}
