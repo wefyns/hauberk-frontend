@@ -28,6 +28,7 @@ export function CAsSection() {
     return agentCAs.map((ca, index) => (
       <PeerTile
         key={ca.id || index}
+        type="ca"
         peer={{ ...ca, agent_status: agentStatus }}
         agent={{ id: agentId }}
         onClick={() => handleClick(agentId, ca.id)}

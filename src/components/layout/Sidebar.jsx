@@ -140,7 +140,7 @@ function Sidebar({ sidebarCollapsed, activeSection }) {
           <span className={styles.navIcon}>
             <img src={searchIconUrl} alt="search icon" />
           </span>
-          {!sidebarCollapsed && <span className={styles.navText}>Поиск</span>}
+          {!sidebarCollapsed && <span className={styles.navText}>Мониторинг</span>}
         </button>
       </nav>
     </div>

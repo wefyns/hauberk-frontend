@@ -15,6 +15,7 @@ export default function DBInfoSection() {
     return (
       <PeerTile
         key={`${item.type}-${item.agent_id || 'global'}`}
+        type="db"
         peer={{
           id: `${item.type}-${item.agent_id || 'global'}`,
           name: item.type,

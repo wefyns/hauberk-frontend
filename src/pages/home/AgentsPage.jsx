@@ -345,6 +345,7 @@ function AgentsPage() {
                             {agent.peer_list.map((peer, index) => (
                               <PeerTile
                                 key={peer.id || index}
+                                type="peer"
                                 peer={peer}
                                 agent={{ id: agent.id }}
                                 onClick={(e) => handlePeerClick(e, agent.id, peer.id)}
@@ -365,6 +366,7 @@ function AgentsPage() {
                             {agent.orderer_list.map((orderer, index) => (
                               <PeerTile
                                 key={orderer.id || index}
+                                type="orderer"
                                 peer={orderer}
                                 agent={{ id: agent.id }}
                                 onClick={(e) => handleOrdererClick(e, agent.id, orderer.id)}
@@ -385,6 +387,7 @@ function AgentsPage() {
                             {agent.ca_list.map((ca, index) => (
                               <PeerTile
                                 key={ca.id || index}
+                                type="ca"
                                 peer={ca}
                                 agent={{ id: agent.id }}
                                 onClick={(e) => handleCAClick(e, agent.id, ca.id)}

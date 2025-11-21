@@ -30,6 +30,7 @@ export function PeersSection() {
     return agentPeers.map((peer, index) => (
       <PeerTile
         key={peer.id || index}
+        type="peer"
         peer={{ ...peer, agent_status: agentStatus }}
         agent={{ id: agentId }}
         onClick={() => handlePeerClick(agentId, peer.id)}

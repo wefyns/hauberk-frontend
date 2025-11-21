@@ -30,6 +30,7 @@ export function OrderersSection() {
     return agentOrderers.map((orderer, index) => (
       <PeerTile
         key={orderer.id || index}
+        type="orderer"
         peer={{ ...orderer, agent_status: agentStatus }}
         agent={{ id: agentId }}
         onClick={() => handleOrdererClick(agentId, orderer.id)}

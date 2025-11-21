@@ -30,9 +30,31 @@ function pickBadgeColor(statusRaw) {
   return STATUS_MAP[s] ?? "gray";
 }
 
-export function PeerTile({ peer, agent, onClick }) {
+export function PeerTile({ peer, agent, onClick, type = 'peer' }) {
   const status = peer?.status ?? "";
   const badgeColor = pickBadgeColor(status);
+
+  const peerName =
+    peer?.peer_name ??
+    peer?.hostname ??
+    peer?.host_name ??
+    peer?.name ??
+    "—";
+
+  const domainName = peer?.domain_name ?? "";
+  const portName = peer?.port ?? "";
+
+  const base = domainName && peerName !== "—"
+    ? `${peerName}.${domainName}`
+    : peerName;
+
+  const fullName = portName
+    ? `${base}:${portName}`
+    : base;
+
+  const showMSP = type !== 'db' && type !== 'ca';
+  const showDomain = type === 'orderer';
+  const showStatus = type !== 'db' && type !== 'ca';
 
   return (
     <div className={styles.tile} onClick={onClick} role="button" tabIndex={0}>
@@ -46,12 +68,12 @@ export function PeerTile({ peer, agent, onClick }) {
       </div>
 
       <div className={styles.tileBody}>
-        <div><strong>Name:</strong> {peer?.peer_name ?? peer?.hostname ?? peer?.host_name ?? "—"}</div>
+        <div><strong>Name:</strong> {fullName}</div>
         <div><strong>ID:</strong> {peer?.id ?? "—"}</div>
         <div><strong>Version:</strong> {peer?.version ?? "—"}</div>
-        <div><strong>MSP:</strong> {peer?.msp_id ?? "—"}</div>
-        <div><strong>Domain:</strong> {peer?.domain_name ?? "—"}</div>
-        <div><strong>Status:</strong> {status || "—"}</div>
+        {showMSP && <div><strong>MSP ID:</strong> {peer?.msp_id ?? "—"}</div>}
+        {showDomain && <div><strong>Domain:</strong> {domainName || "—"}</div>}
+        {showStatus && <div><strong>Status:</strong> {status || "—"}</div>}
       </div>
 
       <div className={styles.tileFooter}>
