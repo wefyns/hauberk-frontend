@@ -1085,6 +1085,10 @@ button[data-component='disabled'] {
   transform: rotate(90deg);
 }
 
+.titleBtn {
+  padding-bottom: 2px;
+}
+
 
 @media (max-width: 880px) {
   .top {

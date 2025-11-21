@@ -14,8 +14,8 @@ import { useOrganization } from "../../contexts/useOrganization";
 
 import deleteIconUrl from '../../assets/images/delete-b.svg'
 import arrowIconUrl from '../../assets/images/arrow.svg'
-import cloudIconUrl from '../../assets/images/cloud.svg'
-import networkIconUrl from '../../assets/images/network.svg'
+import cloudIconUrl from '../../assets/images/cloud-upload.svg'
+import networkIconUrl from '../../assets/images/network2.svg'
 
 import styles from "../Home.module.css";
 
@@ -259,7 +259,7 @@ function AgentsPage() {
                       />
                     </div>
 
-                    <div className={styles.info} style={{ flex: 1, paddingLeft: 12 }}>
+                    <div className={styles.info} style={{ flex: 1 }}>
                       <div className={styles.wrapperTop}>
                         <div>
                           <div className={styles.orgHeader}>
@@ -271,13 +271,13 @@ function AgentsPage() {
                               <>
                                 <div className={styles.reduction}>Организация:</div>
                                 <div className={styles.value}>{getOrganizationName(agent.organization_id)}</div>
-                                <div style={{ width: 24 }} />
+                                <div style={{ width: 14 }} />
                               </>
                             )}
                             <div className={styles.reduction}>UUID:</div>
                             <div className={styles.value}>{agent.uuid}</div> 
                             
-                            <div style={{ width: 24 }} />
+                            <div style={{ width: 14 }} />
                             <div className={styles.reduction}>Protocol:</div>
                             <div className={styles.value}>{agent.protocol}</div>
                           </div>
@@ -297,7 +297,8 @@ function AgentsPage() {
                           }}
                           title="Мастер развертывания сегмента"
                         >
-                          <img src={cloudIconUrl} alt="cloud icon" />
+                          <img src={cloudIconUrl} style={{ width: 20, height: 20 }} alt="cloud icon" />
+                          <span className={styles.titleBtn}>Развернуть сегмент</span>
                         </button>
                       )}
                       
@@ -312,6 +313,7 @@ function AgentsPage() {
                         title="Мастер присоединения к новой сети"
                       >
                         <img src={networkIconUrl} alt="network icon" />
+                        <span className={styles.titleBtn}>Присоединить к сети</span>
                       </button>
 
                       <button
