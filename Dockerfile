@@ -15,10 +15,11 @@ RUN yarn build
 FROM nginx:stable-alpine
 
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/assets /usr/share/nginx/html/assets
 
 # Install envsubst
 RUN apk add --no-cache gettext
 
-CMD ["/bin/sh", "-c", "exec nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/assets/env.sample.js > /usr/share/nginx/html/assets/env.js && exec nginx -g 'daemon off;'"]
 
 EXPOSE 80
